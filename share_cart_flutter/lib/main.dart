@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'ShareCart',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -35,6 +35,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -78,6 +79,20 @@ class _MyHomePageState extends State<MyHomePage> {
     // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          RawMaterialButton(
+            onPressed: (){},
+            elevation: 2.0,
+            fillColor: Colors.white,
+            constraints: BoxConstraints(minWidth: 0.0),
+            padding: EdgeInsets.all(10),
+            shape: CircleBorder(),
+            child: Icon(
+              Icons.person,
+              size: 20.0,
+            ),
+          ),
+        ],
         // TRY THIS: Try changing the color here to a specific color (to
         // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
         // change color while the other colors stay the same.
@@ -85,6 +100,25 @@ class _MyHomePageState extends State<MyHomePage> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text('Drawer Header'),
+            ),
+            ListTile(
+              title: const Text('Item 1'),
+            ),
+            ListTile(
+              title: const Text('Item 2'),
+            )
+          ],
+        ),
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
