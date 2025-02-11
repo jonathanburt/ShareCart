@@ -32,17 +32,19 @@ class MyApp extends StatelessWidget {
           //
           // This works for code too, not just values: Most code changes can be
           // tested with just a hot reload.
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.lime),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 82, 127, 34),
+            primary: const Color.fromARGB(255, 5, 81, 7)),
           useMaterial3: true,
         ),
-        home: const MyHomePage(title: 'Flutter Demo Home Page'),
+        home: const MyHomePage(title: 'ShareCart Demo'),
       ),
     );
   }
 }
 
 class MyAppState extends ChangeNotifier {
-  
+ int tjItems = 5;
+ int tjUrgent = 1;
 }
 
 
@@ -66,26 +68,15 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-
   void _incrementCounter() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
       _counter++;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    final theme = Theme.of(context);
     return Scaffold(
       //AppBar Widget contains the Profile Button
       appBar: AppBar(
@@ -104,13 +95,10 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
         ],
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        backgroundColor: theme.primaryColor,
+        title: Center(child: Text(widget.title, style: TextStyle(
+          fontWeight: FontWeight.bold
+        ),)),
       ),
       bottomNavigationBar: NavigationBar(
         destinations: [
@@ -132,53 +120,111 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             const DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.blue,
+                gradient: LinearGradient(colors: [Colors.amber, Colors.red]),
               ),
               child: Text('Drawer Header'),
             ),
             ListTile(
-              title: const Text('Item 1'),
+              title: const Text('Roomies'),
             ),
             ListTile(
-              title: const Text('Item 2'),
+              title: const Text('Family'),
             )
           ],
         ),
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: ListView(
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+            Center(
+              child: Text('Active Lists', style: TextStyle(
+                fontSize: 50,
+                fontWeight: FontWeight.bold,
+                color: theme.primaryColor
+              ),),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+            ListCard(
+              theme: theme,
+              listName: 'Trader Joes'),
+            // const Text(
+            //   'You have pushed the button this many times:',
+            // ),
+            // Text(
+            //   '$_counter',
+            //   style: Theme.of(context).textTheme.headlineMedium,
+            // ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: _incrementCounter,
+      //   tooltip: 'Increment',
+      //   child: const Icon(Icons.add),
+      // ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class ListCard extends StatelessWidget {
+  const ListCard({
+    super.key,
+    required this.theme,
+    required this.listName
+  });
+
+  final ThemeData theme;
+  final String listName;
+
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+    int items = appState.tjItems;
+    int tjUrgent = appState.tjUrgent;
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: BorderSide(color: theme.colorScheme.inversePrimary, width: 5)
+      ),
+      elevation: 0,
+      clipBehavior: Clip.antiAliasWithSaveLayer,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            padding: const EdgeInsets.all(15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  children: [
+                    Text(listName, style: TextStyle(
+                      fontSize: 24,
+                      color: Colors.grey[800]
+                    ),),
+                    const Spacer(),
+                    PopupMenuButton<String>(
+                      itemBuilder: (BuildContext context){
+                        return {'Edit List', 'Remove List'}.map((String choice){
+                          return PopupMenuItem<String>(
+                            value: choice,
+                            child: Text(choice),
+                          );
+                        }).toList();
+                      },     
+                    ),
+                  ],
+                ),
+                Container(height: 10),
+                Text("Example", style: TextStyle(
+                  fontSize: 15, color: Colors.grey[700]
+                ),),
+                Text('Items: $items'),
+                Text('Urgent: $tjUrgent')
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
