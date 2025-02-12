@@ -118,17 +118,26 @@ class _MyHomePageState extends State<MyHomePage> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
+            DrawerHeader(
+              decoration: const BoxDecoration(
                 gradient: LinearGradient(colors: [Colors.amber, Colors.red]),
               ),
-              child: Text('Drawer Header'),
+              child: Center(
+                child: Text('My Groups',
+                style: theme.textTheme.displayMedium!.copyWith(color: theme.colorScheme.onPrimary)),
+              ),
             ),
             ListTile(
               title: const Text('Roomies'),
+              onTap: () {
+                print('Selected 1');
+              },
             ),
             ListTile(
               title: const Text('Family'),
+              onTap: () {
+                print('Selected 2');
+              },
             )
           ],
         ),
