@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:share_cart_flutter/shop_list.dart';
 
 
 void main() {
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => MyAppState(),
+      create: (context) => ListState(),
       child: MaterialApp(
         title: 'ShareCart',
         theme: ThemeData(
@@ -42,9 +43,13 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyAppState extends ChangeNotifier {
- int tjItems = 5;
- int tjUrgent = 1;
+class ListState extends ChangeNotifier {
+ var lists = <ShopList>[ShopList("Trader Joes", ["Apples", "Tin Foil"])];
+
+ void addList(ShopList newList) {
+   lists.add(newList);
+   notifyListeners();
+ }
 }
 
 
@@ -67,16 +72,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    var appState = context.watch<ListState>();
     final theme = Theme.of(context);
+    
     return Scaffold(
       //AppBar Widget contains the Profile Button
       appBar: AppBar(
@@ -152,24 +152,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 color: theme.primaryColor
               ),),
             ),
-            ListCard(
-              theme: theme,
-              listName: 'Trader Joes'),
-            // const Text(
-            //   'You have pushed the button this many times:',
-            // ),
-            // Text(
-            //   '$_counter',
-            //   style: Theme.of(context).textTheme.headlineMedium,
-            // ),
+            for(var list in appState.lists)
+              ListCard(theme: theme, list: list),
           ],
         ),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: _incrementCounter,
-      //   tooltip: 'Increment',
-      //   child: const Icon(Icons.add),
-      // ), // This trailing comma makes auto-formatting nicer for build methods.
+      floatingActionButton: FloatingActionButton(onPressed: (){appState.addList(ShopList("New List",[""]));}),
     );
   }
 }
@@ -178,17 +166,15 @@ class ListCard extends StatelessWidget {
   const ListCard({
     super.key,
     required this.theme,
-    required this.listName
+    required this.list
   });
 
   final ThemeData theme;
-  final String listName;
+  final ShopList list;
 
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-    int items = appState.tjItems;
-    int tjUrgent = appState.tjUrgent;
+    int items = list.items.length;
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
@@ -206,7 +192,7 @@ class ListCard extends StatelessWidget {
               children: <Widget>[
                 Row(
                   children: [
-                    Text(listName, style: TextStyle(
+                    Text(list.listName, style: TextStyle(
                       fontSize: 24,
                       color: Colors.grey[800]
                     ),),
@@ -217,6 +203,7 @@ class ListCard extends StatelessWidget {
                           return PopupMenuItem<String>(
                             value: choice,
                             child: Text(choice),
+                            onTap: () {}, //TODO
                           );
                         }).toList();
                       },     
@@ -227,8 +214,9 @@ class ListCard extends StatelessWidget {
                 Text("Example", style: TextStyle(
                   fontSize: 15, color: Colors.grey[700]
                 ),),
+                //TODO
                 Text('Items: $items'),
-                Text('Urgent: $tjUrgent')
+                Text('Urgent:')
               ],
             ),
           ),
