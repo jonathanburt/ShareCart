@@ -105,12 +105,9 @@ class _MyHomePageState extends State<MyHomePage> {
           NavigationDestination(
             icon: Icon(Icons.home), 
             label: 'Home'),
-            NavigationDestination(
-              icon: Icon(Icons.search),
-              label: 'Search'),
-              NavigationDestination(
-                icon: Icon(Icons.note_add), 
-                label: 'New List')
+          NavigationDestination(
+            icon: Icon(Icons.search),
+            label: 'Search'),
           ],
         ),
       //Drawer is the Hamburger Menu
@@ -157,7 +154,12 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(onPressed: (){appState.addList(ShopList("New List",[""]));}),
+      floatingActionButton: FloatingActionButton(
+        onPressed: (){
+          appState.addList(ShopList("New List",[""]));
+        },
+        child: Icon(Icons.add),
+        ),
     );
   }
 }
