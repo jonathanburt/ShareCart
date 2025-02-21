@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_cart_flutter/shop_list.dart';
 
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 
 void main() {
   runApp(const MyApp());
@@ -157,6 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: (){
           appState.addList(ShopList("New List",[""]));
+          createUser("Name", "email@email.com");
         },
         child: Icon(Icons.add),
         ),
@@ -226,4 +230,14 @@ class ListCard extends StatelessWidget {
       ),
     );
   }
+}
+
+
+//For HTTP Testing Purposes
+Future<http.Response> createUser(String name, String email) async {
+  print(jsonEncode(<String, String>{'name':name,'email':email}));
+  return await http.post(
+    Uri.parse('http://localhost:8080/cart/add'),
+    body: {'name': name, 'email': email}
+  );
 }
