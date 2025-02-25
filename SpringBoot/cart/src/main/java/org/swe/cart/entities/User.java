@@ -1,4 +1,6 @@
-package org.swe.cart;
+package org.swe.cart.entities;
+
+import java.time.Instant;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,6 +19,16 @@ public class User {
 	private String name;
 
 	private String email;
+
+	private Instant createdAt;
+
+	public Instant getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Instant createdAt) {
+		this.createdAt = createdAt;
+	}
 
 	public Integer getId(){
 		return id;
