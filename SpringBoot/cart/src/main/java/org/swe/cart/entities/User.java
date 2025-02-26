@@ -16,11 +16,35 @@ public class User {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Integer id;
 
-	private String name;
+	private String username;
 
 	private String email;
 
+	private String password; //Either store password as Base64 encoded String or byte[] since it will be encrypted
+
+	private String salt; //Used for password encryption, either store as Base64 encoded string or byte[]
+
+	//TODO Add one-to-many groupMember
+	//TODO Add two one-to-many debts (one creditor one debtor)
+	//TODO Add one-to-many listItem
+
 	private Instant createdAt;
+
+	public String getSalt() {
+		return salt;
+	}
+
+	public void setSalt(String salt) {
+		this.salt = salt;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
 	public Instant getCreatedAt() {
 		return createdAt;
@@ -38,12 +62,12 @@ public class User {
 		this.id = id;
 	}
 
-	public String getName(){
-		return name;
+	public String getUsername(){
+		return username;
 	}
 
-	public void setName(String name){
-		this.name = name;
+	public void setUsername(String username){
+		this.username = username;
 	}
 
 	public String getEmail(){

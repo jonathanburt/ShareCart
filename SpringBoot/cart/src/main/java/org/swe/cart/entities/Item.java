@@ -26,6 +26,8 @@ public class Item {
 
     private float price;
 
+    //TODO add one-to-many listItem
+
     @ManyToOne
     @JoinColumn(name = "group_id", nullable = true)
     private Group group;
