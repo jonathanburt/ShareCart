@@ -14,15 +14,6 @@ class ListState extends ChangeNotifier {
 class ActiveListsPage extends StatefulWidget {
   const ActiveListsPage({super.key, required this.title});
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -182,7 +173,7 @@ class ListCard extends StatelessWidget {
                 Text("Example", style: TextStyle(
                   fontSize: 15, color: Colors.grey[700]
                 ),),
-                //TODO Finish List Cards see this Stack Post for information on doing tranistion https://stackoverflow.com/questions/54165549/navigate-to-a-new-screen-in-flutter
+                //TODO Finish List Cards see this, Stack Post for information on doing tranistion https://stackoverflow.com/questions/54165549/navigate-to-a-new-screen-in-flutter
                 Text('Items: $items'),
                 Text('Urgent:')
               ],
