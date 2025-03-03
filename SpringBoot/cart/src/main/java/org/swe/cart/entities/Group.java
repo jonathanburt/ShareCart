@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,6 +21,7 @@ public class Group {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
+    @Column(name="name")
     private String name;
 
     @OneToMany(mappedBy="group")
@@ -28,22 +30,13 @@ public class Group {
     @OneToMany(mappedBy="group")
     private Set<Item> items;
 
-    //TODO Add on-to-many groupMember
+    @OneToMany(mappedBy="group")
+    private Set<GroupMember> groupMembers;
 
     @CreationTimestamp
     private Instant createdAt;
 
-    public Set<Item> getItems() {
-        return items;
-    }
 
-    public void setItems(Set<Item> items) {
-        this.items = items;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
 
     public Integer getId(){
         return id;
@@ -61,16 +54,36 @@ public class Group {
         this.name = name;
     }
 
-    public Instant getCreatedAt(){
-        return createdAt;
-    }
-
     public Set<List> getLists() {
         return lists;
     }
 
     public void setLists(Set<List> lists) {
         this.lists = lists;
+    }
+
+    public Set<Item> getItems() {
+        return items;
+    }
+
+    public void setItems(Set<Item> items) {
+        this.items = items;
+    }
+
+    public Set<GroupMember> getGroupMembers() {
+        return groupMembers;
+    }
+
+    public void setGroupMembers(Set<GroupMember> groupMembers) {
+        this.groupMembers = groupMembers;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getCreatedAt(){
+        return createdAt;
     }
 
 }

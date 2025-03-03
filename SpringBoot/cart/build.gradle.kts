@@ -29,6 +29,7 @@ dependencies {
  	testImplementation("org.testcontainers:mysql")
 	//testImplementation("org.springframework.security:spring-security-test") TEMPORARILY COMMENTED OUT
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
 }
 
 tasks.withType<Test> {
