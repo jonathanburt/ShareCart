@@ -2,21 +2,31 @@ package org.swe.cart.entities;
 
 import java.time.Instant;
 
+import org.swe.cart.embeddables.DebtTransactKey;
+
 import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 
 
 @Entity
 @Table(name="debt")
 public class Debt {
-    @Id
+
+    @EmbeddedId
+    private DebtTransactKey id;
+
+    @ManyToOne
+    @MapsId("creditorid")
     @JoinColumn(name="creditor_id", nullable=false)
     private User creditor;
 
-    @Id
+    @ManyToOne
+    @MapsId("debtorid")
     @JoinColumn(name="debtor_id", nullable=false)
     private User debtor;
 
@@ -26,7 +36,13 @@ public class Debt {
     @Column(name="createdAt", nullable=false)
     private Instant createdAt;
 
+    public DebtTransactKey getId() {
+        return id;
+    }
 
+    public void setId(DebtTransactKey id) {
+        this.id = id;
+    }
 
     public User getCreditor() {
         return creditor;

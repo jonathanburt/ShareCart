@@ -13,5 +13,9 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name="groupMemeber")
 public class GroupMember {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id; //Temp
     //TODO Implement this
 }
