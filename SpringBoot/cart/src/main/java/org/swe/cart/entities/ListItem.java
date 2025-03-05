@@ -11,7 +11,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name="listItem")
 public class ListItem {
@@ -42,61 +50,5 @@ public class ListItem {
 
     @Column(name="createdAt")
     private Instant createdAt;
-
-    public ListItemKey getId() {
-        return id;
-    }
-
-    public void setId(ListItemKey id) {
-        this.id = id;
-    }
-
-    public Item getItem(){
-        return this.item;
-    }
-
-    public void setItem(Item item){
-        this.item = item;
-    }
-
-    public List getList(){
-        return this.list;
-    }
-
-    public void setList(List list){
-        this.list = list;
-    }
-
-    public User getUser(){
-        return this.user;
-    }
-
-    public void setUser(User user){
-        this.user = user;
-    }
-
-    public Boolean getCommunal(){
-        return this.communal;
-    }
-
-    public void setCommunal(Boolean communal){
-        this.communal = communal;
-    }
-
-    public Integer getQuantity(){
-        return this.quantity;
-    }
-
-    public void setQuantity(Integer quantity){
-        this.quantity = quantity;
-    }
-
-    public Instant getCreatedAt(){
-        return this.createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
 
 }

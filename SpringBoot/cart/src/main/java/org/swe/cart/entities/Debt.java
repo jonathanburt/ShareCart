@@ -11,8 +11,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name="debt")
 public class Debt {
@@ -36,43 +43,4 @@ public class Debt {
     @Column(name="createdAt", nullable=false)
     private Instant createdAt;
 
-    public DebtTransactKey getId() {
-        return id;
-    }
-
-    public void setId(DebtTransactKey id) {
-        this.id = id;
-    }
-
-    public User getCreditor() {
-        return creditor;
-    }
-
-    public void setCreditor(User creditor) {
-        this.creditor = creditor;
-    }
-
-    public User getDebtor() {
-        return debtor;
-    }
-
-    public void setDebtor(User debtor) {
-        this.debtor = debtor;
-    }
-
-    public Float getAmount() {
-        return amount;
-    }
-
-    public void setAmount(Float amount) {
-        this.amount = amount;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
 }
