@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:share_cart_flutter/login_screen.dart';
+import 'package:share_cart_flutter/login_page.dart';
 import 'package:share_cart_flutter/group_home.dart';
 
 import 'package:http/http.dart' as http;

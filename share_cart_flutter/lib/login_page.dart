@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import 'package:share_cart_flutter/group_home.dart';
+import 'package:share_cart_flutter/scaffold_page.dart';
 
 class LoginPage extends StatefulWidget{
   const LoginPage({super.key});
@@ -85,7 +85,7 @@ class _LoginPageState extends State<LoginPage> {
                     //TODO Implement Login System
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => const ActiveListsPage(title: 'ShareCart Demo'))
+                      MaterialPageRoute(builder: (context) => ScaffoldPage())
                     );
                     print(usernameController.text);
                     print(passwordController.text);
