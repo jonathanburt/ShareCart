@@ -1,12 +1,16 @@
 package org.swe.cart.entities;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,10 +38,10 @@ public class User {
 	@Column(nullable=false)
 	private String password; //Either store password as Base64 encoded String or byte[] since it will be encrypted
 
-	private String salt; //Used for password encryption, either store as Base64 encoded string or byte[]
+	@OneToMany(mappedBy = "user",cascade = CascadeType.ALL, orphanRemoval = true)
+	private Set<GroupMember> groupMemberships = new HashSet<>();
 
-	//TODO Add one-to-many groupMember
-	//TODO Add two one-to-many debts (one creditor one debtor)
+	//TODO Add two one-to-many debts (one creditor one debtor) and Transaction
 	//TODO Add one-to-many listItem
 
 	private Instant createdAt;
