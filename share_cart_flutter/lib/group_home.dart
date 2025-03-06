@@ -12,9 +12,7 @@ class ListState extends ChangeNotifier {
 }
 
 class ActiveListsPage extends StatefulWidget {
-  const ActiveListsPage({super.key, required this.title});
-
-  final String title;
+  const ActiveListsPage({super.key});
 
   @override
   State<ActiveListsPage> createState() => _ActiveListsPageState();
@@ -25,98 +23,27 @@ class _ActiveListsPageState extends State<ActiveListsPage> {
   Widget build(BuildContext context) {
     var appState = context.watch<ListState>();
     final theme = Theme.of(context);
-    
-    return Scaffold(
-      //AppBar Widget contains the Profile Button
-      appBar: AppBar(
-        actions: [
-          //Profile Button
-          RawMaterialButton(
-            onPressed: (){},
-            elevation: 2.0,
-            fillColor: Colors.white,
-            constraints: BoxConstraints(minWidth: 0.0),
-            padding: EdgeInsets.all(10),
-            shape: CircleBorder(),
-            child: Icon(
-              Icons.person,
-              size: 20.0,
-            ),
-          ),
-        ],
-        backgroundColor: theme.primaryColor,
-        title: Center(child: Text(widget.title, style: TextStyle(
-          fontWeight: FontWeight.bold
-        ),)),
-      ),
-      bottomNavigationBar: NavigationBar(
-        destinations: [
-          NavigationDestination(
-            icon: Icon(Icons.home), 
-            label: 'Home'),
-          NavigationDestination(
-            icon: Icon(Icons.search),
-            label: 'Search'),
-          ],
-        ),
-      //Drawer is the Hamburger Menu
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(colors: [Colors.amber, Colors.red]),
-              ),
-              child: Center(
-                child: Text('My Groups',
-                style: theme.textTheme.displayMedium!.copyWith(color: theme.colorScheme.onPrimary)),
-              ),
-            ),
-            ListTile(
-              title: const Text('Roomies'),
-              onTap: () {
-                print('Selected 1');
-              },
-            ),
-            ListTile(
-              title: const Text('Family'),
-              onTap: () {
-                print('Selected 2');
-              },
-            )
-          ],
-        ),
-      ),
-      body: Center(
-        child: RefreshIndicator(
-          onRefresh: () {
-            //TODO implement onRefresh
-            return Future.delayed(Duration(seconds: 1));
-          },
-          child: ListView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            children: <Widget>[
-              Center(
-                child: Text('Active Lists', style: TextStyle(
-                  fontSize: 50,
-                  fontWeight: FontWeight.bold,
-                  color: theme.primaryColor
-                ),),
-              ),
-              for(var list in appState.lists)
-                ListCard(theme: theme, list: list),
-            ],
-          ),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: (){
-          appState.addList(ShopList("New List",[""]));
-          //createUser("Name", "email@email.com"); HTTP TEST
+    return Center(
+      child: RefreshIndicator(
+        onRefresh: () {
+          //TODO implement onRefresh
+           return Future.delayed(Duration(seconds: 1));
         },
-        child: Icon(Icons.add),
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: <Widget>[
+            Center(
+              child: Text('Active Lists', style: TextStyle(
+                fontSize: 50,
+                fontWeight: FontWeight.bold,
+                color: theme.primaryColor
+              ),),
+            ),
+            for(var list in appState.lists)
+              ListCard(theme: theme, list: list),
+          ],
         ),
+      ),
     );
   }
 }

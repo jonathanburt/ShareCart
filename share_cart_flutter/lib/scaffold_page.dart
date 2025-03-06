@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:share_cart_flutter/group_home.dart';
 import 'package:share_cart_flutter/search_page.dart';
 
 class ScaffoldPage extends StatefulWidget {
@@ -10,7 +11,7 @@ class _ScaffoldPageState extends State<ScaffoldPage> {
   final PageController _pageController = PageController();
   
   final List<Widget> pages = [
-    Center(child: Text('Home Page')),
+    ActiveListsPage(),
     Center(child: Text('Group Page')),
     SearchPage()
   ];

@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import 'package:share_cart_flutter/api_calls.dart';
 import 'package:share_cart_flutter/scaffold_page.dart';
 
 class LoginPage extends StatefulWidget{
@@ -63,10 +64,11 @@ class _LoginPageState extends State<LoginPage> {
               ),
               TextButton(
                 onPressed: () {
-                  //TODO: Implement Forgot Password Screen
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const ForgotPasswordPage()));
+                  //TODO: Implement Forgot Password Screen
+                  
                 },
                 child: const Text("Forgot Password"),
               ),
@@ -83,12 +85,17 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   onPressed: () {
                     //TODO Implement Login System
+                  //ApiService apiService = ApiService();
+                  //var user = await apiService.authenticateUser(usernameController.text, passwordController.text);
+                  //if(!context.mounted) return;
+                  //if(user != null){
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (context) => ScaffoldPage())
                     );
-                    print(usernameController.text);
-                    print(passwordController.text);
+                  //} else {
+                  //  throw UnimplementedError();
+                  //}
                   },
                   child: const Text("Login")
                 ),
