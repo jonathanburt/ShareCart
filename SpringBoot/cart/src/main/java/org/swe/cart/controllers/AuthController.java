@@ -10,15 +10,21 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.swe.cart.JwtUtil;
 import org.swe.cart.UserRepository;
 import org.swe.cart.entities.User;
+import org.swe.cart.payload.AuthResponseDTO;
 import org.swe.cart.payload.LoginDTO;
 import org.swe.cart.payload.SignUpDTO;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/auth")
 public class AuthController {
     
@@ -31,15 +37,15 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     @PostMapping("/signin")
-    public ResponseEntity<String> authenticateUser(@RequestBody LoginDTO loginDTO) {
-        Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(
+    public ResponseEntity<AuthResponseDTO> authenticateUser(@RequestBody LoginDTO loginDTO) {
+        authManager.authenticate(new UsernamePasswordAuthenticationToken(
             loginDTO.getUsernameOrEmail(), loginDTO.getPassword()));
-
-
-        SecurityContextHolder.getContext().setAuthentication(auth);
-
-        return new ResponseEntity<>("User signed-in successfully!", HttpStatus.OK);   
+        String token = jwtUtil.generateToken(loginDTO.getUsernameOrEmail());
+        return new ResponseEntity<>(new AuthResponseDTO(token), HttpStatus.OK);   
     }
 
     @PostMapping("/signup")

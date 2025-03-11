@@ -12,6 +12,7 @@ class LoginPage extends StatefulWidget{
 class _LoginPageState extends State<LoginPage> {
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  bool loginFailed = false;
 
   @override
   Widget build(BuildContext context) {
@@ -42,12 +43,21 @@ class _LoginPageState extends State<LoginPage> {
                   )
                 ),
                 Container(
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.all(1),
+                  child: Visibility(
+                      visible: loginFailed,
+                      child: Text("Login attempt failed",
+                        style: TextStyle(color: Colors.redAccent),)
+                  ),
+                ),
+                Container(
                   padding: const EdgeInsets.all(10),
                   child: TextField(
                     controller: usernameController,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'Username'
+                      labelText: 'Username',
                     ),
                   ),
                 ),
@@ -83,19 +93,23 @@ class _LoginPageState extends State<LoginPage> {
                     backgroundColor: theme.primaryColor,
                     foregroundColor: theme.colorScheme.onPrimary
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     //TODO Implement Login System
-                  //ApiService apiService = ApiService();
-                  //var user = await apiService.authenticateUser(usernameController.text, passwordController.text);
-                  //if(!context.mounted) return;
-                  //if(user != null){
+                  ApiService apiService = ApiService();
+                  apiService.authenticateUser(usernameController.text, passwordController.text, () { //onSuccess
+                    if(!context.mounted) return;
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (context) => ScaffoldPage())
                     );
-                  //} else {
-                  //  throw UnimplementedError();
-                  //}
+                  },
+                  () { //onFailure
+                    if(!context.mounted) return;
+                    setState(() {
+                      loginFailed = true;
+                    });
+                  }
+                  );
                   },
                   child: const Text("Login")
                 ),
