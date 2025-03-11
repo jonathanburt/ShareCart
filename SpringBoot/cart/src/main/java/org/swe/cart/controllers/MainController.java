@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.swe.cart.UserRepository;
-import org.swe.cart.entities.User; 
+import org.swe.cart.entities.User;
+import org.swe.cart.repositories.UserRepository; 
 
 
 @Controller

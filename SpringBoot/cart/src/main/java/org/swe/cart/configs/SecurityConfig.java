@@ -1,4 +1,4 @@
-package org.swe.cart;
+package org.swe.cart.configs;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +14,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.swe.cart.security.CustomUserDetailsService;
+import org.swe.cart.security.JwtAuthenticationFilter;
+import org.swe.cart.security.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 

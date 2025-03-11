@@ -10,12 +10,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.swe.cart.JwtUtil;
-import org.swe.cart.UserRepository;
 import org.swe.cart.entities.User;
 import org.swe.cart.payload.AuthResponseDTO;
 import org.swe.cart.payload.LoginDTO;
 import org.swe.cart.payload.SignUpDTO;
+import org.swe.cart.repositories.UserRepository;
+import org.swe.cart.security.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 

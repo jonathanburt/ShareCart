@@ -1,4 +1,4 @@
-package org.swe.cart;
+package org.swe.cart.security;
 
 import java.util.ArrayList;
 
@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.swe.cart.entities.User;
+import org.swe.cart.repositories.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
