@@ -1,6 +1,4 @@
-package org.swe.cart.security;
-
-import java.util.ArrayList;
+package org.swe.cart.services;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -9,6 +7,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.swe.cart.entities.User;
 import org.swe.cart.repositories.UserRepository;
+import org.swe.cart.security.CustomUserDetails;
 
 import lombok.RequiredArgsConstructor;
 

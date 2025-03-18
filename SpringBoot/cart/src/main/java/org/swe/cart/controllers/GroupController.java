@@ -1,19 +1,21 @@
 package org.swe.cart.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.swe.cart.repositories.GroupRepository;
-import org.swe.cart.repositories.UserRepository;
+import org.swe.cart.entities.Group;
+import org.swe.cart.payload.GroupCreateDTO;
+import org.swe.cart.security.CustomUserDetails;
+import org.swe.cart.services.GroupService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -21,25 +23,27 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping(path = "/api/group")
 public class GroupController {
     
-    @Autowired
-    private GroupRepository groupRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @PostMapping("/create") //Add authorization check
-    public ResponseEntity<?> createGroup(@RequestBody String groupName){
-        //TODO
-        //Get username from the JWT
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
+    private final GroupService groupService;
 
     @GetMapping("/getAllGroups")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<String> getAllGroups(@RequestParam String param) {
-        //TODO
-        return ResponseEntity.ok("Success");
+    public ResponseEntity<List<Group>> getAllGroups(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        List<Group> groups = groupService.getUserGroups(userDetails.getUsername());
+        return  ResponseEntity.ok(groups);
     }
+
+    @PostMapping("/create")
+    public ResponseEntity<Group> createGroup(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody GroupCreateDTO groupCreateDTO) {
+        String username = customUserDetails.getUsername();
+
+        Group newGroup = groupService.createGroup(username, groupCreateDTO);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(newGroup);
+        //TODO Change this to a more useable return type
+
+    }
+    
+
+
     
 
 }

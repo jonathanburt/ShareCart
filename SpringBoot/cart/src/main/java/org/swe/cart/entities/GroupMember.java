@@ -5,6 +5,8 @@ import java.time.Instant;
 import org.hibernate.annotations.CreationTimestamp;
 import org.swe.cart.embeddables.GroupMemberKey;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -37,11 +39,13 @@ public class GroupMember {
     @ManyToOne
     @MapsId("userid")
     @JoinColumn(name="user_id", nullable = false)
+    @JsonBackReference
     private User user;
 
     @ManyToOne
     @MapsId("groupid")
     @JoinColumn(name="group_id", nullable=false)
+    @JsonBackReference
     private Group group;
 
     @Column(name="created_at")

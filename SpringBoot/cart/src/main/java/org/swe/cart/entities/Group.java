@@ -5,6 +5,8 @@ import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,7 +31,7 @@ public class Group {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    @Column(name="name")
+    @Column(name="name", unique = true)
     private String name;
 
     @OneToMany(mappedBy="group")
@@ -39,6 +41,7 @@ public class Group {
     private Set<Item> items;
 
     @OneToMany(mappedBy="group")
+    @JsonManagedReference
     private Set<GroupMember> members;
 
     @CreationTimestamp

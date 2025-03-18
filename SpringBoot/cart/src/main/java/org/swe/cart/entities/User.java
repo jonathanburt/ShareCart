@@ -6,6 +6,8 @@ import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,7 +43,8 @@ public class User {
 	@Column(nullable=false)
 	private String password; //Either store password as Base64 encoded String or byte[] since it will be encrypted
 
-	@OneToMany(mappedBy = "user",cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "user",cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	@JsonManagedReference
 	private Set<GroupMember> groupMemberships = new HashSet<>();
 
 	//TODO Add two one-to-many debts (one creditor one debtor) and Transaction
