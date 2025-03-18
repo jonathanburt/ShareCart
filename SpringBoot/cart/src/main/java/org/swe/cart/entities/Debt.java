@@ -2,6 +2,7 @@ package org.swe.cart.entities;
 
 import java.time.Instant;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.swe.cart.embeddables.DebtTransactKey;
 
 import jakarta.persistence.Column;
@@ -41,6 +42,7 @@ public class Debt {
     private Float amount;
 
     @Column(name="createdAt", nullable=false)
+    @CreationTimestamp
     private Instant createdAt;
 
 }

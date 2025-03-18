@@ -38,10 +38,11 @@ public class Group {
     @OneToMany(mappedBy="group")
     private Set<Item> items;
 
-    // @OneToMany(mappedBy="group")
-    // private Set<GroupMember> groupMembers;
+    @OneToMany(mappedBy="group")
+    private Set<GroupMember> members;
 
     @CreationTimestamp
+    @Column(name="created_at")
     private Instant createdAt;
 
 }

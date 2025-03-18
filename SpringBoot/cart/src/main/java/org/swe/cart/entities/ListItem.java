@@ -2,6 +2,7 @@ package org.swe.cart.entities;
 
 import java.time.Instant;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.swe.cart.embeddables.ListItemKey;
 
 import jakarta.persistence.Column;
@@ -48,7 +49,8 @@ public class ListItem {
     @Column(name="quantity", columnDefinition="int default 1")
     private Integer quantity;
 
-    @Column(name="createdAt")
+    @Column(name="created_at")
+    @CreationTimestamp
     private Instant createdAt;
 
 }

@@ -3,9 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:share_cart_flutter/login_page.dart';
 import 'package:share_cart_flutter/group_home.dart';
 
-import 'package:http/http.dart' as http;
-
-
 void main() {
   runApp(const MyApp());
 }
@@ -29,12 +26,4 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
-}
-
-//For HTTP Testing Purposes
-Future<http.Response> createUser(String name, String email) async {
-  return await http.post(
-    Uri.parse('http://localhost:8080/cart/add'),
-    body: {'name': name, 'email': email}
-  );
 }
