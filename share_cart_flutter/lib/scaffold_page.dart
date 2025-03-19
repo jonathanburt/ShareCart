@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:share_cart_flutter/group_home.dart';
+import 'package:share_cart_flutter/groups_page.dart';
 import 'package:share_cart_flutter/search_page.dart';
 
 class ScaffoldPage extends StatefulWidget {
@@ -12,7 +13,7 @@ class _ScaffoldPageState extends State<ScaffoldPage> {
   
   final List<Widget> pages = [
     ActiveListsPage(),
-    Center(child: Text('Group Page')),
+    GroupsPage(),
     SearchPage()
   ];
 

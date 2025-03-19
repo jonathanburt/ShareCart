@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:share_cart_flutter/types.dart';
+import 'package:share_cart_flutter/api_service.dart';
 
 class SearchPage extends StatefulWidget {
   @override
@@ -8,9 +9,17 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
 
-  List<Item> items = List<Item>.from(exampleItems);
+  List<Item> items = [];
   String sortByValue = "alphabetical";
   Location userLocation = Location("123 Broadway, New York, NY 10001, USA", 40.7099, -74.0113);
+
+  @override
+  void initState() {
+    super.initState();
+    apiService.fetchItems().then((result) => setState(() {
+      items = result;
+    }));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,13 +35,13 @@ class _SearchPageState extends State<SearchPage> {
                     border: OutlineInputBorder(),
                     labelText: 'Query'
                   ),
-                  onChanged: (value) {
+                  onChanged: (value) async {
+                    await filterItems(value);
+                    await sortItems();
                     setState(() {
-                      items = exampleItems.where((item) {
-                        String valueLower = value.toLowerCase();
-                        return item.name.toLowerCase().contains(valueLower) || item.keywords.any((keyword) => keyword.toLowerCase().contains(valueLower));
-                      }).toList();
-                      sortItems();
+                      items = items;
+                      print("setting state");
+                      print(items.length);
                     });
                   },
                 ),
@@ -41,10 +50,13 @@ class _SearchPageState extends State<SearchPage> {
                     Text("Sort by "),
                     DropdownButton<String>(
                       value: sortByValue,
-                      onChanged: (String? value) {
+                      onChanged: (String? value) async {
+                        sortByValue = value!;
+                        await sortItems();
                         setState(() {
-                          sortByValue = value!;
-                          sortItems();
+                          items = items;
+                          print("setting state from sort by change");
+                          print(items.length);
                         });
                       },
                       items: [
@@ -70,17 +82,22 @@ class _SearchPageState extends State<SearchPage> {
           ),
           Expanded(
             child: ListView(
-              children: items.map((item) {
-                Store store = getExampleStore(item.storeId);
-                return ListTile(
+              children: items.map((item) => 
+                ListTile(
                   title: Text(item.name),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(store.name, style: TextStyle(fontSize: 12)),
-                      Text(store.location.address, style: TextStyle(fontSize: 10)),
-                      Text("${(10 * store.location.distanceTo(userLocation)).round() / 10} mi", style: TextStyle(fontSize: 10)),
-                    ],
+                  subtitle: FutureBuilder<Store?>(
+                    future: apiService.fetchStore(item.storeId),
+                    builder: (context, snapshot) {
+                      Store? store = snapshot.data;
+                      return store == null ? Text("Loading...") : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(store.name, style: TextStyle(fontSize: 12)),
+                          Text(store.location.address, style: TextStyle(fontSize: 10)),
+                          Text("${(10 * store.location.distanceTo(userLocation)).round() / 10} mi", style: TextStyle(fontSize: 10)),
+                        ],
+                      );
+                    }
                   ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -95,8 +112,7 @@ class _SearchPageState extends State<SearchPage> {
                       ),
                     ]
                   )
-                );
-                }
+                )
               ).toList()
             )
           )
@@ -105,7 +121,17 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  void sortItems() {
+  Future<void> filterItems(String value) async {
+    items = (await apiService.fetchItems()).where((item) {
+      String valueLower = value.toLowerCase();
+      return item.name.toLowerCase().contains(valueLower) || item.keywords.any((keyword) => keyword.toLowerCase().contains(valueLower));
+    }).toList();
+
+    print("filtered");
+    print(items.length);
+  }
+
+  Future<void> sortItems() async {
     
     if (sortByValue == "alphabetical") {
       items.sort((a, b) => a.name.compareTo(b.name));
@@ -114,7 +140,18 @@ class _SearchPageState extends State<SearchPage> {
       items.sort((a, b) => (100 * (a.price - b.price)).round());
     }
     else if (sortByValue == "distance") {
-      items.sort((a, b) => (100 * (getExampleStore(a.storeId).location.distanceTo(userLocation) - getExampleStore(b.storeId).location.distanceTo(userLocation))).round());
+
+      var mappedItems = await Future.wait(items.map((item) async {
+        double distance = (await apiService.fetchStore(item.storeId))?.location.distanceTo(userLocation) ?? 10000;
+        return (distance, item);
+      }));
+
+      mappedItems.sort((a, b) => (100 * (a.$1 - b.$1)).round());
+
+      items = mappedItems.map((mappedItem) => mappedItem.$2).toList();
     }
+
+    print("sorted");
+    print(items.length);
   }
 }
