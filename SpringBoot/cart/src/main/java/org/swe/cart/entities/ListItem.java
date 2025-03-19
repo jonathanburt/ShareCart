@@ -36,7 +36,7 @@ public class ListItem {
     @ManyToOne
     @MapsId("listid")
     @JoinColumn(name="list_id", nullable=false)
-    private List list;
+    private ShopList list;
 
     @ManyToOne
     @MapsId("userid")

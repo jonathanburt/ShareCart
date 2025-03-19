@@ -4,6 +4,8 @@ import java.time.Instant;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -41,6 +43,7 @@ public class Item {
 
     @ManyToOne
     @JoinColumn(name = "group_id", nullable = true)
+    @JsonBackReference
     private Group group;
 
     @Column(name="created_at")

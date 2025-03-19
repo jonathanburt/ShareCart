@@ -35,9 +35,11 @@ public class Group {
     private String name;
 
     @OneToMany(mappedBy="group")
-    private Set<List> lists;
+    @JsonManagedReference
+    private Set<ShopList> lists;
 
     @OneToMany(mappedBy="group")
+    @JsonManagedReference
     private Set<Item> items;
 
     @OneToMany(mappedBy="group")
