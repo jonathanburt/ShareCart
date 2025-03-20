@@ -15,6 +15,7 @@ import org.swe.cart.entities.Role;
 import org.swe.cart.entities.ShopList;
 import org.swe.cart.entities.User;
 import org.swe.cart.payload.GroupCreateDTO;
+import org.swe.cart.repositories.GroupInviteRepository;
 import org.swe.cart.repositories.GroupMemberRepository;
 import org.swe.cart.repositories.GroupRepository;
 import org.swe.cart.repositories.ListRepository;
@@ -30,6 +31,7 @@ public class GroupService {
     private final GroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
     private final ListRepository listRepository;
+    private final GroupInviteRepository groupInviteRepository;
 
     public List<Group> getUserGroups(String username){
         User user = userRepository.findByUsername(username)
@@ -59,26 +61,6 @@ public class GroupService {
         return group;
     }
 
-    public boolean canUserManageLists(String username, Integer groupId){
-        Optional<User> optionalUser = userRepository.findByUsername(username);
-        if(optionalUser.isEmpty()){
-            return false;
-        }
-        User user = optionalUser.get();
-        Optional<Group> optionalGroup = groupRepository.findById(groupId);
-        if (optionalGroup.isEmpty()) {
-            return false;
-        }
-        Group group = optionalGroup.get();
-        Optional<GroupMember> optionalGroupMember = groupMemberRepository.findByUserAndGroup(user, group);
-        if (optionalGroupMember.isEmpty()) {
-            return false;
-        }
-
-        GroupMember groupMember = optionalGroupMember.get();
-        return (groupMember.getRole() == Role.ADMIN || groupMember.getRole() == Role.SHOPPER);
-    }
-
     public ResponseEntity<ShopList> addListToGroup(Integer groupId, String name){
         Optional<Group> optionalGroup = groupRepository.findById(groupId);
         if(optionalGroup.isEmpty()) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -95,6 +77,6 @@ public class GroupService {
         //TODO Handle potential ConstraintViolationException
         listRepository.save(list);
 
-        return new ResponseEntity<>(list, HttpStatus.CREATED); 
+        return new ResponseEntity<>(list, HttpStatus.CREATED);  //Change this to a better return type
     }
 }

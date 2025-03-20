@@ -3,7 +3,6 @@ package org.swe.cart.payload;
 import lombok.Data;
 
 @Data
-public class LoginDTO {
+public class InviteUserDTO {
     private String username;
-    private String password;
 }

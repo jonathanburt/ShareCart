@@ -1,46 +1,50 @@
 package org.swe.cart.configs;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.swe.cart.security.JwtAuthenticationFilter;
-import org.swe.cart.security.JwtUtil;
 import org.swe.cart.services.CustomUserDetailsService;
 
-import lombok.RequiredArgsConstructor;
 
 @Configuration
+@EnableMethodSecurity
 @EnableWebSecurity(debug = true)
-@RequiredArgsConstructor
 public class SecurityConfig {
-    private final CustomUserDetailsService userService;
-    private final JwtUtil jwtUtil;
-    
+    @Autowired
+    private JwtAuthenticationFilter jwtFilter;
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
+
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public CustomUserDetailsService userDetailsService() {
+        return new CustomUserDetailsService();  // Use CustomUserDetailsService instead of default
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService) {
-        return authentication -> {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
-            if (!new BCryptPasswordEncoder().matches(authentication.getCredentials().toString(), userDetails.getPassword())) {
-                throw new BadCredentialsException("Invalid credentials");
-            }
-            return new UsernamePasswordAuthenticationToken(userDetails, authentication.getCredentials(), userDetails.getAuthorities());
-        };
+    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService, BCryptPasswordEncoder passwordEncoder) {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder);
+        return new ProviderManager(List.of(authProvider));  // Use Spring Security's authentication provider
     }
 
     @Bean
@@ -51,8 +55,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/group/**").authenticated()
                 .anyRequest().authenticated())
+            .userDetailsService(userDetailsService)
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, userService), UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }

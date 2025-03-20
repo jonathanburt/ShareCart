@@ -46,6 +46,10 @@ public class Group {
     @JsonManagedReference
     private Set<GroupMember> members;
 
+    @OneToMany(mappedBy = "group")
+    @JsonManagedReference
+    private Set<GroupInvite> invites;
+
     @CreationTimestamp
     @Column(name="created_at")
     private Instant createdAt;
