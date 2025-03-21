@@ -14,7 +14,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class InviteUserKey implements Serializable{
+public class GroupInviteKey implements Serializable{
     private Integer userid;
     private Integer groupid;
 
@@ -22,7 +22,7 @@ public class InviteUserKey implements Serializable{
     public boolean equals(Object o){
         if(this == o) return true;
         if(o == null || getClass() != o.getClass()) return false;
-        InviteUserKey other = (InviteUserKey) o;
+        GroupInviteKey other = (GroupInviteKey) o;
         return Objects.equals(userid, other.userid) && Objects.equals(groupid, other.groupid);
     }
 

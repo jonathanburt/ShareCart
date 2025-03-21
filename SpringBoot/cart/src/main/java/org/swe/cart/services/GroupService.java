@@ -8,8 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.swe.cart.embeddables.GroupInviteKey;
 import org.swe.cart.embeddables.GroupMemberKey;
 import org.swe.cart.entities.Group;
+import org.swe.cart.entities.GroupInvite;
 import org.swe.cart.entities.GroupMember;
 import org.swe.cart.entities.Role;
 import org.swe.cart.entities.ShopList;
@@ -78,5 +80,28 @@ public class GroupService {
         listRepository.save(list);
 
         return new ResponseEntity<>(list, HttpStatus.CREATED);  //Change this to a better return type
+    }
+
+    public String inviteUser(Integer groupId, String username){ //TODO Change to useful return type
+        Optional<Group> optionalGroup = groupRepository.findById(groupId);
+        if(optionalGroup.isEmpty()) return "Error: Group not found";
+        Group group = optionalGroup.get();
+
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+        if(optionalUser.isEmpty()) return "Error: User not found";
+        User user = optionalUser.get();
+
+        if(groupMemberRepository.findByUserAndGroup(user, group).isPresent()) return "User is already in group";
+
+        if(groupInviteRepository.findByUserAndGroup(user, group).isPresent()) return "User has already been invited to group"; //TODO figure out how ot handle expired invites
+
+        GroupInvite invite = new GroupInvite();
+        invite.setUser(user);
+        invite.setGroup(group);
+        GroupInviteKey key = new GroupInviteKey(user.getId(),group.getId());
+        invite.setId(key);
+        groupInviteRepository.save(invite);
+
+        return "User invited to group";
     }
 }

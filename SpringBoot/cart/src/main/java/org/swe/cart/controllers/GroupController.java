@@ -5,20 +5,16 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.swe.cart.entities.Group;
 import org.swe.cart.entities.ShopList;
 import org.swe.cart.payload.GroupCreateDTO;
 import org.swe.cart.payload.InviteUserDTO;
 import org.swe.cart.payload.ListCreateDTO;
-import org.swe.cart.security.CustomUserDetails;
 import org.swe.cart.services.GroupService;
 
 import lombok.RequiredArgsConstructor;
@@ -38,12 +34,8 @@ public class GroupController {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         System.out.println(username);
         List<Group> groups = groupService.getUserGroups(username);
-        GrantedAuthority g;
-        for (int i = 0; i < SecurityContextHolder.getContext().getAuthentication().getAuthorities().size(); i++) {
-            g = (GrantedAuthority) SecurityContextHolder.getContext().getAuthentication().getAuthorities().toArray()[i];
-            System.out.println(g.getAuthority());
-        }
         return  ResponseEntity.ok(groups);
+        //TODO change more userful return type
     }
 
     @PostMapping("/create")
@@ -58,10 +50,11 @@ public class GroupController {
     }
 
     @PostMapping("/{groupId}/invite")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId)")
     public ResponseEntity<String> inviteUsertoGroup(@PathVariable Integer groupId,
                                                     @RequestBody InviteUserDTO inviteUserDTO) {
-        
-        return ResponseEntity.ok("Ok"); //TODO Implement this
+        String respose = groupService.inviteUser(groupId, inviteUserDTO.getUsername());
+        return ResponseEntity.ok(respose); //TODO Make useful return type
     }
     
 
@@ -73,6 +66,7 @@ public class GroupController {
         return groupService.addListToGroup(groupId, listCreateDTO.getName());
     }
     
+
     
 
 }

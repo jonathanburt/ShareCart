@@ -3,7 +3,7 @@ package org.swe.cart.entities;
 import java.time.Instant;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.swe.cart.embeddables.InviteUserKey;
+import org.swe.cart.embeddables.GroupInviteKey;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -22,7 +22,7 @@ import lombok.Data;
 public class GroupInvite {
 
     @EmbeddedId
-    private InviteUserKey id;
+    private GroupInviteKey id;
     
     @ManyToOne
     @MapsId("groupid")

@@ -51,7 +51,7 @@ public class User {
 
 	@OneToMany(mappedBy = "user")
     @JsonManagedReference
-    private Set<GroupInvite> invites;
+    private Set<GroupInvite> invites = new HashSet<>();
 
 	//TODO Add two one-to-many debts (one creditor one debtor) and Transaction
 	//TODO Add one-to-many listItem

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.swe.cart.services.CustomUserDetailsService;
@@ -32,7 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
-        } //TODO not sure if returning here is ok
+        }
 
         String token = authHeader.substring(7);
 
@@ -43,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         
         if (jwtUtil.isTokenExpired(token)) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT expired");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "JWT expired");
             filterChain.doFilter(request, response);
             return;
         }
