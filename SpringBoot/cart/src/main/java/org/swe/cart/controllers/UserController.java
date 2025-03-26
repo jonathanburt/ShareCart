@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.swe.cart.entities.User;
 import org.swe.cart.payload.AuthResponseDTO;
@@ -15,18 +16,17 @@ import org.swe.cart.payload.SignUpDTO;
 import org.swe.cart.repositories.UserRepository;
 import org.swe.cart.security.JwtUtil;
 
-import lombok.RequiredArgsConstructor;
-
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequiredArgsConstructor
-@RequestMapping("/api/auth")
-public class AuthController {
-    
+@RequestMapping("/api/users")
+public class UserController {
+    //TODO Move this to CustomUserDetailsService
     @Autowired
     private UserRepository userRepository;
 
@@ -39,7 +39,7 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @PostMapping("/signin")
+    @GetMapping("/auth/signin")
     public ResponseEntity<AuthResponseDTO> authenticateUser(@RequestBody LoginDTO loginDTO) {
         authManager.authenticate(new UsernamePasswordAuthenticationToken(
             loginDTO.getUsername(), loginDTO.getPassword()));
@@ -48,7 +48,7 @@ public class AuthController {
     }
 
     //TODO
-    @PostMapping("/signup")
+    @PostMapping("/auth/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignUpDTO signUpDTO) {
         if(userRepository.existsByUsername(signUpDTO.getUsername())){
             return new ResponseEntity<>("Username is already in use", HttpStatus.BAD_REQUEST);
@@ -68,7 +68,16 @@ public class AuthController {
         return new ResponseEntity<>("User registered succesfully!", HttpStatus.OK);
         
     }
-    
-    
+
+    @GetMapping("/invites/get") //TODO
+    public String getInvites(@RequestParam String param) {
+        return new String();
+    }
+
+    @DeleteMapping("/users/remove")
+    public String deleteUser(){ //Maybe change to void return type, also maybe require password validation?
+        //TODO
+        return "";
+    }
 
 }

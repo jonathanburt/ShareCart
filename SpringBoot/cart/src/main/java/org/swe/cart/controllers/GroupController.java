@@ -11,20 +11,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.swe.cart.entities.Group;
-import org.swe.cart.entities.ShopList;
 import org.swe.cart.payload.GroupCreateDTO;
 import org.swe.cart.payload.InviteUserDTO;
-import org.swe.cart.payload.ListCreateDTO;
 import org.swe.cart.services.GroupService;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping(path = "/api/group")
+@RequiredArgsConstructor
 public class GroupController {
     
     private final GroupService groupService;
@@ -49,24 +51,45 @@ public class GroupController {
         //TODO Change this to a more useable return type
     }
 
-    @PostMapping("/{groupId}/invite")
+    @PutMapping("/{groupId}/invite")
     @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId)")
     public ResponseEntity<String> inviteUsertoGroup(@PathVariable Integer groupId,
                                                     @RequestBody InviteUserDTO inviteUserDTO) {
         String respose = groupService.inviteUser(groupId, inviteUserDTO.getUsername());
         return ResponseEntity.ok(respose); //TODO Make useful return type
     }
-    
 
-    @PostMapping("/{groupId}/list/add")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId)")
-    public ResponseEntity<ShopList> addListToGroup(@PathVariable Integer groupId,
-                                                    @RequestBody ListCreateDTO listCreateDTO) {
+    @PutMapping("/{groupId}/invite/accept")
+    public String acceptInvite(@PathVariable Integer groupId ,@RequestBody String entity) {
+        //TODO: process POST request
         
-        return groupService.addListToGroup(groupId, listCreateDTO.getName());
+        return entity;
     }
     
 
-    
+    @PutMapping("/{groupId}/users/{userId}/remove")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId)")
+    public String removeUser(@PathVariable Integer groupId, @PathVariable Integer userId, @RequestBody String entity) {
+        //TODO: process PUT request
+        
+        return entity;
+    }
 
+    @PutMapping("/{groupId}/users/{userId}/permissions")
+    @PreAuthorize("hasAuthority('ROLE_GROUP_ADMIN_' + #groupId)")
+    public String changeUserPermissions(@PathVariable Integer groupId, @PathVariable Integer userId, @RequestBody String entity) {
+        //TODO: process PUT request
+        
+        return entity;
+    }
+    
+    @DeleteMapping("/{groupId}/delete")
+    @PreAuthorize("hasAuthority('ROLE_GROUP_ADMIN_' + #groupId)")
+    public String deleteGroup(@PathVariable Integer groupId, @RequestBody String entity) {
+        //TODO: process DELETE request
+        
+        return entity;
+    }
+    
+    
 }

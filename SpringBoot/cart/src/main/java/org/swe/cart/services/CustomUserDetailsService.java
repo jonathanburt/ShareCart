@@ -31,4 +31,6 @@ public class CustomUserDetailsService implements UserDetailsService{
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         return userRepository.save(user);
     }
+
+    public void deleteUser(User user){} //TODO Implement account removal
 }
