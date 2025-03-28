@@ -3,6 +3,7 @@ package org.swe.cart.services;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.swe.cart.embeddables.GroupInviteKey;
@@ -78,6 +79,56 @@ public class GroupService {
         groupInviteRepository.save(invite);
 
         return "User invited to group";
+    }
+
+    public String acceptInvite(Integer groupId, Authentication auth){
+        String username = auth.getName();
+        User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new UsernameNotFoundException("User could not be found"));
+
+        Optional<Group> optionalGroup = groupRepository.findById(groupId);
+        if(optionalGroup.isEmpty()) return "Group not found";
+        Group group = optionalGroup.get();
+
+        Optional<GroupInvite> optionalGroupInvite = groupInviteRepository.findByUserAndGroup(user, group);
+        if(optionalGroupInvite.isEmpty()) return username + " has not been invited to this group";
+
+        Optional<GroupMember> optionalGroupMember = groupMemberRepository.findByUserAndGroup(user, group);
+        if(optionalGroupMember.isPresent()) return username + " is already a member of this group";
+
+        GroupMember newMember = new GroupMember();
+        newMember.setGroup(group);
+        newMember.setUser(user);
+        newMember.setRole(Role.MEMBER);
+        GroupMemberKey key = new GroupMemberKey();
+        key.setGroupid(group.getId());
+        key.setUserid(user.getId());
+        newMember.setId(key);
+
+        groupMemberRepository.save(newMember);
+        groupInviteRepository.deleteByUserAndGroup(user, group);
+
+        return username + " has been added to group as a member";
+    }
+
+    public String declineInvite(Integer groupId, Authentication auth){
+        String username = auth.getName();
+        User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new UsernameNotFoundException("User could not be found"));
+
+        Optional<Group> optionalGroup = groupRepository.findById(groupId);
+        if(optionalGroup.isEmpty()) return "Group not found";
+        Group group = optionalGroup.get();
+
+        Optional<GroupInvite> optionalGroupInvite = groupInviteRepository.findByUserAndGroup(user, group);
+        if(optionalGroupInvite.isEmpty()) return username + " has not been invited to this group";
+
+        Optional<GroupMember> optionalGroupMember = groupMemberRepository.findByUserAndGroup(user, group);
+        if(optionalGroupMember.isPresent()) return username + " is already a member of this group";
+
+        groupInviteRepository.deleteByUserAndGroup(user, group);
+
+        return "Group Invite decline";
     }
 
 }

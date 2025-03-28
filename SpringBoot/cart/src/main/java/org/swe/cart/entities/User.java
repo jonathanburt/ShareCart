@@ -45,11 +45,11 @@ public class User {
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	private String password; //Either store password as Base64 encoded String or byte[] since it will be encrypted
 
-	@OneToMany(mappedBy = "user",cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true, fetch = FetchType.EAGER)
 	@JsonManagedReference
 	private Set<GroupMember> groupMemberships = new HashSet<>();
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     @JsonManagedReference
     private Set<GroupInvite> invites = new HashSet<>();
 

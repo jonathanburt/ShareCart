@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,19 +35,19 @@ public class Group {
     @Column(name="name", unique = true)
     private String name;
 
-    @OneToMany(mappedBy="group")
+    @OneToMany(mappedBy="group", cascade = CascadeType.ALL)
     @JsonManagedReference
     private Set<ShopList> lists;
 
-    @OneToMany(mappedBy="group")
+    @OneToMany(mappedBy="group", cascade = CascadeType.ALL)
     @JsonManagedReference
     private Set<Item> items;
 
-    @OneToMany(mappedBy="group")
+    @OneToMany(mappedBy="group", cascade = CascadeType.REMOVE)
     @JsonManagedReference
     private Set<GroupMember> members;
 
-    @OneToMany(mappedBy = "group")
+    @OneToMany(mappedBy = "group", cascade = CascadeType.REMOVE)
     @JsonManagedReference
     private Set<GroupInvite> invites;
 
