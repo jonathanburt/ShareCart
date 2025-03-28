@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -37,7 +38,7 @@ public class ShopList {
     @Column(nullable = false)
     private String name;
 
-    @OneToMany(mappedBy="list")
+    @OneToMany(mappedBy="list", cascade = CascadeType.ALL)
     Set<ListItem> items;
 
     @ManyToOne

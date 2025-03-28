@@ -66,7 +66,7 @@ public class UserController {
         userRepository.save(user);
 
         return new ResponseEntity<>("User registered succesfully!", HttpStatus.OK);
-        
+
     }
 
     @GetMapping("/invites/get") //TODO

@@ -1,10 +1,12 @@
 package org.swe.cart.controllers;
 
+import java.net.Authenticator;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,7 +47,7 @@ public class GroupController {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Group newGroup = groupService.createGroup(username, groupCreateDTO);
 
-        if(newGroup == null) return new ResponseEntity<>(null, HttpStatus.CONFLICT); //Group already esits with this name
+        if(newGroup == null) return new ResponseEntity<>(null, HttpStatus.CONFLICT); //Group already exists with this name
 
         return ResponseEntity.status(HttpStatus.CREATED).body(newGroup);
         //TODO Change this to a more useable return type
@@ -60,12 +62,18 @@ public class GroupController {
     }
 
     @PutMapping("/{groupId}/invite/accept")
-    public String acceptInvite(@PathVariable Integer groupId ,@RequestBody String entity) {
-        //TODO: process POST request
-        
-        return entity;
+    public String acceptInvite(@PathVariable Integer groupId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String response = groupService.acceptInvite(groupId, auth);
+        return response; //TODO change to ResponseEntity
     }
-    
+
+    @PutMapping("/{groupId}/invite/decline")
+    public String declineInvite(@PathVariable Integer groupId) {
+       Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+       String response = groupService.declineInvite(groupId, auth);
+        return response; //TODO change to ResponseEntity
+    }
 
     @PutMapping("/{groupId}/users/{userId}/remove")
     @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId)")
