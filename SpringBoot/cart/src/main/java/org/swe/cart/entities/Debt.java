@@ -3,14 +3,14 @@ package org.swe.cart.entities;
 import java.time.Instant;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.swe.cart.embeddables.DebtTransactKey;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,16 +25,14 @@ import lombok.Setter;
 @Table(name="debt")
 public class Debt {
 
-    @EmbeddedId
-    private DebtTransactKey id;
+    @Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
 
     @ManyToOne
-    @MapsId("creditorid")
     @JoinColumn(name="creditor_id", nullable=false)
     private User creditor;
 
     @ManyToOne
-    @MapsId("debtorid")
     @JoinColumn(name="debtor_id", nullable=false)
     private User debtor;
 

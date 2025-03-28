@@ -9,6 +9,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,8 +28,15 @@ public class Transaction {
     @Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 
-    private Integer payer_id;
-    private Integer payee_id;
+    @ManyToOne
+    @JoinColumn(name="payer_id", nullable = false)
+    private User payerid;
+
+    @ManyToOne
+    @JoinColumn(name="payee_id", nullable = false)
+    private User payeeid;
+
+    @Column(name="amount")
     private float amount;
 
     @Column(name="created_at")

@@ -54,7 +54,22 @@ public class User {
     private Set<GroupInvite> invites = new HashSet<>();
 
 	//TODO Add two one-to-many debts (one creditor one debtor) and Transaction
+	@OneToMany(mappedBy="user")
+	@JsonManagedReference
+	private Set<Debt> debts_creditor = new HashSet<>();
+
+	@OneToMany(mappedBy="user")
+	@JsonManagedReference
+	private Set<Debt> debts_debtor = new HashSet<>();
+
+	@OneToMany(mappedBy="user")
+	@JsonManagedReference
+	private Set<Transaction> transactions = new HashSet<>();
+
 	//TODO Add one-to-many listItem
+	@OneToMany(mappedBy="user")
+	@JsonManagedReference
+	private Set<ListItem> listItems = new HashSet<>();
 
 	@Column(name="created_at")
 	@CreationTimestamp
