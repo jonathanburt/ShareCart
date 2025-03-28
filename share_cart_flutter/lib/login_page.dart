@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import 'package:share_cart_flutter/api_calls.dart';
 import 'package:share_cart_flutter/scaffold_page.dart';
+import 'package:share_cart_flutter/signup_page.dart';
 
 class LoginPage extends StatefulWidget{
   const LoginPage({super.key});
@@ -119,8 +120,9 @@ class _LoginPageState extends State<LoginPage> {
                   const Text("Dont have an account?"),
                   TextButton(
                     onPressed: () {
-                      //TODO: Add sign up screen
-                      throw UnimplementedError();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const SignUpPage()));
                     },
                     child: const Text(
                       "Sign Up",
