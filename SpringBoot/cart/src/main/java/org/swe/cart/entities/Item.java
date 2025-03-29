@@ -1,6 +1,7 @@
 package org.swe.cart.entities;
 
 import java.time.Instant;
+import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -48,8 +49,7 @@ public class Item {
 
     @OneToMany(mappedBy="item")
     @JsonManagedReference
-    private ListItem listitem;
-
+    private Set<ListItem> listitems;
 
     @ManyToOne
     @JoinColumn(name = "group_id", nullable = true)

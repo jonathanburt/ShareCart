@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api")
 public class UserController {
     //TODO Move this to CustomUserDetailsService
     @Autowired
@@ -69,7 +69,7 @@ public class UserController {
 
     }
 
-    @GetMapping("/invites/get") //TODO
+    @GetMapping("/users/invites/get") //TODO
     public String getInvites(@RequestParam String param) {
         return new String();
     }
