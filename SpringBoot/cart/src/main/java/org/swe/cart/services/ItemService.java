@@ -1,6 +1,6 @@
 package org.swe.cart.services;
 
-import java.util.Optional;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,26 +29,37 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final ListItemRepository listItemRepository;
 
-    public ResponseEntity<ListItem> addItemToList(Integer groupId, Integer listId, Integer itemId, Integer quantity, Boolean communal){
-        Optional<Group> optionalGroup = groupRepository.findById(groupId);
-        if(optionalGroup.isEmpty()) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        Group group = optionalGroup.get();
+    public List<ListItem> getListItems(Integer listId){
+        ShopList list = listRepository.findById(listId).orElseThrow();
+        return listItemRepository.findByList(list);
+    }
 
-        Optional<ShopList> optionalList = listRepository.findById(listId);
-        if(optionalList.isEmpty()) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        ShopList list = optionalList.get();
+    public Item createItem(String name, String description, String category, Float price, Integer groupId){
+        Group group = groupRepository.findById(groupId).orElseThrow();
+        Item item = new Item();
+        item.setName(name);
+        item.setDescription(description);
+        item.setCategory(category);
+        item.setPrice(price);
+        item.setGroup(group);
+        item = itemRepository.save(item);
+        return item;
 
-        Optional<Item> optionalItem = itemRepository.findById(itemId);
-        if(optionalList.isEmpty()) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        Item item = optionalItem.get();
+    }
+
+    public ListItem addItemToList(Integer groupId, Integer listId, Integer itemId, Integer quantity, Boolean communal){
+        Group group = groupRepository.findById(groupId).orElseThrow();
+        
+        ShopList list = listRepository.findById(listId).orElseThrow();
+
+        Item item = itemRepository.findById(itemId).orElseThrow();
 
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getName();
-        Optional<User> optionalUser = userRepository.findByUsername(username);
-        User user = optionalUser.get();
+        User user = userRepository.findByUsername(username).orElseThrow();
 
-        if(!group.getLists().contains(list)) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        if(!group.getLists().contains(list)) return null;
         
-        if(!listItemRepository.existsByListAndItem(list, item)) return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+        if(!listItemRepository.existsByListAndItem(list, item)) return null;
         
         ListItem listItem = new ListItem();
         listItem.setItem(item);
@@ -64,8 +75,43 @@ public class ItemService {
         listItem.setCommunal(communal);
         listItem = listItemRepository.save(listItem);
 
-        return ResponseEntity.ok(listItem);
+        return listItem;
 
 
+    }
+
+    public ResponseEntity<Item> updateItem(Integer itemId, String name, String description, String category, Float price){
+        Item item = itemRepository.findById(itemId).orElseThrow();
+        item.setName(name);
+        item.setDescription(description);
+        item.setCategory(category);
+        item.setPrice(price);
+        item = itemRepository.save(item);
+        return new ResponseEntity<>(item, HttpStatus.OK);
+    }
+
+    public ResponseEntity<ListItem> updateListItem(Integer listId, Integer itemId, Integer quantity, Boolean communal){
+        Item item = itemRepository.findById(itemId).orElseThrow();
+        ShopList list = listRepository.findById(listId).orElseThrow();
+
+        ListItem listItem = listItemRepository.findByListAndItem(list, item);
+        listItem.setQuantity(quantity);
+        listItem.setCommunal(communal);
+        listItem = listItemRepository.save(listItem);
+        return new ResponseEntity<>(listItem, HttpStatus.OK);
+    }
+
+    public ResponseEntity<Item> deleteItem(Integer itemId){
+        Item item = itemRepository.findById(itemId).orElseThrow();
+        itemRepository.deleteById(itemId);
+        return new ResponseEntity<>(item, HttpStatus.OK);
+    }
+
+    public ResponseEntity<ListItem> deleteListItem(Integer itemId, Integer listId){
+        Item item = itemRepository.findById(itemId).orElseThrow();
+        ShopList list = listRepository.findById(listId).orElseThrow();
+        ListItem listItem = listItemRepository.findByListAndItem(list, item);
+        listItemRepository.deleteByListAndItem(list, item);
+        return new ResponseEntity<>(listItem, HttpStatus.OK);
     }
 }
