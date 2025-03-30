@@ -26,11 +26,11 @@ import org.swe.cart.services.CustomUserDetailsService;
 public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtFilter;
-    @Autowired
-    private CustomUserDetailsService userDetailsService;
+    // @Autowired
+    // private CustomUserDetailsService customUserDetailsService;
 
     @Bean
-    public CustomUserDetailsService userDetailsService() {
+    public CustomUserDetailsService customUserDetailsService() {
         return new CustomUserDetailsService();  // Use CustomUserDetailsService instead of default
     }
 
@@ -52,11 +52,11 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/users/auth/**").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/users/**").authenticated()
                 .requestMatchers("/api/group/**").authenticated()
                 .anyRequest().authenticated())
-            .userDetailsService(userDetailsService)
+            .userDetailsService(customUserDetailsService())
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

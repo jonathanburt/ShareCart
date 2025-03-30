@@ -54,17 +54,21 @@ public class User {
     private Set<GroupInvite> invites = new HashSet<>();
 
 	//TODO Add two one-to-many debts (one creditor one debtor) and Transaction
-	@OneToMany(mappedBy="user")
+	@OneToMany(mappedBy="creditor")
 	@JsonManagedReference
 	private Set<Debt> debts_creditor = new HashSet<>();
 
-	@OneToMany(mappedBy="user")
+	@OneToMany(mappedBy="debtor")
 	@JsonManagedReference
 	private Set<Debt> debts_debtor = new HashSet<>();
 
-	@OneToMany(mappedBy="user")
+	@OneToMany(mappedBy="payer")
 	@JsonManagedReference
-	private Set<Transaction> transactions = new HashSet<>();
+	private Set<Transaction> transactions_payer = new HashSet<>();
+
+	@OneToMany(mappedBy = "payee")
+	@JsonManagedReference
+	private Set<Transaction> transactions_payee = new HashSet<>();
 
 	//TODO Add one-to-many listItem
 	@OneToMany(mappedBy="user")

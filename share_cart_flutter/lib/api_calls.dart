@@ -30,6 +30,30 @@ class ApiService {
     }
   }
 
+  Future<void> createUser(String username, String email, String password, VoidCallback onSuccess, VoidCallback onFailure) async {
+    var headers = {
+      "Content-Type": "application/json",
+    };
+    var response = await http.post(
+      Uri.parse('$baseUrl/api/auth/signup'),
+      headers: headers,
+      body: jsonEncode({
+        "username": username,
+        "email": email,
+        "password": password
+      })
+    );
+
+    print(response.statusCode);
+    print(response.body);
+
+    if (response.statusCode == 200) {
+      onSuccess.call();
+    } else {
+      onFailure.call();
+    }
+  }
+
   Future<void> logOut(VoidCallback onLogOut) async{
     await _storage.delete(key: 'AuthToken');
     onLogOut.call();

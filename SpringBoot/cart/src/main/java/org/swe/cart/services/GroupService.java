@@ -43,7 +43,7 @@ public class GroupService {
         if(groupRepository.existsByName(groupCreateDTO.getName())) return null;
         Group group = new Group();
         group.setName(groupCreateDTO.getName());
-        groupRepository.save(group);
+        group = groupRepository.save(group);
 
         GroupMember creator = new GroupMember();
         creator.setUser(user);
@@ -129,6 +129,33 @@ public class GroupService {
         groupInviteRepository.deleteByUserAndGroup(user, group);
 
         return "Group Invite decline";
+    }
+
+    public String removeUser(Integer groupId, Integer userId){
+        User user = userRepository.findById(userId).orElseThrow();
+        Group group = groupRepository.findById(groupId).orElseThrow();
+        GroupMember member = groupMemberRepository.findByUserAndGroup(user, group).orElseThrow();
+
+        groupMemberRepository.deleteById(member.getId());
+
+        return "User removed from group";
+    }
+
+    public String changeUserPermission(Integer groupId, Integer userId, Role role){
+        User user = userRepository.findById(userId).orElseThrow();
+        Group group = groupRepository.findById(userId).orElseThrow();
+        GroupMember member = groupMemberRepository.findByUserAndGroup(user, group).orElseThrow();
+
+        member.setRole(role);
+
+        groupMemberRepository.save(member);
+
+        return "User permissions changed to " + role.name();
+    }
+
+    public String deleteGroup(Integer groupId){
+        groupRepository.deleteById(groupId);
+        return "Group removed";
     }
 
 }

@@ -15,7 +15,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 public class JwtUtil {
     private final String SECRET_KEY = "your-secret-key"; // Use environment variables in production
     private final String ISSUER = "ShareCartApplicationServer";
-    //TODO Redo all of this because it is shit and doesnt work at all
     public String generateToken(String username) throws IllegalArgumentException, JWTCreationException{
         return JWT.create()
                 .withSubject("User Details")

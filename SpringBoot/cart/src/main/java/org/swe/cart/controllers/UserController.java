@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,6 +15,7 @@ import org.swe.cart.payload.AuthResponseDTO;
 import org.swe.cart.payload.LoginDTO;
 import org.swe.cart.payload.SignUpDTO;
 import org.swe.cart.repositories.UserRepository;
+import org.swe.cart.security.CustomUserDetails;
 import org.swe.cart.security.JwtUtil;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -24,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api")
 public class UserController {
     //TODO Move this to CustomUserDetailsService
     @Autowired
@@ -41,15 +43,17 @@ public class UserController {
 
     @GetMapping("/auth/signin")
     public ResponseEntity<AuthResponseDTO> authenticateUser(@RequestBody LoginDTO loginDTO) {
-        authManager.authenticate(new UsernamePasswordAuthenticationToken(
+        Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(
             loginDTO.getUsername(), loginDTO.getPassword()));
         String token = jwtUtil.generateToken(loginDTO.getUsername());
-        return new ResponseEntity<>(new AuthResponseDTO(token), HttpStatus.OK);   
+        CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
+        System.out.println(user.getId());
+        return new ResponseEntity<>(new AuthResponseDTO(token, user.getId()), HttpStatus.OK);   
     }
 
     //TODO
     @PostMapping("/auth/signup")
-    public ResponseEntity<?> registerUser(@RequestBody SignUpDTO signUpDTO) {
+    public ResponseEntity<String> registerUser(@RequestBody SignUpDTO signUpDTO) {
         if(userRepository.existsByUsername(signUpDTO.getUsername())){
             return new ResponseEntity<>("Username is already in use", HttpStatus.BAD_REQUEST);
         }
@@ -69,7 +73,7 @@ public class UserController {
 
     }
 
-    @GetMapping("/invites/get") //TODO
+    @GetMapping("/users/invites/get") //TODO
     public String getInvites(@RequestParam String param) {
         return new String();
     }

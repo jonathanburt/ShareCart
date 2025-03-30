@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.swe.cart.entities.Group;
+import org.swe.cart.payload.ChangePermissionDTO;
 import org.swe.cart.payload.GroupCreateDTO;
 import org.swe.cart.payload.InviteUserDTO;
 import org.swe.cart.services.GroupService;
@@ -74,27 +75,26 @@ public class GroupController {
 
     @PutMapping("/{groupId}/users/{userId}/remove")
     @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId)")
-    public String removeUser(@PathVariable Integer groupId, @PathVariable Integer userId, @RequestBody String entity) {
-        //TODO: process PUT request
-        
-        return entity;
+    public String removeUser(@PathVariable Integer groupId, @PathVariable Integer userId) {
+        String response = groupService.removeUser(groupId, userId);
+        return response; //TODO change to ResponseEntity
     }
 
     @PutMapping("/{groupId}/users/{userId}/permissions")
     @PreAuthorize("hasAuthority('ROLE_GROUP_ADMIN_' + #groupId)")
-    public String changeUserPermissions(@PathVariable Integer groupId, @PathVariable Integer userId, @RequestBody String entity) {
-        //TODO: process PUT request
+    public String changeUserPermissions(@PathVariable Integer groupId, @PathVariable Integer userId,
+                                        @RequestBody ChangePermissionDTO changePermissionDTO) {
+        String response = groupService.changeUserPermission(groupId, userId, changePermissionDTO.getRole());
         
-        return entity;
+        return response; //TODO change to ResponseEntity
     }
     
     @DeleteMapping("/{groupId}/delete")
     @PreAuthorize("hasAuthority('ROLE_GROUP_ADMIN_' + #groupId)")
-    public String deleteGroup(@PathVariable Integer groupId, @RequestBody String entity) {
-        //TODO: process DELETE request
+    public String deleteGroup(@PathVariable Integer groupId) {
+        String response = groupService.deleteGroup(groupId);
         
-        return entity;
+        return response; //TODO change to ResponseEntity
     }
-    
     
 }

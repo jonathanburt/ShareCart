@@ -30,11 +30,11 @@ public class Transaction {
 
     @ManyToOne
     @JoinColumn(name="payer_id", nullable = false)
-    private User payerid;
+    private User payer;
 
     @ManyToOne
     @JoinColumn(name="payee_id", nullable = false)
-    private User payeeid;
+    private User payee;
 
     @Column(name="amount")
     private float amount;
