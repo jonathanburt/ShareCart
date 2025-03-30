@@ -7,7 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,11 +22,6 @@ import org.swe.cart.payload.InviteUserDTO;
 import org.swe.cart.services.GroupService;
 
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
 
 
 @RestController
@@ -55,8 +54,8 @@ public class GroupController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId)")
     public ResponseEntity<String> inviteUsertoGroup(@PathVariable Integer groupId,
                                                     @RequestBody InviteUserDTO inviteUserDTO) {
-        String respose = groupService.inviteUser(groupId, inviteUserDTO.getUsername());
-        return ResponseEntity.ok(respose); //TODO Make useful return type
+        String response = groupService.inviteUser(groupId, inviteUserDTO.getUsername());
+        return ResponseEntity.ok(response); //TODO Make useful return type
     }
 
     @PutMapping("/{groupId}/invite/accept")
