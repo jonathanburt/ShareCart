@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:share_cart_flutter/types.dart';
 
 abstract class ApiService {
@@ -5,6 +6,9 @@ abstract class ApiService {
   Future<Item?> fetchItem(String itemId);
   Future<List<Store>> fetchStores();
   Future<Store?> fetchStore(String storeId);
+
+  Future<void> authenticateUser(String usernameOrEmail, String password, VoidCallback onSuccess, VoidCallback onFailure);
+  Future<void> createUser(String username, String email, String password, VoidCallback onSuccess, VoidCallback onFailure);
 }
 
 class MockApiService implements ApiService {
@@ -85,6 +89,16 @@ class MockApiService implements ApiService {
   Future<Store?> fetchStore(String storeId) async {
     await fetchStores();
     return stores.firstWhere((store) => store.id == storeId);
+  }
+
+  @override
+  Future<void> createUser(String username, String email, String password, VoidCallback onSuccess, VoidCallback onFailure) async {
+    onSuccess();
+  }
+  
+  @override
+  Future<void> authenticateUser(String usernameOrEmail, String password, VoidCallback onSuccess, VoidCallback onFailure) async {
+    onSuccess();
   }
 }
 

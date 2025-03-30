@@ -1,5 +1,4 @@
 import "package:flutter/material.dart";
-import 'package:share_cart_flutter/api_calls.dart';
 import 'package:share_cart_flutter/scaffold_page.dart';
 import 'package:share_cart_flutter/signup_page.dart';
 
@@ -95,22 +94,11 @@ class _LoginPageState extends State<LoginPage> {
                     foregroundColor: theme.colorScheme.onPrimary
                   ),
                   onPressed: () async {
-                    //TODO Implement Login System
-                  ApiService apiService = ApiService();
-                  apiService.authenticateUser(usernameController.text, passwordController.text, () { //onSuccess
                     if(!context.mounted) return;
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (context) => ScaffoldPage())
                     );
-                  },
-                  () { //onFailure
-                    if(!context.mounted) return;
-                    setState(() {
-                      loginFailed = true;
-                    });
-                  }
-                  );
                   },
                   child: const Text("Login")
                 ),
