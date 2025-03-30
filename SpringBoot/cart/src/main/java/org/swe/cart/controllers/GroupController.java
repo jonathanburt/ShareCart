@@ -35,7 +35,6 @@ public class GroupController {
     @GetMapping("/getAllGroups")
     public ResponseEntity<List<Group>> getAllGroups() {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        System.out.println(username);
         List<Group> groups = groupService.getUserGroups(username);
         return  ResponseEntity.ok(groups);
         //TODO change more userful return type

@@ -21,6 +21,7 @@ import org.swe.cart.security.JwtUtil;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -73,13 +74,13 @@ public class UserController {
 
     }
 
-    @GetMapping("/users/invites/get") //TODO
-    public String getInvites(@RequestParam String param) {
+    @GetMapping("/users/{userId}/invites/get") //TODO
+    public String getInvites(@PathVariable Integer userId, @RequestParam String param) {
         return new String();
     }
 
-    @DeleteMapping("/users/remove")
-    public String deleteUser(){ //Maybe change to void return type, also maybe require password validation?
+    @DeleteMapping("/users/{userId}/remove")
+    public String deleteUser(@PathVariable Integer userId){ //Maybe change to void return type, also maybe require additional password validation?
         //TODO
         return "";
     }

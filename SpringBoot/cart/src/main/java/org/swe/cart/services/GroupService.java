@@ -55,7 +55,7 @@ public class GroupService {
 
         groupMemberRepository.save(creator);
 
-        return group;
+        return groupRepository.findById(group.getId()).orElseThrow();
     }
 
     public String inviteUser(Integer groupId, String username){ //TODO Change to useful return type
