@@ -12,4 +12,5 @@ import org.swe.cart.entities.User;
 @Repository
 public interface GroupMemberRepository extends JpaRepository<GroupMember, GroupMemberKey>{
     Optional<GroupMember> findByUserAndGroup(User user, Group group);
+    
 }
