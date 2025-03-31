@@ -17,6 +17,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.Rollback;
 import org.swe.cart.entities.Group;
 import org.swe.cart.entities.GroupMember;
 import org.swe.cart.entities.GroupRole;
@@ -31,6 +32,7 @@ import jakarta.transaction.Transactional;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ExtendWith(MockitoExtension.class)
 @Transactional
+@Rollback(true)
 public class GroupControllerIntegrationTest {
     
     @Autowired
@@ -53,13 +55,17 @@ public class GroupControllerIntegrationTest {
         String jwt = loginResponse.get("token").asText();
         Integer userId = loginResponse.get("userId").asInt();
 
-        String createGroupJson = "{\"name\":\"test100\"}";
+        String createGroupJson = "{\"name\":\"NewTestGroup1\"}";
 
         ResponseEntity<String> returnedGroupResponse = restTemplate.postForEntity("/api/group/create", new HttpEntity<>(createGroupJson, getJsonHeaders(jwt)), String.class);
 
         assertThat(returnedGroupResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
-        Integer returnedGroupId = objectMapper.readTree(returnedGroupResponse.getBody()).get("id").asInt();
+        JsonNode responsejson = objectMapper.readTree(returnedGroupResponse.getBody());
+
+        System.out.println(responsejson.toString());
+
+        Integer returnedGroupId = responsejson.get("groupId").asInt();
 
         Optional<Group> returnedGroupOptional = groupRepository.findById(returnedGroupId);
 
@@ -74,6 +80,19 @@ public class GroupControllerIntegrationTest {
         assertThat(creator.getRole()).isEqualTo(GroupRole.ADMIN); //Assert that the group creator is an admin
 
         assertThat(creator.getUser().getId()).isEqualTo(userId); //Assert that the group creator is the the user who is logged in
+    }
+
+    @Test
+    public void canInviteUserToGroupWithValidPermissions(){
+        //TODO
+    }
+
+    private JsonNode createGroup(String groupName, String jwt){
+        String jsonBody = String.format("{\"name\" : \"%s\"}", groupName);
+
+        ResponseEntity<String> group = restTemplate.postForEntity("/", jsonBody, null);
+
+        return null; //TODO finish this
     }
 
     private void createAccount(String username, String email, String password){
@@ -92,7 +111,6 @@ public class GroupControllerIntegrationTest {
 
 
         String responseString = response2.getBody();
-        System.out.println(responseString);
         JsonNode jsonNode = objectMapper.readTree(responseString);
         return jsonNode;
     }

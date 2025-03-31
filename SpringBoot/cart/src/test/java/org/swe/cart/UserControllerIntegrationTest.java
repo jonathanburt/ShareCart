@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.*;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.swe.cart.entities.User;
 import org.swe.cart.repositories.UserRepository;
@@ -20,6 +21,7 @@ import jakarta.transaction.Transactional;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT) // Starts full Spring Boot server
 @ExtendWith(MockitoExtension.class)
 @Transactional
+@Rollback(true)
 public class UserControllerIntegrationTest {
 
     @Autowired
@@ -33,6 +35,7 @@ public class UserControllerIntegrationTest {
 
     @Autowired
     private UserRepository userRepository;
+    //Test names are UCT-i where i is the number the of the test in the file
 
     @Test
     public void canCreateUserWhenNameAndEmailDontExist() {
