@@ -1,5 +1,6 @@
 package org.swe.cart.security;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -41,6 +42,14 @@ public class CustomUserDetails implements UserDetails {
 
     public Integer getId(){
         return user.getId();
+    }
+
+    public String getEmail(){
+        return user.getEmail();
+    }
+
+    public Instant getCreatedAt(){
+        return user.getCreatedAt();
     }
 
     @Override

@@ -1,5 +1,7 @@
 package org.swe.cart.controllers;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +52,7 @@ public class UserController {
         String token = jwtUtil.generateToken(loginDTO.getUsername());
         CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
         System.out.println(user.getId());
-        return new ResponseEntity<>(new AuthResponseDTO(token, user.getId()), HttpStatus.OK);   
+        return new ResponseEntity<>(new AuthResponseDTO(token, user.getId(), user.getEmail(), Date.from(user.getCreatedAt()).toString()), HttpStatus.OK);   
     }
 
     //TODO

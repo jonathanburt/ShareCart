@@ -1,11 +1,19 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:share_cart_flutter/types.dart';
+import 'package:http/http.dart' as http;
+
 
 abstract class ApiService {
   Future<List<Item>> fetchItems();
   Future<Item?> fetchItem(String itemId);
   Future<List<Store>> fetchStores();
   Future<Store?> fetchStore(String storeId);
+
+  Future<List<ShallowGroupDetails>> fetchAllGroups();
+  Future<DeepGroupDetails?> fetchGroupDeep(int groupId);
 
   Future<void> authenticateUser(String usernameOrEmail, String password, VoidCallback onSuccess, VoidCallback onFailure);
   Future<void> createUser(String username, String email, String password, VoidCallback onSuccess, VoidCallback onFailure);
@@ -92,6 +100,18 @@ class MockApiService implements ApiService {
   }
 
   @override
+  Future<List<ShallowGroupDetails>> fetchAllGroups() {
+    // TODO: implement fetchAllGroups
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<DeepGroupDetails?> fetchGroupDeep(int groupId) {
+    // TODO: implement fetchGroupDeep
+    throw UnimplementedError();
+  }
+
+  @override
   Future<void> createUser(String username, String email, String password, VoidCallback onSuccess, VoidCallback onFailure) async {
     onSuccess();
   }
@@ -103,4 +123,100 @@ class MockApiService implements ApiService {
 }
 
 final ApiService apiService = MockApiService();
+
+class RealApiService implements ApiService {
+  static const String baseUrl = 'http://localhost:8080'; //The default base address of the Spring Boot server
+  static final FlutterSecureStorage _storage = const FlutterSecureStorage(); //TODO make sure this works with target platforms and everyones machines
+
+  @override
+  Future<void> authenticateUser(String username, String password, VoidCallback onSuccess, VoidCallback onFailure) async {
+    var headers = {
+      "Content-Type":
+        "application/json",
+    };
+    var response = await http.post(Uri.parse('$baseUrl/api/auth/signin'),
+      headers: headers,
+      body: jsonEncode({"username": username, "password": password})
+    );
+
+    print(response.statusCode);
+    print(response.body);
+
+    if(response.statusCode == 200){
+      onSuccess.call();
+      var responseJson = jsonDecode(response.body) as Map<String, dynamic>;
+      await _storage.write(key: 'AuthToken', value: responseJson['token']);
+      print(await _storage.read(key: 'AuthToken'));
+    } else {
+      onFailure.call();
+    }
+  }
+
+  @override
+  Future<void> createUser(String username, String email, String password, VoidCallback onSuccess, VoidCallback onFailure) async {
+    var headers = {
+      "Content-Type": "application/json",
+    };
+    var response = await http.post(
+      Uri.parse('$baseUrl/api/auth/signup'),
+      headers: headers,
+      body: jsonEncode({
+        "username": username,
+        "email": email,
+        "password": password
+      })
+    );
+
+    print(response.statusCode);
+    print(response.body);
+
+    if (response.statusCode == 200) {
+      onSuccess.call();
+    } else {
+      onFailure.call();
+    }
+  }
+
+  @override
+  Future<List<ShallowGroupDetails>> fetchAllGroups() {
+    // TODO: implement fetchAllGroups
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<DeepGroupDetails?> fetchGroupDeep(int groupId) {
+    // TODO: implement fetchGroupDeep
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Item?> fetchItem(String itemId) {
+    // TODO: implement fetchItem
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<Item>> fetchItems() {
+    // TODO: implement fetchItems
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Store?> fetchStore(String storeId) {
+    // TODO: implement fetchStore
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<Store>> fetchStores() {
+    // TODO: implement fetchStores
+    throw UnimplementedError();
+  }
+
+  Future<void> logOut(VoidCallback onLogOut) async{
+    await _storage.deleteAll(); //Clear all stored data on log out
+    onLogOut.call();
+    return;
+  }
+}
 

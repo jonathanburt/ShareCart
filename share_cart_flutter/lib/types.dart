@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:share_cart_flutter/shop_list.dart';
+
 class Location {
   final String address;
   final double latitude;
@@ -45,4 +47,54 @@ class Item {
   final String storeId;
 
   const Item(this.name, this.keywords, this.price, this.id, this.storeId);
+}
+
+class ThisUserDetails {
+  final String username;
+  final String email;
+  final int userId;
+  final DateTime createdAt;
+
+  const ThisUserDetails(this.username, this.email, this.userId, this.createdAt);
+}
+
+class ShallowGroupDetails { //The system will fetch and save these details about all groups the user is a member of
+  final String name;
+  final int groupId;
+  final DateTime createdAt;
+  final List<GroupMember> members;
+
+  const ShallowGroupDetails(this.name, this.groupId, this.createdAt, this.members);
+}
+
+class DeepGroupDetails { //The system will only fetch the additional details of a group when that group is selected
+  final ShallowGroupDetails shallowDetails;
+  final List<GroupInvite> invites;
+  final List<ShopList> lists;
+  final List<Item> items;
+
+  const DeepGroupDetails(this.shallowDetails, this.invites, this.lists, this.items);
+}
+
+class GroupMember {
+  final String username;
+  final int userId;
+  final GroupRole role;
+  final DateTime joinedAt;
+
+  const GroupMember(this.username, this.userId, this.role, this.joinedAt);
+}
+
+class GroupInvite {
+  final String username;
+  final int userId;
+  final String invitedAt;
+
+  const GroupInvite(this.username, this.userId, this.invitedAt);
+}
+
+enum GroupRole{
+  MEMBER,
+  SHOPPER,
+  ADMIN;
 }

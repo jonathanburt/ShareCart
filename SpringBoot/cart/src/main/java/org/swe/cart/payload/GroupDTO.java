@@ -1,6 +1,5 @@
 package org.swe.cart.payload;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,10 +13,15 @@ import lombok.NoArgsConstructor;
 public class GroupDTO {
     private String name;
     private Integer groupId;
-    private Instant createdAt;
+    private String createdAtFormatted;
     private List<GroupMemberDTO> members = new ArrayList<>();
+    private List<GroupInviteDTO> invites = new ArrayList<>();
 
     public void addMember(GroupMemberDTO newMember){
         members.add(newMember);
+    }
+
+    public void addInvite(GroupInviteDTO newInvite){
+        addInvite(newInvite);
     }
 }

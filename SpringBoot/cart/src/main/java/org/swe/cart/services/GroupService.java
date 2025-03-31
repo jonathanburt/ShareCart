@@ -1,5 +1,6 @@
 package org.swe.cart.services;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -16,6 +17,7 @@ import org.swe.cart.entities.GroupRole;
 import org.swe.cart.entities.User;
 import org.swe.cart.payload.GroupCreateDTO;
 import org.swe.cart.payload.GroupDTO;
+import org.swe.cart.payload.GroupInviteDTO;
 import org.swe.cart.payload.GroupMemberDTO;
 import org.swe.cart.repositories.GroupInviteRepository;
 import org.swe.cart.repositories.GroupMemberRepository;
@@ -41,13 +43,20 @@ public class GroupService {
         .map(group -> new GroupDTO(
             group.getName(),
             group.getId(),
-            group.getCreatedAt(),
+            Date.from(group.getCreatedAt()).toString(),
             (List<GroupMemberDTO>) group.getMembers().stream()
                 .map(member -> new GroupMemberDTO(
                     member.getUser().getUsername(),
                     member.getUser().getId(),
                     member.getRole(),
-                    member.getCreated_at()
+                    Date.from(member.getCreated_at()).toString()
+                ))
+                .collect(Collectors.toList()),
+            (List<GroupInviteDTO>) group.getInvites().stream()
+                .map(invite -> new GroupInviteDTO(
+                    invite.getUser().getUsername(),
+                    invite.getUser().getId(),
+                    Date.from(invite.getCreated_at()).toString()
                 ))
                 .collect(Collectors.toList())))
         .collect(Collectors.toList());
@@ -58,12 +67,12 @@ public class GroupService {
         Group group = groupRepository.findById(groupId).orElseThrow();
         GroupDTO groupDTO = new GroupDTO();
         groupDTO.setGroupId(groupId);
-        groupDTO.setCreatedAt(group.getCreatedAt());
+        groupDTO.setCreatedAtFormatted(Date.from(group.getCreatedAt()).toString());
         groupDTO.setName(group.getName());
         for (GroupMember member : group.getMembers()){
             User memberUser = member.getUser();
             GroupMemberDTO memberDTO = new GroupMemberDTO();
-            memberDTO.setJoinedAt(member.getCreated_at());
+            memberDTO.setJoinedAtFormatted(Date.from(member.getCreated_at()).toString());
             memberDTO.setRole(member.getRole());
             memberDTO.setUserId(memberUser.getId());
             memberDTO.setUsername(memberUser.getUsername());
@@ -93,13 +102,13 @@ public class GroupService {
         creatorDTO.setRole(creator.getRole());
         creatorDTO.setUserId(creator.getUser().getId());
         creatorDTO.setUsername(creator.getUser().getUsername());
-        creatorDTO.setJoinedAt(creator.getCreated_at());
+        creatorDTO.setJoinedAtFormatted(Date.from(creator.getCreated_at()).toString());
 
         GroupDTO groupDTO = new GroupDTO();
         groupDTO.setGroupId(group.getId());
         groupDTO.setName(group.getName());
         groupDTO.addMember(creatorDTO);
-        groupDTO.setCreatedAt(group.getCreatedAt());
+        groupDTO.setCreatedAtFormatted(Date.from(group.getCreatedAt()).toString());
 
         return groupDTO;
     }
