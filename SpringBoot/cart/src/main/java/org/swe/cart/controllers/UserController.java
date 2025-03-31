@@ -1,5 +1,7 @@
 package org.swe.cart.controllers;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.swe.cart.entities.GlobalRole;
 import org.swe.cart.entities.User;
 import org.swe.cart.payload.AuthResponseDTO;
 import org.swe.cart.payload.LoginDTO;
@@ -49,7 +52,7 @@ public class UserController {
         String token = jwtUtil.generateToken(loginDTO.getUsername());
         CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
         System.out.println(user.getId());
-        return new ResponseEntity<>(new AuthResponseDTO(token, user.getId()), HttpStatus.OK);   
+        return new ResponseEntity<>(new AuthResponseDTO(token, user.getId(), user.getEmail(), Date.from(user.getCreatedAt()).toString()), HttpStatus.OK);   
     }
 
     //TODO
@@ -67,6 +70,7 @@ public class UserController {
         user.setUsername(signUpDTO.getUsername());
         user.setEmail(signUpDTO.getEmail());
         user.setPassword(passwordEncoder.encode(signUpDTO.getPassword()));
+        user.setGlobalRole(GlobalRole.USER);
 
         userRepository.save(user);
 

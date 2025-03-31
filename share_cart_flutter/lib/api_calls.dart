@@ -11,14 +11,14 @@ class ApiService {
   static const String baseUrl = 'http://localhost:8080'; //The default base address of the Spring Boot server
   static final FlutterSecureStorage _storage = const FlutterSecureStorage(); //TODO make sure this works with target platforms and everyones machines
 
-  Future<void> authenticateUser(String usernameOrEmail, String password, VoidCallback onSuccess, VoidCallback onFailure) async {
+  Future<void> authenticateUser(String username, String password, VoidCallback onSuccess, VoidCallback onFailure) async {
     var headers = {
       "Content-Type":
         "application/json",
     };
     var response = await http.post(Uri.parse('$baseUrl/api/auth/signin'),
       headers: headers,
-      body: jsonEncode({"usernameOrEmail": usernameOrEmail, "password": password})
+      body: jsonEncode({"username": username, "password": password})
     );
 
     print(response.statusCode);
@@ -59,7 +59,7 @@ class ApiService {
   }
 
   Future<void> logOut(VoidCallback onLogOut) async{
-    await _storage.delete(key: 'AuthToken');
+    await _storage.deleteAll(); //Clear all stored data on log out
     onLogOut.call();
     return;
   }

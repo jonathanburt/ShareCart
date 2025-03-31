@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.swe.cart.entities.Group;
 import org.swe.cart.payload.ChangePermissionDTO;
 import org.swe.cart.payload.GroupCreateDTO;
+import org.swe.cart.payload.GroupDTO;
 import org.swe.cart.payload.InviteUserDTO;
 import org.swe.cart.services.GroupService;
 
@@ -31,18 +31,24 @@ public class GroupController {
     
     private final GroupService groupService;
 
-    @GetMapping("/getAllGroups")
-    public ResponseEntity<List<Group>> getAllGroups() {
+    @GetMapping("/get/all")
+    public ResponseEntity<List<GroupDTO>> getAllGroups() {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<Group> groups = groupService.getUserGroups(username);
+        List<GroupDTO> groups = groupService.getUserGroups(username);
         return  ResponseEntity.ok(groups);
         //TODO change more userful return type
     }
 
+    @GetMapping("/get/{groupId}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId) or hasAuthority('ROLE_MEMBER_GROUP_' + #groupId)")
+    public ResponseEntity<GroupDTO> getGroubById(@PathVariable Integer groupId){
+        return ResponseEntity.ok(groupService.getGroupById(groupId));
+    }
+
     @PostMapping("/create")
-    public ResponseEntity<Group> createGroup(@RequestBody GroupCreateDTO groupCreateDTO) {
+    public ResponseEntity<GroupDTO> createGroup(@RequestBody GroupCreateDTO groupCreateDTO) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Group newGroup = groupService.createGroup(username, groupCreateDTO);
+        GroupDTO newGroup = groupService.createGroup(username, groupCreateDTO);
 
         if(newGroup == null) return new ResponseEntity<>(null, HttpStatus.CONFLICT); //Group already exists with this name
 

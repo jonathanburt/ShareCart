@@ -12,6 +12,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -70,10 +72,13 @@ public class User {
 	@JsonManagedReference
 	private Set<Transaction> transactions_payee = new HashSet<>();
 
-	//TODO Add one-to-many listItem
 	@OneToMany(mappedBy="user")
 	@JsonManagedReference
 	private Set<ListItem> listItems = new HashSet<>();
+
+	@Enumerated(EnumType.STRING)
+	@Column(name="global_role", nullable = false, columnDefinition = "VARCHAR(10) DEFAULT 'USER'")
+	private GlobalRole globalRole;
 
 	@Column(name="created_at")
 	@CreationTimestamp

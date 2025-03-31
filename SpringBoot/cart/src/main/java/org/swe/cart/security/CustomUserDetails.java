@@ -1,6 +1,9 @@
 package org.swe.cart.security;
 
+import java.time.Instant;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -17,10 +20,14 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-    return user.getGroupMemberships().stream()
-        .map(groupMember -> (GrantedAuthority) () -> 
-            "ROLE_" + groupMember.getRole().name() + "_GROUP_" + groupMember.getGroup().getId())
-        .collect(Collectors.toSet());
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        authorities.addAll(user.getGroupMemberships().stream()
+            .map(groupMember -> (GrantedAuthority) () -> 
+                "ROLE_" + groupMember.getRole().name() + "_GROUP_" + groupMember.getGroup().getId())
+            .collect(Collectors.toSet()));
+        authorities.add((GrantedAuthority) () -> "ROLE_GLOBAL_" + user.getGlobalRole().name());
+
+        return authorities;
     }
 
     @Override
@@ -35,6 +42,14 @@ public class CustomUserDetails implements UserDetails {
 
     public Integer getId(){
         return user.getId();
+    }
+
+    public String getEmail(){
+        return user.getEmail();
+    }
+
+    public Instant getCreatedAt(){
+        return user.getCreatedAt();
     }
 
     @Override
