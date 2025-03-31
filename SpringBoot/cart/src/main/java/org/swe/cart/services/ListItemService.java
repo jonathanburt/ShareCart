@@ -1,5 +1,7 @@
 package org.swe.cart.services;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,6 +29,11 @@ public class ListItemService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
     private final ListItemRepository listItemRepository;
+
+    public List<ListItem> getListItems(Integer listId){
+        ShopList list = listRepository.findById(listId).orElseThrow();
+        return listItemRepository.findByList(list);
+    }
 
 
     public ListItem addItemToList(Integer groupId, Integer listId, Integer itemId, Integer quantity, Boolean communal){
