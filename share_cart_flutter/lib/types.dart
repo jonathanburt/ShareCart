@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:share_cart_flutter/shop_list.dart';
 
 class Location {
@@ -93,7 +94,7 @@ class GroupInvite {
   const GroupInvite(this.username, this.userId, this.invitedAt);
 }
 
-enum GroupRole{
+enum GroupRole {
   MEMBER,
   SHOPPER,
   ADMIN;

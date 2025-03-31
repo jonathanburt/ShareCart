@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:share_cart_flutter/types.dart';
 import 'package:share_cart_flutter/api_service.dart';
 
-class SearchPage extends StatefulWidget {
+class ShopPage extends StatefulWidget {
   @override
   State createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> {
+class _SearchPageState extends State<ShopPage> {
 
   List<Item> items = [];
   String sortByValue = "alphabetical";
@@ -18,6 +18,7 @@ class _SearchPageState extends State<SearchPage> {
     super.initState();
     apiService.fetchItems().then((result) => setState(() {
       items = result;
+      sortItems();
     }));
   }
 

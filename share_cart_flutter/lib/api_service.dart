@@ -68,11 +68,12 @@ class MockApiService implements ApiService {
 
   bool itemsCached = false;
   bool storesCached = false;
+  Duration fetchDelay = Duration(milliseconds: 500);
 
   @override
   Future<List<Item>> fetchItems() async {
     if (!itemsCached) {
-      await Future.delayed(Duration(milliseconds: 500));
+      await Future.delayed(fetchDelay);
       itemsCached = true;
     }
     return items;
@@ -87,7 +88,7 @@ class MockApiService implements ApiService {
   @override
   Future<List<Store>> fetchStores() async {
     if (!storesCached) {
-      await Future.delayed(Duration(milliseconds: 500));
+      await Future.delayed(fetchDelay);
       storesCached = true;
     }
     return stores;
