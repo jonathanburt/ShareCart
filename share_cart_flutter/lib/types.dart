@@ -30,16 +30,16 @@ class Location {
   }
 }
 
-class Store {
+class ShareCartStore {
   final String name;
   final Location location;
 
   final String id;
 
-  const Store(this.name, this.location, this.id);
+  const ShareCartStore(this.name, this.location, this.id);
 }
 
-class Item {
+class ShareCartItem {
   final String name;
   final List<String> keywords;
   final double price;
@@ -47,8 +47,9 @@ class Item {
   final String id;
   final String storeId;
 
-  const Item(this.name, this.keywords, this.price, this.id, this.storeId);
+  const ShareCartItem(this.name, this.keywords, this.price, this.id, this.storeId);
 }
+
 
 class ThisUserDetails {
   final String username;
@@ -72,7 +73,7 @@ class DeepGroupDetails { //The system will only fetch the additional details of 
   final ShallowGroupDetails shallowDetails;
   final List<GroupInvite> invites;
   final List<ShopList> lists;
-  final List<Item> items;
+  final List<ShareCartItem> items;
 
   const DeepGroupDetails(this.shallowDetails, this.invites, this.lists, this.items);
 }

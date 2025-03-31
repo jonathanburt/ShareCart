@@ -9,7 +9,7 @@ class ShopPage extends StatefulWidget {
 
 class _SearchPageState extends State<ShopPage> {
 
-  List<Item> items = [];
+  List<ShareCartItem> items = [];
   String sortByValue = "alphabetical";
   Location userLocation = Location("123 Broadway, New York, NY 10001, USA", 40.7099, -74.0113);
 
@@ -82,10 +82,10 @@ class _SearchPageState extends State<ShopPage> {
               children: items.map((item) => 
                 ListTile(
                   title: Text(item.name),
-                  subtitle: FutureBuilder<Store?>(
+                  subtitle: FutureBuilder<ShareCartStore?>(
                     future: apiService.fetchStore(item.storeId),
                     builder: (context, snapshot) {
-                      Store? store = snapshot.data;
+                      ShareCartStore? store = snapshot.data;
                       return store == null ? Text("Loading...") : Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
