@@ -2,7 +2,6 @@ package org.swe.cart.services;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.Authentication;
@@ -15,6 +14,9 @@ import org.swe.cart.entities.GroupInvite;
 import org.swe.cart.entities.GroupMember;
 import org.swe.cart.entities.GroupRole;
 import org.swe.cart.entities.User;
+import org.swe.cart.exceptions.UserAlreadyInGroupException;
+import org.swe.cart.exceptions.UserAlreadyInvitedToGroupException;
+import org.swe.cart.exceptions.UserNotInvitedToGroupException;
 import org.swe.cart.payload.GroupCreateDTO;
 import org.swe.cart.payload.GroupDTO;
 import org.swe.cart.payload.GroupInviteDTO;
@@ -58,7 +60,8 @@ public class GroupService {
                     invite.getUser().getId(),
                     Date.from(invite.getCreated_at()).toString()
                 ))
-                .collect(Collectors.toList())))
+                .collect(Collectors.toList())
+            ))
         .collect(Collectors.toList());
     }
 
@@ -66,7 +69,7 @@ public class GroupService {
     public GroupDTO getGroupById(Integer groupId){
         Group group = groupRepository.findById(groupId).orElseThrow();
         GroupDTO groupDTO = new GroupDTO();
-        groupDTO.setGroupId(groupId);
+        groupDTO.setGroupId(group.getId());
         groupDTO.setCreatedAtFormatted(Date.from(group.getCreatedAt()).toString());
         groupDTO.setName(group.getName());
         for (GroupMember member : group.getMembers()){
@@ -103,28 +106,20 @@ public class GroupService {
         creatorDTO.setUserId(creator.getUser().getId());
         creatorDTO.setUsername(creator.getUser().getUsername());
         creatorDTO.setJoinedAtFormatted(Date.from(creator.getCreated_at()).toString());
+        group.getMembers().add(creator);
 
-        GroupDTO groupDTO = new GroupDTO();
-        groupDTO.setGroupId(group.getId());
-        groupDTO.setName(group.getName());
-        groupDTO.addMember(creatorDTO);
-        groupDTO.setCreatedAtFormatted(Date.from(group.getCreatedAt()).toString());
+        GroupDTO groupDTO = groupToGroupDTO(group);
 
         return groupDTO;
     }
 
-    public String inviteUser(Integer groupId, String username){ //TODO Change to useful return type
-        Optional<Group> optionalGroup = groupRepository.findById(groupId);
-        if(optionalGroup.isEmpty()) return "Error: Group not found";
-        Group group = optionalGroup.get();
+    public GroupDTO inviteUser(Integer groupId, String username) throws UserAlreadyInGroupException, UserAlreadyInvitedToGroupException{ //TODO Change to useful return type
+        Group group = groupRepository.findById(groupId).orElseThrow();
+        User user = userRepository.findByUsername(username).orElseThrow();
 
-        Optional<User> optionalUser = userRepository.findByUsername(username);
-        if(optionalUser.isEmpty()) return "Error: User not found";
-        User user = optionalUser.get();
+        if(groupMemberRepository.findByUserAndGroup(user, group).isPresent()) throw new UserAlreadyInGroupException(username);
 
-        if(groupMemberRepository.findByUserAndGroup(user, group).isPresent()) return "User is already in group";
-
-        if(groupInviteRepository.findByUserAndGroup(user, group).isPresent()) return "User has already been invited to group"; //TODO figure out how ot handle expired invites
+        if(groupInviteRepository.findByUserAndGroup(user, group).isPresent()) throw new UserAlreadyInvitedToGroupException(username); //TODO figure out how ot handle expired invites
 
         GroupInvite invite = new GroupInvite();
         invite.setUser(user);
@@ -132,24 +127,21 @@ public class GroupService {
         GroupInviteKey key = new GroupInviteKey(user.getId(),group.getId());
         invite.setId(key);
         groupInviteRepository.save(invite);
+        group.getInvites().add(invite);
 
-        return "User invited to group";
+        return groupToGroupDTO(groupRepository.findById(groupId).get());
     }
 
-    public String acceptInvite(Integer groupId, Authentication auth){
+    public GroupDTO acceptInvite(Integer groupId, Authentication auth) throws UserNotInvitedToGroupException, UserAlreadyInGroupException{
         String username = auth.getName();
         User user = userRepository.findByUsername(username)
             .orElseThrow(() -> new UsernameNotFoundException("User could not be found"));
 
-        Optional<Group> optionalGroup = groupRepository.findById(groupId);
-        if(optionalGroup.isEmpty()) return "Group not found";
-        Group group = optionalGroup.get();
+        Group group = groupRepository.findById(groupId).orElseThrow();
 
-        Optional<GroupInvite> optionalGroupInvite = groupInviteRepository.findByUserAndGroup(user, group);
-        if(optionalGroupInvite.isEmpty()) return username + " has not been invited to this group";
+        if(!groupInviteRepository.existsByUserAndGroup(user, group)) throw new UserNotInvitedToGroupException(username);
 
-        Optional<GroupMember> optionalGroupMember = groupMemberRepository.findByUserAndGroup(user, group);
-        if(optionalGroupMember.isPresent()) return username + " is already a member of this group";
+        if(groupMemberRepository.findByUserAndGroup(user, group).isPresent()) throw new UserAlreadyInGroupException(username);
 
         GroupMember newMember = new GroupMember();
         newMember.setGroup(group);
@@ -163,40 +155,36 @@ public class GroupService {
         groupMemberRepository.save(newMember);
         groupInviteRepository.deleteByUserAndGroup(user, group);
 
-        return username + " has been added to group as a member";
+        return groupToGroupDTO(groupRepository.findById(groupId).get());
     }
 
-    public String declineInvite(Integer groupId, Authentication auth){
+    public GroupDTO declineInvite(Integer groupId, Authentication auth) throws UserNotInvitedToGroupException, UserAlreadyInGroupException{
         String username = auth.getName();
         User user = userRepository.findByUsername(username)
             .orElseThrow(() -> new UsernameNotFoundException("User could not be found"));
 
-        Optional<Group> optionalGroup = groupRepository.findById(groupId);
-        if(optionalGroup.isEmpty()) return "Group not found";
-        Group group = optionalGroup.get();
+        Group group = groupRepository.findById(groupId).orElseThrow();
 
-        Optional<GroupInvite> optionalGroupInvite = groupInviteRepository.findByUserAndGroup(user, group);
-        if(optionalGroupInvite.isEmpty()) return username + " has not been invited to this group";
+        if(!groupInviteRepository.existsByUserAndGroup(user, group)) throw new UserNotInvitedToGroupException(username);
 
-        Optional<GroupMember> optionalGroupMember = groupMemberRepository.findByUserAndGroup(user, group);
-        if(optionalGroupMember.isPresent()) return username + " is already a member of this group";
+        if(groupMemberRepository.findByUserAndGroup(user, group).isPresent()) throw new UserAlreadyInGroupException(username);
 
         groupInviteRepository.deleteByUserAndGroup(user, group);
 
-        return "Group Invite decline";
+        return groupToGroupDTO(groupRepository.findById(groupId).get());
     }
 
-    public String removeUser(Integer groupId, Integer userId){
+    public GroupDTO removeUser(Integer groupId, Integer userId){
         User user = userRepository.findById(userId).orElseThrow();
         Group group = groupRepository.findById(groupId).orElseThrow();
         GroupMember member = groupMemberRepository.findByUserAndGroup(user, group).orElseThrow();
 
         groupMemberRepository.deleteById(member.getId());
 
-        return "User removed from group";
+        return groupToGroupDTO(groupRepository.findById(userId).get());
     }
 
-    public String changeUserPermission(Integer groupId, Integer userId, GroupRole role){
+    public GroupDTO changeUserPermission(Integer groupId, Integer userId, GroupRole role){
         User user = userRepository.findById(userId).orElseThrow();
         Group group = groupRepository.findById(userId).orElseThrow();
         GroupMember member = groupMemberRepository.findByUserAndGroup(user, group).orElseThrow();
@@ -205,12 +193,35 @@ public class GroupService {
 
         groupMemberRepository.save(member);
 
-        return "User permissions changed to " + role.name();
+        return groupToGroupDTO(groupRepository.findById(groupId).get());
     }
 
     public String deleteGroup(Integer groupId){
         groupRepository.deleteById(groupId);
         return "Group removed";
+    }
+
+    private GroupDTO groupToGroupDTO(Group group){
+        GroupDTO groupDTO = new GroupDTO(group.getName(),
+                                         group.getId(),
+                                         Date.from(group.getCreatedAt()).toString(),
+                                         (List<GroupMemberDTO>) group.getMembers().stream()
+                                            .map(member -> new GroupMemberDTO(
+                                                member.getUser().getUsername(),
+                                                member.getUser().getId(),
+                                                member.getRole(),
+                                                Date.from(member.getCreated_at()).toString()
+                                            ))
+                                            .collect(Collectors.toList()),
+                                         (List<GroupInviteDTO>) group.getInvites().stream()
+                                            .map(invite -> new GroupInviteDTO(
+                                                invite.getUser().getUsername(),
+                                                invite.getUser().getId(),
+                                                Date.from(invite.getCreated_at()).toString()
+                                            ))
+                                            .collect(Collectors.toList()));
+
+        return groupDTO;
     }
 
 }

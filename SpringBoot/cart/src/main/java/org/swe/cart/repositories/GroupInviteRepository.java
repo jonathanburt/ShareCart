@@ -13,4 +13,5 @@ import org.swe.cart.entities.User;
 public interface GroupInviteRepository extends JpaRepository<GroupInvite, GroupInviteKey>{
     Optional<GroupInvite> findByUserAndGroup(User user, Group group);
     GroupInviteKey deleteByUserAndGroup(User user, Group group);
+    Boolean existsByUserAndGroup(User user, Group group);
 }

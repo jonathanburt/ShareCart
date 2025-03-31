@@ -63,17 +63,18 @@ class ShallowGroupDetails { //The system will fetch and save these details about
   final int groupId;
   final DateTime createdAt;
   final List<GroupMember> members;
+  final List<GroupInvite> invites;
 
-  const ShallowGroupDetails(this.name, this.groupId, this.createdAt, this.members);
+
+  const ShallowGroupDetails(this.name, this.groupId, this.createdAt, this.members, this.invites);
 }
 
 class DeepGroupDetails { //The system will only fetch the additional details of a group when that group is selected
   final ShallowGroupDetails shallowDetails;
-  final List<GroupInvite> invites;
   final List<ShopList> lists;
   final List<Item> items;
 
-  const DeepGroupDetails(this.shallowDetails, this.invites, this.lists, this.items);
+  const DeepGroupDetails(this.shallowDetails, this.lists, this.items);
 }
 
 class GroupMember {
