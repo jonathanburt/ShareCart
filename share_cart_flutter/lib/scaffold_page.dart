@@ -34,7 +34,10 @@ class _ScaffoldPageState extends State<ScaffoldPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(pageTitles[pageIndex]), backgroundColor: Theme.of(context).colorScheme.secondary),
+      appBar: AppBar(
+        title: Text(pageTitles[pageIndex], style: TextStyle(color: Colors.white)),
+        backgroundColor: Theme.of(context).colorScheme.secondary,
+      ),
       body: PageView(
         controller: _pageController,
         onPageChanged: (int newIndex) {

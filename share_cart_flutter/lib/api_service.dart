@@ -11,6 +11,8 @@ abstract class ApiService {
   Future<ShareCartItem?> fetchItem(String itemId);
   Future<List<ShareCartStore>> fetchStores();
   Future<ShareCartStore?> fetchStore(String storeId);
+  Future<List<ShareCartList>> fetchLists();
+  Future<ShareCartList?> fetchList(String listId);
 
   Future<List<ShallowGroupDetails>> fetchAllGroups();
   Future<DeepGroupDetails?> fetchGroupDeep(int groupId);
@@ -66,8 +68,15 @@ class MockApiService implements ApiService {
     ShareCartItem("Cinnamon", ["spice", "cinnamon", "baking"], 2.49, "b7b9601e-ab6c-4bcc-93ac-949af9134da4", "4b944e4d-4212-4f24-9454-e367610cec62"),
   ];
 
+  final List<ShareCartList> lists = [
+    ShareCartList("Weekly Groceries", "5610f089-c34e-4206-ba8e-b6031f28bc9d", "6aeff571-b270-4878-b8f0-1a48f1018bd5"),
+    ShareCartList("Halloween Supplies", "3e234a6e-2489-4917-9c9d-f3bc9d1d5a77", "6aeff571-b270-4878-b8f0-1a48f1018bd5"),
+    ShareCartList("Game Night Food", "6750c0db-8c25-4d98-9eff-9c6db9a6117b", "6aeff571-b270-4878-b8f0-1a48f1018bd5"),
+  ];
+
   bool itemsCached = false;
   bool storesCached = false;
+  bool listsCached = false;
   Duration fetchDelay = Duration(milliseconds: 500);
 
   @override
@@ -98,6 +107,21 @@ class MockApiService implements ApiService {
   Future<ShareCartStore?> fetchStore(String storeId) async {
     await fetchStores();
     return stores.firstWhere((store) => store.id == storeId);
+  }
+
+  @override
+  Future<List<ShareCartList>> fetchLists() async {
+    if (!listsCached) {
+      await Future.delayed(fetchDelay);
+      listsCached = true;
+    }
+    return lists;
+  }
+
+  @override
+  Future<ShareCartList?> fetchList(String listId) async {
+    await fetchLists();
+    return lists.firstWhere((list) => list.id == listId);
   }
 
   @override
@@ -211,6 +235,18 @@ class RealApiService implements ApiService {
   @override
   Future<List<ShareCartStore>> fetchStores() {
     // TODO: implement fetchStores
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<ShareCartList>> fetchLists() async {
+    // TODO: implement fetchLists
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<ShareCartList?> fetchList(String listId) async {
+    // TODO: implement fetchList
     throw UnimplementedError();
   }
 

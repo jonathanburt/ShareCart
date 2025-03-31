@@ -1,6 +1,4 @@
 import 'dart:math';
-
-import 'package:flutter/material.dart';
 import 'package:share_cart_flutter/shop_list.dart';
 
 class Location {
@@ -31,25 +29,42 @@ class Location {
 }
 
 class ShareCartStore {
+  final String id;
+  
   final String name;
   final Location location;
-
-  final String id;
 
   const ShareCartStore(this.name, this.location, this.id);
 }
 
 class ShareCartItem {
+  final String id;
+  final String storeId;
+  
   final String name;
   final List<String> keywords;
   final double price;
 
-  final String id;
-  final String storeId;
-
   const ShareCartItem(this.name, this.keywords, this.price, this.id, this.storeId);
 }
 
+class ShareCartList {
+  String name;
+  final String id;
+  final String groupId;
+
+  ShareCartList(this.name, this.id, this.groupId);
+}
+
+class ShareCartListItem {
+  final String itemId;
+  final String listId;
+  final String userId;
+  bool communal;
+  int quantity;
+
+  ShareCartListItem(this.itemId, this.listId, this.userId, this.communal, this.quantity);
+}
 
 class ThisUserDetails {
   final String username;
