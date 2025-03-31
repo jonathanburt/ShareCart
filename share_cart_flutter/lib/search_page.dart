@@ -40,8 +40,6 @@ class _SearchPageState extends State<SearchPage> {
                     await sortItems();
                     setState(() {
                       items = items;
-                      print("setting state");
-                      print(items.length);
                     });
                   },
                 ),
@@ -55,8 +53,6 @@ class _SearchPageState extends State<SearchPage> {
                         await sortItems();
                         setState(() {
                           items = items;
-                          print("setting state from sort by change");
-                          print(items.length);
                         });
                       },
                       items: [
@@ -126,9 +122,6 @@ class _SearchPageState extends State<SearchPage> {
       String valueLower = value.toLowerCase();
       return item.name.toLowerCase().contains(valueLower) || item.keywords.any((keyword) => keyword.toLowerCase().contains(valueLower));
     }).toList();
-
-    print("filtered");
-    print(items.length);
   }
 
   Future<void> sortItems() async {
@@ -150,8 +143,5 @@ class _SearchPageState extends State<SearchPage> {
 
       items = mappedItems.map((mappedItem) => mappedItem.$2).toList();
     }
-
-    print("sorted");
-    print(items.length);
   }
 }
