@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:share_cart_flutter/types.dart';
 
 class GroupsPage extends StatefulWidget {
   @override

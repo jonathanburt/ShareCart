@@ -38,4 +38,19 @@ public class ListService {
         return new ResponseEntity<>(list, HttpStatus.CREATED);  //Change this to a better return type
     }
 
+    public ResponseEntity<ShopList> deleteList(Integer listId){
+        ShopList list = listRepository.findById(listId).orElseThrow();
+        listRepository.deleteById(listId);
+        return new ResponseEntity<ShopList>(list, HttpStatus.OK);
+    }
+
+    public ResponseEntity<ShopList> updateList(Integer listId, String name, Integer groupId){
+        ShopList list = listRepository.findById(listId).orElseThrow();
+        Group group = groupRepository.findById(groupId).orElseThrow();
+        list.setName(name);
+        list.setGroup(group);
+        list = listRepository.save(list);
+        return new ResponseEntity<ShopList>(list, HttpStatus.OK);
+    }
+
 }

@@ -3,6 +3,10 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+// THIS FILE SHOULD BE DEPRECATED, AND IT'S CONTENTS SHOULD BE MADE TO COMPLY WITH THE INTERFACE ESTABLISHED IN api_service.dart
+// As a temporary file, I am replacing references to this file but not deleting it since it has work that
+// is yet to be fully transfered.
+
 class ApiService {
   static const String baseUrl = 'http://localhost:8080'; //The default base address of the Spring Boot server
   static final FlutterSecureStorage _storage = const FlutterSecureStorage(); //TODO make sure this works with target platforms and everyones machines

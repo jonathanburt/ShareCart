@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import 'package:share_cart_flutter/api_calls.dart';
+import 'package:share_cart_flutter/api_service.dart';
 import 'package:share_cart_flutter/login_page.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -119,7 +119,6 @@ class _SignUpPageState extends State<SignUpPage> {
                     return;
                   }
 
-                  ApiService apiService = ApiService();
                   apiService.createUser(
                     usernameController.text,
                     emailController.text,

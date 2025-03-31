@@ -50,6 +50,9 @@ public class ListItem {
     @Column(name="quantity", columnDefinition="int default 1")
     private Integer quantity;
 
+    @Column(name="bought", columnDefinition="boolean default false")
+    private Boolean bought;
+
     @Column(name="created_at")
     @CreationTimestamp
     private Instant createdAt;

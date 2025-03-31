@@ -1,5 +1,6 @@
 package org.swe.cart;
 
+import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,11 @@ public class ItemControllerIntegrationTest {
 
     @Autowired
     private ItemRepository itemRepository;
+
+    @Test
+    public void canCreateItemWhenGroupIdIsNull(){
+        
+    }
 
     
     
