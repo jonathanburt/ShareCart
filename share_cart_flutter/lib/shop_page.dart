@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:share_cart_flutter/types.dart';
 import 'package:share_cart_flutter/api_service.dart';
 
-class SearchPage extends StatefulWidget {
+class ShopPage extends StatefulWidget {
   @override
   State createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> {
+class _SearchPageState extends State<ShopPage> {
 
-  List<Item> items = [];
+  List<ShareCartItem> items = [];
   String sortByValue = "alphabetical";
   Location userLocation = Location("123 Broadway, New York, NY 10001, USA", 40.7099, -74.0113);
 
@@ -18,6 +18,7 @@ class _SearchPageState extends State<SearchPage> {
     super.initState();
     apiService.fetchItems().then((result) => setState(() {
       items = result;
+      sortItems();
     }));
   }
 
@@ -40,8 +41,6 @@ class _SearchPageState extends State<SearchPage> {
                     await sortItems();
                     setState(() {
                       items = items;
-                      print("setting state");
-                      print(items.length);
                     });
                   },
                 ),
@@ -55,8 +54,6 @@ class _SearchPageState extends State<SearchPage> {
                         await sortItems();
                         setState(() {
                           items = items;
-                          print("setting state from sort by change");
-                          print(items.length);
                         });
                       },
                       items: [
@@ -85,10 +82,10 @@ class _SearchPageState extends State<SearchPage> {
               children: items.map((item) => 
                 ListTile(
                   title: Text(item.name),
-                  subtitle: FutureBuilder<Store?>(
+                  subtitle: FutureBuilder<ShareCartStore?>(
                     future: apiService.fetchStore(item.storeId),
                     builder: (context, snapshot) {
-                      Store? store = snapshot.data;
+                      ShareCartStore? store = snapshot.data;
                       return store == null ? Text("Loading...") : Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -126,9 +123,6 @@ class _SearchPageState extends State<SearchPage> {
       String valueLower = value.toLowerCase();
       return item.name.toLowerCase().contains(valueLower) || item.keywords.any((keyword) => keyword.toLowerCase().contains(valueLower));
     }).toList();
-
-    print("filtered");
-    print(items.length);
   }
 
   Future<void> sortItems() async {
@@ -150,8 +144,5 @@ class _SearchPageState extends State<SearchPage> {
 
       items = mappedItems.map((mappedItem) => mappedItem.$2).toList();
     }
-
-    print("sorted");
-    print(items.length);
   }
 }

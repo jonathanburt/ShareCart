@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:share_cart_flutter/group_home.dart';
 import 'package:share_cart_flutter/groups_page.dart';
-import 'package:share_cart_flutter/search_page.dart';
+import 'package:share_cart_flutter/lists_page.dart';
+import 'package:share_cart_flutter/shop_page.dart';
 
 class ScaffoldPage extends StatefulWidget {
   @override
@@ -12,15 +12,21 @@ class _ScaffoldPageState extends State<ScaffoldPage> {
   final PageController _pageController = PageController();
   
   final List<Widget> pages = [
-    ActiveListsPage(),
     GroupsPage(),
-    SearchPage()
+    ListsPage(),
+    ShopPage()
   ];
 
   final List<String> pageTitles = [
-    "Home",
-    "Group",
-    "Search"
+    "Groups",
+    "Lists",
+    "Shop"
+  ];
+
+  final List<Icon> pageIcons = [
+    Icon(Icons.group),
+    Icon(Icons.list_alt),
+    Icon(Icons.search)
   ];
   
   int pageIndex = 0;
@@ -47,11 +53,10 @@ class _ScaffoldPageState extends State<ScaffoldPage> {
             curve: Curves.easeInOut,
           );
         },
-        destinations: [
-          NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
-          NavigationDestination(icon: Icon(Icons.group), label: 'Group'),
-          NavigationDestination(icon: Icon(Icons.search), label: 'Search'),
-        ],
+        destinations: List.generate(
+          pages.length,
+          (index) => NavigationDestination(icon: pageIcons[index], label: pageTitles[index])
+        ),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:share_cart_flutter/shop_list.dart';
 
 class Location {
@@ -29,16 +30,16 @@ class Location {
   }
 }
 
-class Store {
+class ShareCartStore {
   final String name;
   final Location location;
 
   final String id;
 
-  const Store(this.name, this.location, this.id);
+  const ShareCartStore(this.name, this.location, this.id);
 }
 
-class Item {
+class ShareCartItem {
   final String name;
   final List<String> keywords;
   final double price;
@@ -46,8 +47,9 @@ class Item {
   final String id;
   final String storeId;
 
-  const Item(this.name, this.keywords, this.price, this.id, this.storeId);
+  const ShareCartItem(this.name, this.keywords, this.price, this.id, this.storeId);
 }
+
 
 class ThisUserDetails {
   final String username;
@@ -72,7 +74,7 @@ class ShallowGroupDetails { //The system will fetch and save these details about
 class DeepGroupDetails { //The system will only fetch the additional details of a group when that group is selected
   final ShallowGroupDetails shallowDetails;
   final List<ShopList> lists;
-  final List<Item> items;
+  final List<ShareCartItem> items;
 
   const DeepGroupDetails(this.shallowDetails, this.lists, this.items);
 }
@@ -94,7 +96,7 @@ class GroupInvite {
   const GroupInvite(this.username, this.userId, this.invitedAt);
 }
 
-enum GroupRole{
+enum GroupRole {
   MEMBER,
   SHOPPER,
   ADMIN;
