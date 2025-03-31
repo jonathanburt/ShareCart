@@ -13,6 +13,8 @@ abstract class ApiService {
   Future<ShareCartStore?> fetchStore(String storeId);
   Future<List<ShareCartList>> fetchLists();
   Future<ShareCartList?> fetchList(String listId);
+  Future<List<ShareCartGroup>> fetchGroups();
+  Future<ShareCartGroup?> fetchGroup(String groupId);
 
   Future<List<ShallowGroupDetails>> fetchAllGroups();
   Future<DeepGroupDetails?> fetchGroupDeep(int groupId);
@@ -74,9 +76,14 @@ class MockApiService implements ApiService {
     ShareCartList("Game Night Food", "6750c0db-8c25-4d98-9eff-9c6db9a6117b", "6aeff571-b270-4878-b8f0-1a48f1018bd5"),
   ];
 
+  final List<ShareCartGroup> groups = [
+    ShareCartGroup("Family Group", "459d5970-16c6-4a6a-9feb-c5619c76cc47"),
+  ];
+
   bool itemsCached = false;
   bool storesCached = false;
   bool listsCached = false;
+  bool groupsCached = false;
   Duration fetchDelay = Duration(milliseconds: 500);
 
   @override
@@ -122,6 +129,21 @@ class MockApiService implements ApiService {
   Future<ShareCartList?> fetchList(String listId) async {
     await fetchLists();
     return lists.firstWhere((list) => list.id == listId);
+  }
+
+  @override
+  Future<List<ShareCartGroup>> fetchGroups() async {
+    if (!groupsCached) {
+      await Future.delayed(fetchDelay);
+      groupsCached = true;
+    }
+    return groups;
+  }
+
+  @override
+  Future<ShareCartGroup?> fetchGroup(String groupId) async {
+    await fetchLists();
+    return groups.firstWhere((group) => group.id == groupId);
   }
 
   @override
@@ -247,6 +269,18 @@ class RealApiService implements ApiService {
   @override
   Future<ShareCartList?> fetchList(String listId) async {
     // TODO: implement fetchList
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<ShareCartGroup>> fetchGroups() async {
+    // TODO: implement fetchGroups
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<ShareCartGroup?> fetchGroup(String groupId) async {
+    // TODO: implement fetchGroup
     throw UnimplementedError();
   }
 

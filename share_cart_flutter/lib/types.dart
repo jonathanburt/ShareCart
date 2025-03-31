@@ -49,9 +49,10 @@ class ShareCartItem {
 }
 
 class ShareCartList {
-  String name;
   final String id;
   final String groupId;
+
+  String name;
 
   ShareCartList(this.name, this.id, this.groupId);
 }
@@ -60,10 +61,19 @@ class ShareCartListItem {
   final String itemId;
   final String listId;
   final String userId;
+
   bool communal;
   int quantity;
 
   ShareCartListItem(this.itemId, this.listId, this.userId, this.communal, this.quantity);
+}
+
+class ShareCartGroup {
+  final String id;
+  
+  String name;
+
+  ShareCartGroup(this.name, this.id);
 }
 
 class ThisUserDetails {

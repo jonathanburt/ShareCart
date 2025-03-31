@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:share_cart_flutter/login_page.dart';
 import 'package:share_cart_flutter/group_home.dart';
 
-void main() {
+void main() { 
   runApp(const MyApp());
 }
 
