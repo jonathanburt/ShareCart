@@ -34,7 +34,7 @@ public class GroupMember {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role;
+    private GroupRole role;
 
     @ManyToOne
     @MapsId("userid")

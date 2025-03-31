@@ -12,7 +12,7 @@ import org.springframework.test.annotation.Rollback;
 import org.swe.cart.embeddables.GroupMemberKey;
 import org.swe.cart.entities.Group;
 import org.swe.cart.entities.GroupMember;
-import org.swe.cart.entities.Role;
+import org.swe.cart.entities.GroupRole;
 import org.swe.cart.entities.User;
 import org.swe.cart.repositories.GroupMemberRepository;
 import org.swe.cart.repositories.GroupRepository;
@@ -63,7 +63,7 @@ public class RepositoryTests {
         GroupMember member = new GroupMember();
         member.setUser(user);
         member.setGroup(group);
-        member.setRole(Role.ADMIN);
+        member.setRole(GroupRole.ADMIN);
 
         GroupMemberKey key = new GroupMemberKey();
         key.setGroupid(group.getId());

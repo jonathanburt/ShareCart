@@ -19,7 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.swe.cart.entities.Group;
 import org.swe.cart.entities.GroupMember;
-import org.swe.cart.entities.Role;
+import org.swe.cart.entities.GroupRole;
 import org.swe.cart.repositories.GroupRepository;
 import org.swe.cart.repositories.UserRepository;
 
@@ -71,7 +71,7 @@ public class GroupControllerIntegrationTest {
 
         GroupMember creator = returnedGroup.getMembers().iterator().next(); //Get the first item from the set
         
-        assertThat(creator.getRole()).isEqualTo(Role.ADMIN); //Assert that the group creator is an admin
+        assertThat(creator.getRole()).isEqualTo(GroupRole.ADMIN); //Assert that the group creator is an admin
 
         assertThat(creator.getUser().getId()).isEqualTo(userId); //Assert that the group creator is the the user who is logged in
     }

@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.swe.cart.entities.GlobalRole;
 import org.swe.cart.entities.User;
 import org.swe.cart.payload.AuthResponseDTO;
 import org.swe.cart.payload.LoginDTO;
@@ -67,6 +68,7 @@ public class UserController {
         user.setUsername(signUpDTO.getUsername());
         user.setEmail(signUpDTO.getEmail());
         user.setPassword(passwordEncoder.encode(signUpDTO.getPassword()));
+        user.setGlobalRole(GlobalRole.USER);
 
         userRepository.save(user);
 
