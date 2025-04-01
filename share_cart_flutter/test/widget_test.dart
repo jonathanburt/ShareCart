@@ -1,30 +1,89 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:share_cart_flutter/main.dart';
+import 'package:share_cart_flutter/api_service.dart';
+import 'package:share_cart_flutter/scaffold_page.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  if (apiService is MockApiService) {
+    (apiService as MockApiService).fetchDelay = Duration.zero;
+  }
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  group('ScaffoldPage', () {
+    Future<void> pumpScaffoldPage(WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ScaffoldPage(),
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    testWidgets('should show nav bar options', (WidgetTester tester) async {
+      await pumpScaffoldPage(tester);
+
+      expect(find.text('Groups'), findsAny);
+      expect(find.text('Lists'), findsAny);
+      expect(find.text('Shop'), findsAny);
+    });
+
+    group('ShopPage', () {
+      Future<void> pumpShopPage(WidgetTester tester) async {
+        await pumpScaffoldPage(tester);
+        await tester.tap(find.text('Shop'));
+        await tester.pumpAndSettle();
+      }
+
+      testWidgets('should render Shop page text', (WidgetTester tester) async {
+        await pumpShopPage(tester);
+
+        expect(find.text('Shop'), findsAtLeast(2));
+        expect(find.text('Query'), findsOne);
+        expect(find.text('Sort by '), findsOne);
+        expect(find.text('alphabetical'), findsOne);
+      });
+
+      testWidgets('should default to sort by alphabetical', (WidgetTester tester) async {
+        await pumpShopPage(tester);
+
+        expect(find.text('Almond Butter'), findsOne);
+        expect(find.text('Almond Milk'), findsOne);
+        expect(find.text('Avocado'), findsOne);
+      });
+
+      testWidgets('should sort by price', (WidgetTester tester) async {
+        await pumpShopPage(tester);
+        await tester.tap(find.text('alphabetical'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('price'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Organic Bananas'), findsOne);
+        expect(find.text('Greek Yogurt'), findsOne);
+        expect(find.text('Avocado'), findsOne);
+      });
+
+      testWidgets('should sort by distance', (WidgetTester tester) async {
+        await pumpShopPage(tester);
+        await tester.tap(find.text('alphabetical'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('distance'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Almond Milk'), findsOne);
+        expect(find.text('Organic Bananas'), findsOne);
+        expect(find.text('Strawberries'), findsOne);
+      });
+
+      testWidgets('should show current location when sorting by distance', (WidgetTester tester) async {
+        await pumpShopPage(tester);
+        await tester.tap(find.text('alphabetical'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('distance'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Current Location: '), findsOne);
+      });
+    });
   });
 }

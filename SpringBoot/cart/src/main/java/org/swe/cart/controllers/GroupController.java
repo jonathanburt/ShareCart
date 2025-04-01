@@ -11,10 +11,11 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.swe.cart.exceptions.UserAlreadyInGroupException;
+import org.swe.cart.exceptions.UserNotInvitedToGroupException;
 import org.swe.cart.payload.ChangePermissionDTO;
 import org.swe.cart.payload.GroupCreateDTO;
 import org.swe.cart.payload.GroupDTO;
@@ -56,42 +57,60 @@ public class GroupController {
         //TODO Change this to a more useable return type
     }
 
-    @PutMapping("/{groupId}/invite")
+    @PostMapping("/{groupId}/invite")
     @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId)")
-    public ResponseEntity<String> inviteUsertoGroup(@PathVariable Integer groupId,
+    public ResponseEntity<GroupDTO> inviteUsertoGroup(@PathVariable Integer groupId,
                                                     @RequestBody InviteUserDTO inviteUserDTO) {
-        String response = groupService.inviteUser(groupId, inviteUserDTO.getUsername());
-        return ResponseEntity.ok(response); //TODO Make useful return type
+        try {
+            GroupDTO response = groupService.inviteUser(groupId, inviteUserDTO.getUsername());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
     }
 
-    @PutMapping("/{groupId}/invite/accept")
-    public String acceptInvite(@PathVariable Integer groupId) {
+    @PostMapping("/{groupId}/invite/accept")
+    public ResponseEntity<GroupDTO> acceptInvite(@PathVariable Integer groupId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String response = groupService.acceptInvite(groupId, auth);
-        return response; //TODO change to ResponseEntity
-    }
-
-    @PutMapping("/{groupId}/invite/decline")
-    public String declineInvite(@PathVariable Integer groupId) {
-       Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-       String response = groupService.declineInvite(groupId, auth);
-        return response; //TODO change to ResponseEntity
-    }
-
-    @PutMapping("/{groupId}/users/{userId}/remove")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId)")
-    public String removeUser(@PathVariable Integer groupId, @PathVariable Integer userId) {
-        String response = groupService.removeUser(groupId, userId);
-        return response; //TODO change to ResponseEntity
-    }
-
-    @PutMapping("/{groupId}/users/{userId}/permissions")
-    @PreAuthorize("hasAuthority('ROLE_GROUP_ADMIN_' + #groupId)")
-    public String changeUserPermissions(@PathVariable Integer groupId, @PathVariable Integer userId,
-                                        @RequestBody ChangePermissionDTO changePermissionDTO) {
-        String response = groupService.changeUserPermission(groupId, userId, changePermissionDTO.getRole());
+        try {
+            GroupDTO response = groupService.acceptInvite(groupId, auth);
+            return ResponseEntity.ok(response);
+        } catch (UserAlreadyInGroupException e) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        } catch (UserNotInvitedToGroupException e){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         
-        return response; //TODO change to ResponseEntity
+    }
+
+    @PostMapping("/{groupId}/invite/decline")
+    public ResponseEntity<GroupDTO> declineInvite(@PathVariable Integer groupId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        try {
+            GroupDTO response = groupService.declineInvite(groupId, auth);
+            return ResponseEntity.ok(response);
+        } catch (UserAlreadyInGroupException e) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        } catch (UserNotInvitedToGroupException e){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+        
+    }
+
+    @PostMapping("/{groupId}/users/{userId}/remove")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId)")
+    public ResponseEntity<GroupDTO> removeUser(@PathVariable Integer groupId, @PathVariable Integer userId) {
+        GroupDTO response = groupService.removeUser(groupId, userId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{groupId}/users/{userId}/permissions")
+    @PreAuthorize("hasAuthority('ROLE_GROUP_ADMIN_' + #groupId)")
+    public ResponseEntity<GroupDTO> changeUserPermissions(@PathVariable Integer groupId, @PathVariable Integer userId,
+                                        @RequestBody ChangePermissionDTO changePermissionDTO) {
+        GroupDTO response = groupService.changeUserPermission(groupId, userId, changePermissionDTO.getRole());
+        
+        return ResponseEntity.ok(response);
     }
     
     @DeleteMapping("/{groupId}/delete")

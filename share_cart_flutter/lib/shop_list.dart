@@ -1,6 +1,6 @@
 class ShopList {
   final String listName;
-  List<String> items; //Replace with Item type once it is fully defined
+  List<String> items; //Replace with ShareCartItem type once it is fully defined
 
   ShopList(this.listName, this.items);
 

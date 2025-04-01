@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:share_cart_flutter/shop_list.dart';
 
 class Location {
@@ -29,24 +28,52 @@ class Location {
   }
 }
 
-class Store {
+class ShareCartStore {
+  final String id;
+  
   final String name;
   final Location location;
 
-  final String id;
-
-  const Store(this.name, this.location, this.id);
+  const ShareCartStore(this.name, this.location, this.id);
 }
 
-class Item {
+class ShareCartItem {
+  final String id;
+  final String storeId;
+  
   final String name;
   final List<String> keywords;
   final double price;
 
-  final String id;
-  final String storeId;
+  const ShareCartItem(this.name, this.keywords, this.price, this.id, this.storeId);
+}
 
-  const Item(this.name, this.keywords, this.price, this.id, this.storeId);
+class ShareCartList {
+  final String id;
+  final String groupId;
+
+  String name;
+
+  ShareCartList(this.name, this.id, this.groupId);
+}
+
+class ShareCartListItem {
+  final String itemId;
+  final String listId;
+  final String userId;
+
+  bool communal;
+  int quantity;
+
+  ShareCartListItem(this.itemId, this.listId, this.userId, this.communal, this.quantity);
+}
+
+class ShareCartGroup {
+  final String id;
+  
+  String name;
+
+  ShareCartGroup(this.name, this.id);
 }
 
 class ThisUserDetails {
@@ -63,17 +90,18 @@ class ShallowGroupDetails { //The system will fetch and save these details about
   final int groupId;
   final DateTime createdAt;
   final List<GroupMember> members;
+  final List<GroupInvite> invites;
 
-  const ShallowGroupDetails(this.name, this.groupId, this.createdAt, this.members);
+
+  const ShallowGroupDetails(this.name, this.groupId, this.createdAt, this.members, this.invites);
 }
 
 class DeepGroupDetails { //The system will only fetch the additional details of a group when that group is selected
   final ShallowGroupDetails shallowDetails;
-  final List<GroupInvite> invites;
   final List<ShopList> lists;
-  final List<Item> items;
+  final List<ShareCartItem> items;
 
-  const DeepGroupDetails(this.shallowDetails, this.invites, this.lists, this.items);
+  const DeepGroupDetails(this.shallowDetails, this.lists, this.items);
 }
 
 class GroupMember {
@@ -93,7 +121,7 @@ class GroupInvite {
   const GroupInvite(this.username, this.userId, this.invitedAt);
 }
 
-enum GroupRole{
+enum GroupRole {
   MEMBER,
   SHOPPER,
   ADMIN;

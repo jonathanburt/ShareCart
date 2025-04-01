@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:share_cart_flutter/api_service.dart';
 import 'package:share_cart_flutter/types.dart';
 
-class GroupsPage extends StatefulWidget {
+class ListsPage extends StatefulWidget {
   @override
-  State createState() => _GroupsPageState();
+  State createState() => _ListsPageState();
 }
 
-class _GroupsPageState extends State<GroupsPage> {
-  List<ShareCartGroup> lists = [];
+class _ListsPageState extends State<ListsPage> {
+  List<ShareCartList> lists = [];
 
   @override
   void initState() {
     super.initState();
-    apiService.fetchGroups().then((result) => setState(() {
+    apiService.fetchLists().then((result) => setState(() {
       lists = result;
     }));
   }
@@ -27,7 +27,7 @@ class _GroupsPageState extends State<GroupsPage> {
           ElevatedButton.icon(
             onPressed: () {},
             icon: Icon(Icons.add),
-            label: Text('Create Group'),
+            label: Text('Create List'),
             style: ElevatedButton.styleFrom(
               minimumSize: Size.fromHeight(50),
               shape: RoundedRectangleBorder(
@@ -37,11 +37,11 @@ class _GroupsPageState extends State<GroupsPage> {
           ),
           Expanded(
             child: ListView(
-              children: lists.map((group) =>
+              children: lists.map((list) =>
                 ListTile(
-                  title: Text(group.name),
+                  title: Text(list.name),
                   trailing: IconButton(
-                    onPressed: () {}, // TODO: Implement group editing 
+                    onPressed: () {}, // TODO: Implement list editing 
                     icon: Icon(Icons.edit)
                   ))
               ).toList(),
