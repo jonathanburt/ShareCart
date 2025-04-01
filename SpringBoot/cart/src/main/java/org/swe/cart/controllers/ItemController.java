@@ -45,14 +45,14 @@ public class ItemController {
     }
 
     @PutMapping("/{itemId}/update")
-    public ResponseEntity<Item> updateItem(@PathVariable Integer itemId, String name, String description, String category, Float price, @RequestBody String entity) {
+    public ResponseEntity<Item> updateItem(@PathVariable Integer itemId, @PathVariable Integer groupId, String name, String description, String category, Float price, @RequestBody String entity) {
         //TODO: process PUT request
-        return itemService.updateItem(itemId, name, description, category, price);
+        return itemService.updateItem(itemId, groupId, name, description, category, price);
     }
 
     @PutMapping("/{itemId}/delete")
-    public ResponseEntity<Item> deleteItem(@PathVariable Integer itemId){
-        return itemService.deleteItem(itemId);
+    public ResponseEntity<Item> deleteItem(@PathVariable Integer itemId, @PathVariable Integer groupId){
+        return itemService.deleteItem(itemId, groupId);
     }
     
 }

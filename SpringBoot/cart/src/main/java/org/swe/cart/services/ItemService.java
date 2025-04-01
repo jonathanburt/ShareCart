@@ -44,8 +44,12 @@ public class ItemService {
 
     
 
-    public ResponseEntity<Item> updateItem(Integer itemId, String name, String description, String category, Float price){
-        Item item = itemRepository.findById(itemId).orElseThrow();
+    public ResponseEntity<Item> updateItem(Integer itemId, Integer groupId, String name, String description, String category, Float price){
+        Group group = groupRepository.findById(groupId).orElseThrow();
+        Item item = itemRepository.findByIdAndGroup(itemId, group).orElseThrow();
+        if(!groupId.equals(item.getId())){
+            return new ResponseEntity<Item>(item, HttpStatus.BAD_REQUEST);
+        }
         item.setName(name);
         item.setDescription(description);
         item.setCategory(category);
@@ -56,8 +60,12 @@ public class ItemService {
 
     
 
-    public ResponseEntity<Item> deleteItem(Integer itemId){
-        Item item = itemRepository.findById(itemId).orElseThrow();
+    public ResponseEntity<Item> deleteItem(Integer itemId, Integer groupId){
+        Group group = groupRepository.findById(groupId).orElseThrow();
+        Item item = itemRepository.findByIdAndGroup(itemId, group).orElseThrow();
+        if(!groupId.equals(item.getId())){
+            return new ResponseEntity<Item>(item, HttpStatus.BAD_REQUEST);
+        }
         itemRepository.deleteById(itemId);
         return new ResponseEntity<>(item, HttpStatus.OK);
     }

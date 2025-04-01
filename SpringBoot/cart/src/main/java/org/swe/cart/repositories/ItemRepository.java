@@ -12,4 +12,5 @@ import org.swe.cart.entities.Item;
 public interface ItemRepository extends JpaRepository<Item, Integer>{ 
     Optional<Item> findById(Integer id);
     List<Item> findByGroup(Group group);
+    Optional<Item> findByIdAndGroup(Integer id, Group group);
 }
