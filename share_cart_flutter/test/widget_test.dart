@@ -16,6 +16,7 @@ void main() {
           home: ScaffoldPage(),
         ),
       );
+      await tester.pumpAndSettle();
     }
 
     testWidgets('should show nav bar options', (WidgetTester tester) async {
