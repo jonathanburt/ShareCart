@@ -5,6 +5,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,9 +30,14 @@ public class ListController {
     }
 
     @DeleteMapping("/{listId}/delete")
-    public String deleteList(@PathVariable Integer groupId, @PathVariable Integer listId, @RequestBody String entity) {
-        //TODO: process DELETE request
-        
-        return entity;
+    @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId)")
+    public ResponseEntity<ShopList> deleteList(@PathVariable Integer groupId, @PathVariable Integer listId, @RequestBody String entity) {
+        return listService.deleteList(listId);
+    }
+
+    @PutMapping("/{listId}/update")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId)")
+    public ResponseEntity<ShopList> updateList(@PathVariable Integer listId, String name, @PathVariable Integer groupId){
+        return listService.updateList(listId, name, groupId);
     }
 }

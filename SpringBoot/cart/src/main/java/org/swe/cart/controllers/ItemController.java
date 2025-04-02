@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,7 +52,8 @@ public class ItemController {
         return itemService.updateItem(itemId, groupId, name, description, category, price);
     }
 
-    @PutMapping("/{itemId}/delete")
+    @DeleteMapping("/{itemId}/delete")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId)")
     public ResponseEntity<Item> deleteItem(@PathVariable Integer itemId, @PathVariable Integer groupId){
         return itemService.deleteItem(itemId, groupId);
     }
