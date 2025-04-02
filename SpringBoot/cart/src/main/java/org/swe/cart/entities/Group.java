@@ -1,6 +1,7 @@
 package org.swe.cart.entities;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -37,19 +38,19 @@ public class Group {
 
     @OneToMany(mappedBy="group", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private Set<ShopList> lists;
+    private Set<ShopList> lists = new HashSet<>();
 
     @OneToMany(mappedBy="group", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private Set<Item> items;
+    private Set<Item> items = new HashSet<>();
 
     @OneToMany(mappedBy="group", cascade = CascadeType.REMOVE)
     @JsonManagedReference
-    private Set<GroupMember> members;
+    private Set<GroupMember> members = new HashSet<>();
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.REMOVE)
     @JsonManagedReference
-    private Set<GroupInvite> invites;
+    private Set<GroupInvite> invites = new HashSet<>();
 
     @CreationTimestamp
     @Column(name="created_at")

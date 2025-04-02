@@ -104,6 +104,14 @@ public class GroupController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/{groupId}/users/leave")
+    public String leaveGroup(@PathVariable Integer groupId, @RequestBody String entity) {
+        //TODO: process POST request
+        
+        return entity;
+    }
+    
+
     @PostMapping("/{groupId}/users/{userId}/permissions")
     @PreAuthorize("hasAuthority('ROLE_GROUP_ADMIN_' + #groupId)")
     public ResponseEntity<GroupDTO> changeUserPermissions(@PathVariable Integer groupId, @PathVariable Integer userId,
