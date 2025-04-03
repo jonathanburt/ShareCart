@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import 'package:share_cart_flutter/scaffold_page.dart';
+import 'package:share_cart_flutter/home_page.dart';
 import 'package:share_cart_flutter/signup_page.dart';
 
 class LoginPage extends StatefulWidget{
@@ -97,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
                     if(!context.mounted) return;
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => ScaffoldPage())
+                      MaterialPageRoute(builder: (context) => HomePage())
                     );
                   },
                   child: const Text("Login")
