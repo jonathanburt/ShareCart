@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -20,8 +21,11 @@ abstract class ApiService {
   Future<List<ShallowGroupDetails>> fetchAllGroups();
   Future<DeepGroupDetails?> fetchGroupDeep(int groupId);
 
-  Future<void> authenticateUser(String usernameOrEmail, String password, VoidCallback onSuccess, VoidCallback onFailure);
-  Future<void> createUser(String username, String email, String password, VoidCallback onSuccess, VoidCallback onFailure);
+  Future<ThisUserDetails?> authenticateUser(String usernameOrEmail, String password, VoidCallback onSuccess, VoidCallback onFailure);
+  Future<ThisUserDetails?> createUser(String username, String email, String password, VoidCallback onSuccess, VoidCallback onFailure);
+  Future<void> logOut(VoidCallback onLogOut);
+  Future<void> leaveGroup(String groupId, VoidCallback onSuccess, Function(String) onFailure);
+  Future<List<GroupDetails>> getUserGroups();
 }
 
 class MockApiService implements ApiService {
@@ -176,30 +180,61 @@ class MockApiService implements ApiService {
   }
 
   @override
-  Future<void> createUser(String username, String email, String password, VoidCallback onSuccess, VoidCallback onFailure) async {
+  Future<ThisUserDetails?> createUser(String username, String email, String password, VoidCallback onSuccess, VoidCallback onFailure) async {
     onSuccess();
+    return null;
   }
   
   @override
-  Future<void> authenticateUser(String usernameOrEmail, String password, VoidCallback onSuccess, VoidCallback onFailure) async {
+  Future<ThisUserDetails?> authenticateUser(String usernameOrEmail, String password, VoidCallback onSuccess, VoidCallback onFailure) async {
     onSuccess();
+    return null;
+  }
+
+  @override
+  Future<void> logOut(VoidCallback onLogOut) async {
+    onLogOut();
+  }
+
+  @override
+  Future<void> leaveGroup(String groupId, VoidCallback onSuccess, Function(String) onFailure) async {
+    await Future.delayed(fetchDelay);
+    onSuccess();
+  }
+
+  @override
+  Future<List<GroupDetails>> getUserGroups() async {
+    await Future.delayed(fetchDelay);
+    return [
+      GroupDetails("1", "Family Group"),
+      GroupDetails("2", "Friends Group"),
+    ];
   }
 }
 
 final ApiService apiService = MockApiService();
 
 class RealApiService implements ApiService {
-  static const String baseUrl = 'http://localhost:8080'; //The default base address of the Spring Boot server
-  static final FlutterSecureStorage _storage = const FlutterSecureStorage(); //TODO make sure this works with target platforms and everyones machines
+  final String baseUrl;
+  final http.Client client;
+
+  RealApiService({required this.baseUrl, http.Client? client})
+    : client = client ?? http.Client(); //Client dependency injection for testing purposes, defaults to regular http client
+
+  final FlutterSecureStorage _storage = const FlutterSecureStorage(); //TODO make sure this works with target platforms and everyones machines
+  var baseHeaders = { 
+    "Content-Type":
+      "application/json"
+  };
+  
+  Future<String?> getJWT(){
+    return _storage.read(key: 'AuthToken');
+  }
 
   @override
-  Future<void> authenticateUser(String username, String password, VoidCallback onSuccess, VoidCallback onFailure) async {
-    var headers = {
-      "Content-Type":
-        "application/json",
-    };
-    var response = await http.post(Uri.parse('$baseUrl/api/auth/signin'),
-      headers: headers,
+  Future<ThisUserDetails?> authenticateUser(String username, String password, VoidCallback onSuccess, VoidCallback onFailure) async {
+    var response = await client.post(Uri.parse('$baseUrl/api/auth/signin'),
+      headers: baseHeaders,
       body: jsonEncode({"username": username, "password": password})
     );
 
@@ -211,39 +246,50 @@ class RealApiService implements ApiService {
       var responseJson = jsonDecode(response.body) as Map<String, dynamic>;
       await _storage.write(key: 'AuthToken', value: responseJson['token']);
       print(await _storage.read(key: 'AuthToken'));
+      return ThisUserDetails(username, responseJson['email'], responseJson['userId'], HttpDate.parse(responseJson['createdAtFormatted']));
     } else {
       onFailure.call();
+      return null;
     }
   }
 
   @override
-  Future<void> createUser(String username, String email, String password, VoidCallback onSuccess, VoidCallback onFailure) async {
-    var headers = {
-      "Content-Type": "application/json",
-    };
-    var response = await http.post(
+  Future<ThisUserDetails?> createUser(String username, String email, String password, VoidCallback onSuccess, VoidCallback onFailure) async {
+    var response = await client.post(
       Uri.parse('$baseUrl/api/auth/signup'),
-      headers: headers,
+      headers: baseHeaders,
       body: jsonEncode({
         "username": username,
         "email": email,
         "password": password
       })
     );
-
-    print(response.statusCode);
-    print(response.body);
-
     if (response.statusCode == 200) {
       onSuccess.call();
+      var responseBody = jsonDecode(response.body) as Map<String, dynamic>;
+      return ThisUserDetails(username, email, responseBody['userId'], HttpDate.parse(responseBody['createdAt']));
     } else {
       onFailure.call();
+      return null;
     }
   }
 
   @override
-  Future<List<ShallowGroupDetails>> fetchAllGroups() {
-    // TODO: implement fetchAllGroups
+  Future<List<ShallowGroupDetails>> fetchAllGroups() async { //TODO create a test to ensure this works
+    //String jwt = (await getJWT())!;
+    var headers = baseHeaders;
+    //headers["Authorization"] = "Bearer $jwt";
+    var response = await client.get(Uri.parse('$baseUrl/api/group/get/all'),
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      Iterable responseBody = jsonDecode(response.body);
+      return List.from(responseBody.map((model) => ShallowGroupDetails.fromJson(model)));
+    }
+
+    print("call failed " + response.statusCode.toString());
+    // TODO: implement fail-state
     throw UnimplementedError();
   }
 
@@ -307,10 +353,75 @@ class RealApiService implements ApiService {
     throw UnimplementedError();
   }
 
+  @override
   Future<void> logOut(VoidCallback onLogOut) async{
     await _storage.deleteAll(); //Clear all stored data on log out
     onLogOut.call();
     return;
   }
+
+  @override
+  Future<void> leaveGroup(String groupId, VoidCallback onSuccess, Function(String) onFailure) async {
+    String? jwt = await getJWT();
+    if (jwt == null) {
+      onFailure("Not authenticated");
+      return;
+    }
+
+    var headers = baseHeaders;
+    headers["Authorization"] = "Bearer $jwt";
+
+    var response = await client.post(
+      Uri.parse('$baseUrl/api/group/$groupId/leave'),
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      onSuccess();
+    } else {
+      var errorMessage = "Failed to leave group";
+      try {
+        var responseBody = jsonDecode(response.body) as Map<String, dynamic>;
+        errorMessage = responseBody['message'] ?? errorMessage;
+      } catch (e) {
+        // Use default error message if response parsing fails
+      }
+      onFailure(errorMessage);
+    }
+  }
+
+  @override
+  Future<List<GroupDetails>> getUserGroups() async {
+    String? jwt = await getJWT();
+    if (jwt == null) {
+      return [];
+    }
+
+    var headers = baseHeaders;
+    headers["Authorization"] = "Bearer $jwt";
+
+    var response = await client.get(
+      Uri.parse('$baseUrl/api/group/user/groups'),
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      var responseBody = jsonDecode(response.body) as List;
+      return responseBody.map((group) => 
+        GroupDetails(
+          group['id'].toString(),
+          group['name'],
+        )
+      ).toList();
+    }
+    return [];
+  }
+}
+
+class GroupDetails {
+  final String id;
+  final String name;
+
+  GroupDetails(this.id, this.name);
 }
 

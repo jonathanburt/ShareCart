@@ -1,7 +1,12 @@
 package org.swe.cart.services;
 
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.Authentication;
@@ -45,20 +50,20 @@ public class GroupService {
         .map(group -> new GroupDTO(
             group.getName(),
             group.getId(),
-            Date.from(group.getCreatedAt()).toString(),
+            formatInstantToHTTP(group.getCreatedAt()),
             (List<GroupMemberDTO>) group.getMembers().stream()
                 .map(member -> new GroupMemberDTO(
                     member.getUser().getUsername(),
                     member.getUser().getId(),
                     member.getRole(),
-                    Date.from(member.getCreated_at()).toString()
+                    formatInstantToHTTP(member.getCreated_at())
                 ))
                 .collect(Collectors.toList()),
             (List<GroupInviteDTO>) group.getInvites().stream()
                 .map(invite -> new GroupInviteDTO(
                     invite.getUser().getUsername(),
                     invite.getUser().getId(),
-                    Date.from(invite.getCreated_at()).toString()
+                    formatInstantToHTTP(invite.getCreated_at())
                 ))
                 .collect(Collectors.toList())
             ))
@@ -68,19 +73,7 @@ public class GroupService {
 
     public GroupDTO getGroupById(Integer groupId){
         Group group = groupRepository.findById(groupId).orElseThrow();
-        GroupDTO groupDTO = new GroupDTO();
-        groupDTO.setGroupId(group.getId());
-        groupDTO.setCreatedAtFormatted(Date.from(group.getCreatedAt()).toString());
-        groupDTO.setName(group.getName());
-        for (GroupMember member : group.getMembers()){
-            User memberUser = member.getUser();
-            GroupMemberDTO memberDTO = new GroupMemberDTO();
-            memberDTO.setJoinedAtFormatted(Date.from(member.getCreated_at()).toString());
-            memberDTO.setRole(member.getRole());
-            memberDTO.setUserId(memberUser.getId());
-            memberDTO.setUsername(memberUser.getUsername());
-            groupDTO.addMember(memberDTO);
-        }
+        GroupDTO groupDTO = groupToGroupDTO(group);
 
         return groupDTO;
     }
@@ -91,25 +84,18 @@ public class GroupService {
         if(groupRepository.existsByName(groupCreateDTO.getName())) return null;
         Group group = new Group();
         group.setName(groupCreateDTO.getName());
-        group = groupRepository.save(group);
+        Group savedGroup = groupRepository.save(group);
 
         GroupMember creator = new GroupMember();
         creator.setUser(user);
-        creator.setGroup(group);
+        creator.setGroup(savedGroup);
         creator.setRole(GroupRole.ADMIN);
 
         GroupMemberKey creatorKey = new GroupMemberKey(user.getId(),group.getId());
         creator.setId(creatorKey);
         creator = groupMemberRepository.save(creator);
-        GroupMemberDTO creatorDTO = new GroupMemberDTO();
-        creatorDTO.setRole(creator.getRole());
-        creatorDTO.setUserId(creator.getUser().getId());
-        creatorDTO.setUsername(creator.getUser().getUsername());
-        creatorDTO.setJoinedAtFormatted(Date.from(creator.getCreated_at()).toString());
-        group.getMembers().add(creator);
-
-        GroupDTO groupDTO = groupToGroupDTO(group);
-
+        savedGroup.getMembers().add(creator);
+        GroupDTO groupDTO = groupToGroupDTO(savedGroup);
         return groupDTO;
     }
 
@@ -204,24 +190,31 @@ public class GroupService {
     private GroupDTO groupToGroupDTO(Group group){
         GroupDTO groupDTO = new GroupDTO(group.getName(),
                                          group.getId(),
-                                         Date.from(group.getCreatedAt()).toString(),
+                                         formatInstantToHTTP(group.getCreatedAt()),
                                          (List<GroupMemberDTO>) group.getMembers().stream()
                                             .map(member -> new GroupMemberDTO(
                                                 member.getUser().getUsername(),
                                                 member.getUser().getId(),
                                                 member.getRole(),
-                                                Date.from(member.getCreated_at()).toString()
+                                                formatInstantToHTTP(member.getCreated_at())
                                             ))
                                             .collect(Collectors.toList()),
                                          (List<GroupInviteDTO>) group.getInvites().stream()
                                             .map(invite -> new GroupInviteDTO(
                                                 invite.getUser().getUsername(),
                                                 invite.getUser().getId(),
-                                                Date.from(invite.getCreated_at()).toString()
+                                                formatInstantToHTTP(invite.getCreated_at())
                                             ))
                                             .collect(Collectors.toList()));
 
         return groupDTO;
+    }
+
+    private String formatInstantToHTTP(Instant instant) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+            "EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return dateFormat.format(Date.from(instant));
     }
 
 }

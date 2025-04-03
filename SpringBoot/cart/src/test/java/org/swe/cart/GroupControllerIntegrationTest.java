@@ -48,6 +48,7 @@ public class GroupControllerIntegrationTest {
     private UserRepository userRepository;
 
     @Test
+    @Rollback(true)
     public void canCreateGroupWhenLoggedIn() throws Exception{
         createAccount("Jonah", "jbl113@case.edu", "password");
         JsonNode loginResponse = login("Jonah", "password");
@@ -55,7 +56,7 @@ public class GroupControllerIntegrationTest {
         String jwt = loginResponse.get("token").asText();
         Integer userId = loginResponse.get("userId").asInt();
 
-        String createGroupJson = "{\"name\":\"NewTestGroup1\"}";
+        String createGroupJson = "{\"name\":\"Anothe\"}";
 
         ResponseEntity<String> returnedGroupResponse = restTemplate.postForEntity("/api/group/create", new HttpEntity<>(createGroupJson, getJsonHeaders(jwt)), String.class);
 
@@ -83,7 +84,37 @@ public class GroupControllerIntegrationTest {
     }
 
     @Test
-    public void canInviteUserToGroupWithValidPermissions(){
+    public void canInviteUserToGroupOnlyWithValidPermissions(){
+        //TODO
+    }
+
+    @Test
+    public void canAcceptValidInviteToGroup(){
+        //TODO
+    }
+
+    @Test
+    public void canDeclineValidInviteToGroup(){
+        //TODO
+    }
+
+    @Test
+    public void canNotInviteToGroupIfAlreadyAMember(){
+        //TODO
+    }
+
+    @Test
+    public void canRemoveUserFromGroupWithValidPermissions(){
+        //TODO
+    }
+
+    @Test
+    public void canLeaveGroupIfMember(){
+        //TODO
+    }
+
+    @Test
+    public void canDeleteGroupIfAdmin(){
         //TODO
     }
 

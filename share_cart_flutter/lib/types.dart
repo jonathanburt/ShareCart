@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 import 'package:share_cart_flutter/shop_list.dart';
 
@@ -92,6 +93,13 @@ class ShallowGroupDetails { //The system will fetch and save these details about
   final List<GroupMember> members;
   final List<GroupInvite> invites;
 
+  static ShallowGroupDetails fromJson(Map<String,dynamic> input){
+    DateTime createdAtFormatted = HttpDate.parse(input["createdAtFormatted"]);
+    List<GroupMember> inputMembers = List.from((input["members"]).map((member) => GroupMember.fromJson(member)));
+    List<GroupInvite> inputInvites = List.from((input["invites"]).map((invite) => GroupInvite.fromJson(invite)));
+    ShallowGroupDetails details = ShallowGroupDetails(input["name"], input["groupId"], createdAtFormatted, inputMembers, inputInvites);
+    return details;
+  }
 
   const ShallowGroupDetails(this.name, this.groupId, this.createdAt, this.members, this.invites);
 }
@@ -110,13 +118,25 @@ class GroupMember {
   final GroupRole role;
   final DateTime joinedAt;
 
+  static GroupMember fromJson(Map<String, dynamic> input){
+    DateTime joinedAtFormatted = HttpDate.parse(input["joinedAtFormatted"]!);
+    GroupMember member = GroupMember(input["username"], input["userId"], input["role"].toString().groupRole, joinedAtFormatted);
+    return member;
+  }
+
   const GroupMember(this.username, this.userId, this.role, this.joinedAt);
 }
 
 class GroupInvite {
   final String username;
   final int userId;
-  final String invitedAt;
+  final DateTime invitedAt;
+
+  static GroupInvite fromJson(Map<String, dynamic> input){
+    DateTime joinedAtFormatted = HttpDate.parse(input["invitedAtFormatted"]!);
+    GroupInvite invite = GroupInvite(input["username"], input["userId"], joinedAtFormatted);
+    return invite;
+  }
 
   const GroupInvite(this.username, this.userId, this.invitedAt);
 }
@@ -125,4 +145,18 @@ enum GroupRole {
   MEMBER,
   SHOPPER,
   ADMIN;
+}
+
+extension GroupRoleString on String {
+  GroupRole get groupRole {
+    switch (this) {
+      case 'MEMBER':
+        return GroupRole.MEMBER;
+      case 'SHOPPER':
+        return GroupRole.SHOPPER;
+      case 'ADMIN':
+        return GroupRole.ADMIN;
+      default: throw UnimplementedError(); //TODO figure out what to throw here
+    }
+  }
 }
