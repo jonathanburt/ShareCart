@@ -44,11 +44,13 @@ class _ListItemTileState extends State<ListItemTile> {
     return FutureBuilder<ShareCartItem?>(
       future: _itemFuture,
       builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const Text("Loading...");
+        
+        ShareCartItem item = ShareCartItem("loading...", [], 0, "", "");
+
+        if (snapshot.hasData) {
+          item = snapshot.data!;
         }
 
-        final item = snapshot.data!;
         return ListTile(
           title: Text(item.name),
           trailing: Row(

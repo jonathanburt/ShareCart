@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:share_cart_flutter/api_service.dart';
+import 'package:share_cart_flutter/app_bar.dart';
 import 'package:share_cart_flutter/list_page.dart';
 import 'package:share_cart_flutter/types.dart';
 
@@ -26,10 +27,7 @@ class _GroupPageState extends State<GroupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("${widget.group.name} Lists", style: TextStyle(color: Colors.white)),
-        backgroundColor: Theme.of(context).colorScheme.secondary,
-      ),
+      appBar: MyAppBar(Icon(Icons.people), widget.group.name),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(

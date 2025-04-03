@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:share_cart_flutter/api_service.dart';
+import 'package:share_cart_flutter/app_bar.dart';
 import 'package:share_cart_flutter/group_page.dart';
 import 'package:share_cart_flutter/types.dart';
 
@@ -22,10 +23,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Groups", style: TextStyle(color: Colors.white)),
-        backgroundColor: Theme.of(context).colorScheme.secondary,
-      ),
+      appBar: MyAppBar(Icon(Icons.home), "Home"),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
