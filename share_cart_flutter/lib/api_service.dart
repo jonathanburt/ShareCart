@@ -23,6 +23,8 @@ abstract class ApiService {
   Future<ThisUserDetails?> authenticateUser(String usernameOrEmail, String password, VoidCallback onSuccess, VoidCallback onFailure);
   Future<ThisUserDetails?> createUser(String username, String email, String password, VoidCallback onSuccess, VoidCallback onFailure);
   Future<void> logOut(VoidCallback onLogOut);
+  Future<void> leaveGroup(String groupId, VoidCallback onSuccess, Function(String) onFailure);
+  Future<List<GroupDetails>> getUserGroups();
 }
 
 class MockApiService implements ApiService {
@@ -176,6 +178,21 @@ class MockApiService implements ApiService {
   Future<void> logOut(VoidCallback onLogOut) async {
     onLogOut();
   }
+
+  @override
+  Future<void> leaveGroup(String groupId, VoidCallback onSuccess, Function(String) onFailure) async {
+    await Future.delayed(fetchDelay);
+    onSuccess();
+  }
+
+  @override
+  Future<List<GroupDetails>> getUserGroups() async {
+    await Future.delayed(fetchDelay);
+    return [
+      GroupDetails("1", "Family Group"),
+      GroupDetails("2", "Friends Group"),
+    ];
+  }
 }
 
 final ApiService apiService = MockApiService();
@@ -319,5 +336,69 @@ class RealApiService implements ApiService {
     onLogOut.call();
     return;
   }
+
+  @override
+  Future<void> leaveGroup(String groupId, VoidCallback onSuccess, Function(String) onFailure) async {
+    String? jwt = await getJWT();
+    if (jwt == null) {
+      onFailure("Not authenticated");
+      return;
+    }
+
+    var headers = baseHeaders;
+    headers["Authorization"] = "Bearer $jwt";
+
+    var response = await client.post(
+      Uri.parse('$baseUrl/api/group/$groupId/leave'),
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      onSuccess();
+    } else {
+      var errorMessage = "Failed to leave group";
+      try {
+        var responseBody = jsonDecode(response.body) as Map<String, dynamic>;
+        errorMessage = responseBody['message'] ?? errorMessage;
+      } catch (e) {
+        // Use default error message if response parsing fails
+      }
+      onFailure(errorMessage);
+    }
+  }
+
+  @override
+  Future<List<GroupDetails>> getUserGroups() async {
+    String? jwt = await getJWT();
+    if (jwt == null) {
+      return [];
+    }
+
+    var headers = baseHeaders;
+    headers["Authorization"] = "Bearer $jwt";
+
+    var response = await client.get(
+      Uri.parse('$baseUrl/api/group/user/groups'),
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      var responseBody = jsonDecode(response.body) as List;
+      return responseBody.map((group) => 
+        GroupDetails(
+          group['id'].toString(),
+          group['name'],
+        )
+      ).toList();
+    }
+    return [];
+  }
+}
+
+class GroupDetails {
+  final String id;
+  final String name;
+
+  GroupDetails(this.id, this.name);
 }
 

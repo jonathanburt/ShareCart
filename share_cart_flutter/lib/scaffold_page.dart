@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:share_cart_flutter/active_lists_page.dart';
+import 'package:share_cart_flutter/group_home.dart';
 import 'package:share_cart_flutter/groups_page.dart';
-import 'package:share_cart_flutter/lists_page.dart';
-import 'package:share_cart_flutter/shop_page.dart';
+import 'package:share_cart_flutter/search_page.dart';
+import 'package:share_cart_flutter/settings_page.dart';
 
 class ScaffoldPage extends StatefulWidget {
   @override
@@ -12,21 +14,17 @@ class _ScaffoldPageState extends State<ScaffoldPage> {
   final PageController _pageController = PageController();
   
   final List<Widget> pages = [
+    ActiveListsPage(),
     GroupsPage(),
-    ListsPage(),
-    ShopPage()
+    SearchPage(),
+    SettingsPage(),
   ];
 
   final List<String> pageTitles = [
-    "Groups",
-    "Lists",
-    "Shop"
-  ];
-
-  final List<Icon> pageIcons = [
-    Icon(Icons.group),
-    Icon(Icons.list_alt),
-    Icon(Icons.search)
+    "Home",
+    "Group",
+    "Search",
+    "Settings"
   ];
   
   int pageIndex = 0;
@@ -35,8 +33,20 @@ class _ScaffoldPageState extends State<ScaffoldPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(pageTitles[pageIndex], style: TextStyle(color: Colors.white)),
+        title: Text(pageTitles[pageIndex]), 
         backgroundColor: Theme.of(context).colorScheme.secondary,
+        actions: [
+          if (pageIndex == 0 || pageIndex == 1) // Show only on Home (list) and Group pages
+            IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SettingsPage()),
+                );
+              },
+            ),
+        ],
       ),
       body: PageView(
         controller: _pageController,
@@ -56,10 +66,12 @@ class _ScaffoldPageState extends State<ScaffoldPage> {
             curve: Curves.easeInOut,
           );
         },
-        destinations: List.generate(
-          pages.length,
-          (index) => NavigationDestination(icon: pageIcons[index], label: pageTitles[index])
-        ),
+        destinations: [
+          NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
+          NavigationDestination(icon: Icon(Icons.group), label: 'Group'),
+          NavigationDestination(icon: Icon(Icons.search), label: 'Search'),
+          NavigationDestination(icon: Icon(Icons.settings), label: 'Settings'),
+        ],
       ),
     );
   }
