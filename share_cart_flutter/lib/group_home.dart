@@ -11,14 +11,14 @@ class ListState extends ChangeNotifier {
  }
 }
 
-class ActiveListsPage extends StatefulWidget {
-  const ActiveListsPage({super.key});
+class ActiveGroupPage extends StatefulWidget {
+  const ActiveGroupPage({super.key});
 
   @override
-  State<ActiveListsPage> createState() => _ActiveListsPageState();
+  State<ActiveGroupPage> createState() => _ActiveGroupPageState();
 }
 
-class _ActiveListsPageState extends State<ActiveListsPage> {
+class _ActiveGroupPageState extends State<ActiveGroupPage> {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<ListState>();
