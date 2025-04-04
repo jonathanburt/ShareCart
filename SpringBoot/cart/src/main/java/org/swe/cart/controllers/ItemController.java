@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.swe.cart.entities.Item;
 import org.swe.cart.entities.ListItem;
+import org.swe.cart.payload.ItemDTO;
 import org.swe.cart.services.ItemService;
 import org.swe.cart.services.ListItemService;
 
@@ -35,8 +36,15 @@ public class ItemController {
         List<Item> items = itemService.getItems(groupId);
         return ResponseEntity.ok(items);
     }
+
+    @PostMapping("/create")
+    public ResponseEntity<ItemDTO> createItem(@PathVariable groupId, @RequestBody ItemCreateDTO itemCreateDTO){
+        ItemDTO item = itemService.createItem(itemCreateDTO);
+        item.setGroupId(groupId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(item);
+    }
     
-    @PostMapping("/add")
+    @PostMapping("/{listId}/add")
     public ResponseEntity<ListItem> addItem(@PathVariable Integer groupId, Integer listId, Integer itemId, Integer quantity, Boolean communal, @RequestBody String entity) {
         //TODO: process POST request
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -45,6 +53,7 @@ public class ItemController {
         return ResponseEntity.status(HttpStatus.CREATED).body(item);
         
     }
+
 
     @PutMapping("/{itemId}/update")
     public ResponseEntity<Item> updateItem(@PathVariable Integer itemId, @PathVariable Integer groupId, String name, String description, String category, Float price, @RequestBody String entity) {
