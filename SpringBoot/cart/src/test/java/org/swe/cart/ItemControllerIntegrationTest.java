@@ -45,7 +45,7 @@ public class ItemControllerIntegrationTest {
     @Test
     public void cannotCreateItemWhenGroupIdIsNull() throws Exception{
         String createGroupJson = "{\"name\":\"test100\"}";
-        //String jwt = loginResponse.get("token").asText();
+        String jwt = loginResponse.get("token").asText();
         ResponseEntity<String> returnedGroupResponse = restTemplate.postForEntity("/api/group/create", new HttpEntity<>(createGroupJson, getJsonHeaders(jwt)), String.class);
 
         assertThat(returnedGroupResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);

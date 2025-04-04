@@ -81,13 +81,14 @@ public class UserControllerIntegrationTest {
         String jsonBody2 = String.format("{\"username\": \"%s\", \"password\": \"password\"}", username);
 
         ResponseEntity<String> response2 = restTemplate.exchange("/api/auth/signin",
-                HttpMethod.GET,
+                HttpMethod.POST,
                 new HttpEntity<>(jsonBody2, getJsonHeaders()),
                 String.class);
 
         assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         String responseString = response2.getBody();
+        System.out.println(responseString);
         JsonNode jsonNode = objectMapper.readTree(responseString);
         String token = jsonNode.get("token").asText();
         Integer userId = jsonNode.get("userId").asInt();

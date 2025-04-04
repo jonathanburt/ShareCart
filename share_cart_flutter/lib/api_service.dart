@@ -14,6 +14,7 @@ abstract class ApiService {
   Future<ShareCartStore?> fetchStore(String storeId);
   Future<List<ShareCartList>> fetchLists();
   Future<ShareCartList?> fetchList(String listId);
+  Future<List<ShareCartListItem>?> fetchListItems(String listId);
   Future<List<ShareCartGroup>> fetchGroups();
   Future<ShareCartGroup?> fetchGroup(String groupId);
 
@@ -23,6 +24,8 @@ abstract class ApiService {
   Future<ThisUserDetails?> authenticateUser(String usernameOrEmail, String password, VoidCallback onSuccess, VoidCallback onFailure);
   Future<ThisUserDetails?> createUser(String username, String email, String password, VoidCallback onSuccess, VoidCallback onFailure);
   Future<void> logOut(VoidCallback onLogOut);
+  Future<void> leaveGroup(String groupId, VoidCallback onSuccess, Function(String) onFailure);
+  Future<List<GroupDetails>> getUserGroups();
 }
 
 class MockApiService implements ApiService {
@@ -78,6 +81,18 @@ class MockApiService implements ApiService {
     ShareCartList("Game Night Food", "6750c0db-8c25-4d98-9eff-9c6db9a6117b", "6aeff571-b270-4878-b8f0-1a48f1018bd5"),
   ];
 
+  final List<ShareCartListItem> listItems = [
+    ShareCartListItem("b1b1343b-9b4c-4cc7-a29b-dbc782a667c8", "5610f089-c34e-4206-ba8e-b6031f28bc9d", "none", false, 1),
+    ShareCartListItem("ab8f4a7c-2bff-47a7-8d8e-5504f6d5d413", "5610f089-c34e-4206-ba8e-b6031f28bc9d", "none", true, 5),
+    ShareCartListItem("f63ef020-ff45-4ef3-9c40-577a93c7ec7b", "5610f089-c34e-4206-ba8e-b6031f28bc9d", "none", false, 2),
+    ShareCartListItem("6412fd55-ddd9-41e2-9abb-ba7d81a25bcb", "3e234a6e-2489-4917-9c9d-f3bc9d1d5a77", "none", true, 1),
+    ShareCartListItem("220ec65a-cb0d-4558-b3af-0dc2c4d75ec4", "3e234a6e-2489-4917-9c9d-f3bc9d1d5a77", "none", false, 2),
+    ShareCartListItem("b7b9601e-ab6c-4bcc-93ac-949af9134da4", "3e234a6e-2489-4917-9c9d-f3bc9d1d5a77", "none", false, 1),
+    ShareCartListItem("b8b9a326-6eda-4c80-b9ba-350a6e8438ec", "6750c0db-8c25-4d98-9eff-9c6db9a6117b", "none", true, 3),
+    ShareCartListItem("894eccb6-1dd2-49c5-91e8-f031b2373351", "6750c0db-8c25-4d98-9eff-9c6db9a6117b", "none", false, 2),
+    ShareCartListItem("e97393d9-7175-418b-bdad-a9c4df0b761c", "6750c0db-8c25-4d98-9eff-9c6db9a6117b", "none", false, 4),
+  ];
+
   final List<ShareCartGroup> groups = [
     ShareCartGroup("Family Group", "459d5970-16c6-4a6a-9feb-c5619c76cc47"),
   ];
@@ -85,6 +100,7 @@ class MockApiService implements ApiService {
   bool itemsCached = false;
   bool storesCached = false;
   bool listsCached = false;
+  bool listItemsCached = false;
   bool groupsCached = false;
   Duration fetchDelay = Duration(milliseconds: 500);
 
@@ -134,6 +150,15 @@ class MockApiService implements ApiService {
   }
 
   @override
+  Future<List<ShareCartListItem>?> fetchListItems(String listId) async {
+    if (!listItemsCached) {
+      await Future.delayed(fetchDelay);
+      listItemsCached = true;
+    }
+    return listItems.where((listItem) => listItem.listId == listId).toList();
+  }
+
+  @override
   Future<List<ShareCartGroup>> fetchGroups() async {
     if (!groupsCached) {
       await Future.delayed(fetchDelay);
@@ -175,6 +200,21 @@ class MockApiService implements ApiService {
   @override
   Future<void> logOut(VoidCallback onLogOut) async {
     onLogOut();
+  }
+
+  @override
+  Future<void> leaveGroup(String groupId, VoidCallback onSuccess, Function(String) onFailure) async {
+    await Future.delayed(fetchDelay);
+    onSuccess();
+  }
+
+  @override
+  Future<List<GroupDetails>> getUserGroups() async {
+    await Future.delayed(fetchDelay);
+    return [
+      GroupDetails("1", "Family Group"),
+      GroupDetails("2", "Friends Group"),
+    ];
   }
 }
 
@@ -262,6 +302,7 @@ class RealApiService implements ApiService {
   @override
   Future<DeepGroupDetails?> fetchGroupDeep(int groupId) {
     // TODO: implement fetchGroupDeep
+    
     throw UnimplementedError();
   }
 
@@ -302,6 +343,12 @@ class RealApiService implements ApiService {
   }
 
   @override
+  Future<List<ShareCartListItem>?> fetchListItems(String listId) async {
+    // TODO: implement fetchListItems
+    throw UnimplementedError();
+  }
+
+  @override
   Future<List<ShareCartGroup>> fetchGroups() async {
     // TODO: implement fetchGroups
     throw UnimplementedError();
@@ -319,5 +366,69 @@ class RealApiService implements ApiService {
     onLogOut.call();
     return;
   }
+
+  @override
+  Future<void> leaveGroup(String groupId, VoidCallback onSuccess, Function(String) onFailure) async {
+    String? jwt = await getJWT();
+    if (jwt == null) {
+      onFailure("Not authenticated");
+      return;
+    }
+
+    var headers = baseHeaders;
+    headers["Authorization"] = "Bearer $jwt";
+
+    var response = await client.post(
+      Uri.parse('$baseUrl/api/group/$groupId/leave'),
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      onSuccess();
+    } else {
+      var errorMessage = "Failed to leave group";
+      try {
+        var responseBody = jsonDecode(response.body) as Map<String, dynamic>;
+        errorMessage = responseBody['message'] ?? errorMessage;
+      } catch (e) {
+        // Use default error message if response parsing fails
+      }
+      onFailure(errorMessage);
+    }
+  }
+
+  @override
+  Future<List<GroupDetails>> getUserGroups() async {
+    String? jwt = await getJWT();
+    if (jwt == null) {
+      return [];
+    }
+
+    var headers = baseHeaders;
+    headers["Authorization"] = "Bearer $jwt";
+
+    var response = await client.get(
+      Uri.parse('$baseUrl/api/group/user/groups'),
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      var responseBody = jsonDecode(response.body) as List;
+      return responseBody.map((group) => 
+        GroupDetails(
+          group['id'].toString(),
+          group['name'],
+        )
+      ).toList();
+    }
+    return [];
+  }
+}
+
+class GroupDetails {
+  final String id;
+  final String name;
+
+  GroupDetails(this.id, this.name);
 }
 
