@@ -262,6 +262,7 @@ class RealApiService implements ApiService {
   @override
   Future<DeepGroupDetails?> fetchGroupDeep(int groupId) {
     // TODO: implement fetchGroupDeep
+    
     throw UnimplementedError();
   }
 
