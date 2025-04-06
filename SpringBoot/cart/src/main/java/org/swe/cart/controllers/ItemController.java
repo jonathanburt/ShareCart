@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.swe.cart.entities.Item;
 import org.swe.cart.entities.ListItem;
+import org.swe.cart.payload.ItemCreateDTO;
 import org.swe.cart.payload.ItemDTO;
 import org.swe.cart.services.ItemService;
 import org.swe.cart.services.ListItemService;
@@ -27,7 +28,6 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping(path="/api/group/{groupId}/item")
 @RequiredArgsConstructor
 public class ItemController {
-
     private final ItemService itemService;
     private final ListItemService listItemService;
     
@@ -38,7 +38,7 @@ public class ItemController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ItemDTO> createItem(@PathVariable groupId, @RequestBody ItemCreateDTO itemCreateDTO){
+    public ResponseEntity<ItemDTO> createItem(@PathVariable Integer groupId, @RequestBody ItemCreateDTO itemCreateDTO){
         ItemDTO item = itemService.createItem(itemCreateDTO);
         item.setGroupId(groupId);
         return ResponseEntity.status(HttpStatus.CREATED).body(item);
