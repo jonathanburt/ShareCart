@@ -1,5 +1,8 @@
 package org.swe.cart.controllers;
 
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,11 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.swe.cart.entities.ShopList;
 import org.swe.cart.payload.ListCreateDTO;
+import org.swe.cart.payload.ShopListDTO;
 import org.swe.cart.services.ListService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -25,8 +28,12 @@ public class ListController {
     private final ListService listService;
 
     @GetMapping("/getall")
-    public String getAllLists(@PathVariable Integer groupId) {
-        return new String();
+    public ResponseEntity<List<ShopListDTO>> getAllLists(@PathVariable Integer groupId) {
+        try {
+            return ResponseEntity.ok(listService.getAllLists(groupId));
+        } catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
     
 

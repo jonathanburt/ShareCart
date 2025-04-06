@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:math';
-import 'package:share_cart_flutter/shop_list.dart';
 
 class Location {
   final String address;
@@ -30,7 +29,7 @@ class Location {
 }
 
 class ShareCartStore {
-  final String id;
+  final int id;
   
   final String name;
   final Location location;
@@ -39,42 +38,66 @@ class ShareCartStore {
 }
 
 class ShareCartItem {
-  final String id;
-  final String storeId;
+  final int id;
   
   final String name;
-  final List<String> keywords;
+  final String description;
   final double price;
+  final String category;
+  final DateTime createdAt;
 
-  const ShareCartItem(this.name, this.keywords, this.price, this.id, this.storeId);
+  factory ShareCartItem.fromJson(Map<String, dynamic> input){
+    DateTime createdAt = HttpDate.parse(input["createdAtFormatted"]);
+    return ShareCartItem(input["name"], input["description"], input["category"], input["price"], input["itemId"], createdAt); //TODO make sure this matches ItemDTO
+  }
+
+  const ShareCartItem(this.name, this.description,  this.category, this.price, this.id, this.createdAt);
 }
 
 class ShareCartList {
-  final String id;
-  final String groupId;
+  final int id; 
+  final int groupId;
+  final DateTime createdAt;
+
+  List<ShareCartListItem> items = [];
 
   String name;
 
-  ShareCartList(this.name, this.id, this.groupId);
+  factory ShareCartList.fromJson(Map<String, dynamic> input){
+    DateTime createdAt = HttpDate.parse(input["createdAt"]);
+    List<ShareCartListItem> listItems = List.from((input["items"].map((item) => ShareCartListItem.fromJson(item))));
+    return ShareCartList.all(input["name"], input["listId"], input["groupId"], createdAt, listItems);
+  }
+
+  ShareCartList(this.name, this.id, this.groupId, this.createdAt);
+  ShareCartList.all(this.name, this.id, this.groupId, this.createdAt, this.items);
 }
 
 class ShareCartListItem {
-  final String itemId;
-  final String listId;
-  final String userId;
+  final int itemId;
+  final int listId;
+  final int? userId;
+  final DateTime createdAt;
 
   bool communal;
   int quantity;
 
-  ShareCartListItem(this.itemId, this.listId, this.userId, this.communal, this.quantity);
+  factory ShareCartListItem.fromJson(Map<String, dynamic> input){
+    DateTime createdAt = HttpDate.parse(input["createdAt"]);
+    return ShareCartListItem(input["itemId"], input["listId"], input["userId"], input["communal"], input["quantity"], createdAt);
+  }
+
+  ShareCartListItem(this.itemId, this.listId, this.userId, this.communal, this.quantity, this.createdAt);
 }
 
 class ShareCartGroup {
-  final String id;
-  
-  String name;
+  final int id;
+  final String name;
+  final DateTime createdAt;
+  final GroupRole role;
 
-  ShareCartGroup(this.name, this.id);
+
+  ShareCartGroup(this.name, this.id, this.role, this.createdAt);
 }
 
 class ThisUserDetails {
@@ -93,7 +116,7 @@ class ShallowGroupDetails { //The system will fetch and save these details about
   final List<GroupMember> members;
   final List<GroupInvite> invites;
 
-  static ShallowGroupDetails fromJson(Map<String,dynamic> input){
+  factory ShallowGroupDetails.fromJson(Map<String,dynamic> input){
     DateTime createdAtFormatted = HttpDate.parse(input["createdAtFormatted"]);
     List<GroupMember> inputMembers = List.from((input["members"]).map((member) => GroupMember.fromJson(member)));
     List<GroupInvite> inputInvites = List.from((input["invites"]).map((invite) => GroupInvite.fromJson(invite)));
@@ -104,13 +127,7 @@ class ShallowGroupDetails { //The system will fetch and save these details about
   const ShallowGroupDetails(this.name, this.groupId, this.createdAt, this.members, this.invites);
 }
 
-class DeepGroupDetails { //The system will only fetch the additional details of a group when that group is selected
-  final ShallowGroupDetails shallowDetails;
-  final List<ShopList> lists;
-  final List<ShareCartItem> items;
-
-  const DeepGroupDetails(this.shallowDetails, this.lists, this.items);
-}
+typedef GroupReturn = ({ShareCartGroup group, List<GroupMember> members, List<GroupInvite> invites});
 
 class GroupMember {
   final String username;
@@ -118,7 +135,7 @@ class GroupMember {
   final GroupRole role;
   final DateTime joinedAt;
 
-  static GroupMember fromJson(Map<String, dynamic> input){
+  factory GroupMember.fromJson(Map<String, dynamic> input){
     DateTime joinedAtFormatted = HttpDate.parse(input["joinedAtFormatted"]!);
     GroupMember member = GroupMember(input["username"], input["userId"], input["role"].toString().groupRole, joinedAtFormatted);
     return member;
@@ -132,7 +149,7 @@ class GroupInvite {
   final int userId;
   final DateTime invitedAt;
 
-  static GroupInvite fromJson(Map<String, dynamic> input){
+  factory GroupInvite.fromJson(Map<String, dynamic> input){
     DateTime joinedAtFormatted = HttpDate.parse(input["invitedAtFormatted"]!);
     GroupInvite invite = GroupInvite(input["username"], input["userId"], joinedAtFormatted);
     return invite;
