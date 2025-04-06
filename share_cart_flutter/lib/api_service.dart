@@ -7,11 +7,11 @@ import 'package:share_cart_flutter/types.dart';
 import 'package:http/http.dart' as http;
 
 abstract class ApiService {
-  Future<List<ShareCartItem>> fetchItems(int groupId);
+  Future<Map<int, ShareCartItem>> fetchItems(int groupId);
   Future<ShareCartItem?> fetchItem(int itemId);
   Future<List<ShareCartStore>> fetchStores();
   Future<ShareCartStore?> fetchStore(int storeId);
-  Future<List<ShareCartList>> fetchLists(int groupId);
+  Future<Map<int, ShareCartList>> fetchLists(int groupId);
   Future<ShareCartList?> fetchList(int listId);
   Future<List<ShareCartListItem>?> fetchListItems(int listId);
   Future<List<GroupReturn>> fetchGroups();
@@ -266,54 +266,14 @@ class RealApiService implements ApiService {
   }
 
   @override
-  Future<List<ShallowGroupDetails>> fetchAllGroups() async { //TODO create a test to ensure this works
-    String jwt = await getJWT();
-    var headers = baseHeaders;
-    headers["Authorization"] = "Bearer $jwt";
-    var response = await client.get(Uri.parse('$baseUrl/api/group/get/all'),
-      headers: headers,
-    );
-
-    if (response.statusCode == 200) {
-      Iterable responseBody = jsonDecode(response.body);
-      return List.from(responseBody.map((model) => ShallowGroupDetails.fromJson(model)));
-    }
-
-    print("call failed ${response.statusCode}");
-    // TODO: implement fail-state
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<DeepGroupDetails?> fetchGroupDeep(int groupId) async {
-    String jwt = await getJWT();
-    var headers = baseHeaders;
-    headers["Authorization"] = "Bearer $jwt";
-    var response = await client.get(Uri.parse('$baseUrl/api/group/get/$groupId'),
-      headers: headers,
-    );
-
-    if (response.statusCode == 200) {
-      List<ShareCartList> lists = await fetchLists(groupId);
-      List<ShareCartItem> items = await fetchItems(groupId);
-      ShallowGroupDetails shallowDetails = ShallowGroupDetails.fromJson(jsonDecode(response.body));
-      return DeepGroupDetails(shallowDetails, lists, items);
-    }
-    
-    // TODO: implement fetchGroupDeep
-    
-    throw UnimplementedError();
-  }
-
-  @override
   Future<ShareCartItem?> fetchItem(int itemId) {
     // TODO: implement fetchItem
     throw UnimplementedError();
   }
 
   @override
-  Future<List<ShareCartItem>> fetchItems(int groupId) async {
-    String jwt = (await getJWT())!;
+  Future<Map<int, ShareCartItem>> fetchItems(int groupId) async {
+    String jwt = await getJWT();
     var headers = baseHeaders;
     headers["Authorization"] = "Bearer $jwt";
 
@@ -321,7 +281,7 @@ class RealApiService implements ApiService {
 
     if(itemsResponse.statusCode == 200){
       Iterable jsonResponse = jsonDecode(itemsResponse.body);
-      return List.from(jsonResponse.map((item) => ShareCartItem.fromJson(item)));
+      return <int, ShareCartItem>{for (var item in jsonResponse) item["listId"]: ShareCartItem.fromJson(item)};
     }
     // TODO: implement fetchItems
     throw UnimplementedError();
@@ -340,8 +300,8 @@ class RealApiService implements ApiService {
   }
 
   @override
-  Future<List<ShareCartList>> fetchLists(int groupId) async {
-    String jwt = (await getJWT())!;
+  Future<Map<int, ShareCartList>> fetchLists(int groupId) async {
+    String jwt = await getJWT();
     var headers = baseHeaders;
     headers["Authorization"] = "Bearer $jwt";
 
@@ -349,7 +309,7 @@ class RealApiService implements ApiService {
 
     if(response.statusCode == 200){
       Iterable responseBody = jsonDecode(response.body);
-      return List.from(responseBody.map((list) => ShareCartList.fromJson(list)));
+      return <int, ShareCartList>{for (var list in responseBody) list["listId"]: ShareCartList.fromJson(list)};
     }
 
     // TODO: implement fetchLists fail state
@@ -369,7 +329,7 @@ class RealApiService implements ApiService {
   }
 
   @override
-  Future<List<ShareCartGroup>> fetchGroups() async {
+  Future<List<GroupReturn>> fetchGroups() async {
     // TODO: implement fetchGroups
     throw UnimplementedError();
   }
@@ -389,11 +349,7 @@ class RealApiService implements ApiService {
 
   @override
   Future<void> leaveGroup(String groupId, VoidCallback onSuccess, Function(String) onFailure) async {
-    String? jwt = await getJWT();
-    if (jwt == null) {
-      onFailure("Not authenticated");
-      return;
-    }
+    String jwt = await getJWT();
 
     var headers = baseHeaders;
     headers["Authorization"] = "Bearer $jwt";
@@ -415,33 +371,6 @@ class RealApiService implements ApiService {
       }
       onFailure(errorMessage);
     }
-  }
-
-  @override
-  Future<List<GroupDetails>> getUserGroups() async { //TODO depracated
-    String? jwt = await getJWT();
-    if (jwt == null) {
-      return [];
-    }
-
-    var headers = baseHeaders;
-    headers["Authorization"] = "Bearer $jwt";
-
-    var response = await client.get(
-      Uri.parse('$baseUrl/api/group/user/groups'),
-      headers: headers,
-    );
-
-    if (response.statusCode == 200) {
-      var responseBody = jsonDecode(response.body) as List;
-      return responseBody.map((group) => 
-        GroupDetails(
-          group['id'].toString(),
-          group['name'],
-        )
-      ).toList();
-    }
-    return [];
   }
 }
 

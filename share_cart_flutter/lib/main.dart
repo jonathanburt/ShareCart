@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider( //TODO change to MultiProvider
+    return ChangeNotifierProvider(
       create: (context) => ListState(),
       child: MaterialApp(
         title: 'ShareCart',
@@ -39,19 +39,19 @@ class GroupProvider extends ChangeNotifier { //This may be a bit chunky as far a
   List<ShareCartGroup> get groups => _groups;
   set blockGroupRefresh(bool blockGroupRefresh) => _blockGroupRefresh = blockGroupRefresh; //We may want to prevent groups from refreshing if it messes up the widget tree
 
-  Map<int, List<GroupMember>> _memberLists = {};
-  Map<int, List<GroupInvite>> _inviteLists = {};
+  Map<int /*groupId*/, List<GroupMember>> _memberLists = {};
+  Map<int /*groupId*/, List<GroupInvite>> _inviteLists = {};
   Map<int, List<GroupMember>> get memberLists => _memberLists;
   Map<int, List<GroupInvite>> get inviteLists => _inviteLists;
   
-  Map<int, List<ShareCartItem>> _groupItems = {};
-  Map<int, List<ShareCartList>> _groupLists = {};
+  Map<int /*groupId*/, Map<int /*itemId*/, ShareCartItem>> _groupItems = {};
+  Map<int /*groupId*/, Map<int /*listId*/, ShareCartList>> _groupLists = {};
   Map<int, DateTime?> _lastTimeFetchedItems = {};
   Map<int, DateTime?> _lastTimeFetchedLists = {};
   Map<int, bool> blockItemsRefresh = {};
   Map<int, bool> blockListsRefresh = {};
-  Map<int, List<ShareCartItem>> get groupItems => _groupItems;
-  Map<int, List<ShareCartList>> get groupLists => _groupLists;
+  Map<int, Map<int, ShareCartItem>> get groupItems => _groupItems;
+  Map<int, Map<int, ShareCartList>> get groupLists => _groupLists;
 
   bool get shouldRefreshGroups {
     if(_lastTimeFetchedGroups == null) true;
@@ -92,7 +92,7 @@ class GroupProvider extends ChangeNotifier { //This may be a bit chunky as far a
   Future<void> loadGroupLists({required int groupId, bool forceRefresh = false}) async {
     if(!_getShouldRefreshGroupsLists(groupId) && !forceRefresh) return;
 
-    List<ShareCartList> lists = await apiService.fetchLists(groupId);
+    Map<int, ShareCartList> lists = await apiService.fetchLists(groupId);
     _groupLists[groupId] = lists;
     _lastTimeFetchedLists[groupId] = DateTime.now();
     notifyListeners();
@@ -101,9 +101,23 @@ class GroupProvider extends ChangeNotifier { //This may be a bit chunky as far a
   Future<void> loadGroupItems({required int groupId, bool forceRefresh = false}) async {
     if(!_getShouldRefreshGroupsItems(groupId) && !forceRefresh) return;
 
-    List<ShareCartItem> items = await apiService.fetchItems(groupId);
+    Map<int, ShareCartItem> items = await apiService.fetchItems(groupId);
     _groupItems[groupId] = items;
     _lastTimeFetchedItems[groupId] = DateTime.now();
+    notifyListeners();
+  }
+
+  Future<void> refreshList(int groupId, int listId) async {
+    ShareCartList? list = await apiService.fetchList(listId);
+    if(list == null) throw UnimplementedError();
+    _groupLists[groupId]![listId] = list;
+    notifyListeners();
+  }
+
+  Future<void> refreshItem(int groupId, int itemId) async {
+    ShareCartItem? item = await apiService.fetchItem(itemId);
+    if(item == null) throw UnimplementedError();
+    _groupItems[groupId]![itemId] = item;
     notifyListeners();
   }
 }
