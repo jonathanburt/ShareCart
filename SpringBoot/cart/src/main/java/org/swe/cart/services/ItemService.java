@@ -1,12 +1,17 @@
 package org.swe.cart.services;
 
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.swe.cart.entities.Group;
 import org.swe.cart.entities.Item;
+import org.swe.cart.exceptions.GroupMismatchException;
+import org.swe.cart.payload.ItemDTO;
 import org.swe.cart.repositories.GroupRepository;
 import org.swe.cart.repositories.ItemRepository;
 import org.swe.cart.repositories.ListItemRepository;
@@ -29,7 +34,7 @@ public class ItemService {
         return itemRepository.findByGroup(group);
     }
 
-    public Item createItem(String name, String description, String category, Float price, Integer groupId){
+    public ItemDTO createItem(String name, String description, String category, Float price, Integer groupId){
         Group group = groupRepository.findById(groupId).orElseThrow();
         Item item = new Item();
         item.setName(name);
@@ -38,36 +43,50 @@ public class ItemService {
         item.setPrice(price);
         item.setGroup(group);
         item = itemRepository.save(item);
-        return item;
+        ItemDTO itemDTO = itemToItemDTO(item);
+        return itemDTO;
 
+    }
+
+    private String formatInstantToHTTP(Instant instant) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+            "EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return dateFormat.format(Date.from(instant));
+    }
+
+    private ItemDTO itemToItemDTO(Item item){
+        ItemDTO itemDTO = new ItemDTO(item.getId(), item.getName(), item.getDescription(), item.getCategory(), 
+                        item.getPrice(), item.getGroup(), formatInstantToHTTP(item.getCreatedAt()));
+        return itemDTO;
     }
 
     
 
-    public ResponseEntity<Item> updateItem(Integer itemId, Integer groupId, String name, String description, String category, Float price){
+    public ItemDTO updateItem(Integer itemId, Integer groupId, String name, String description, String category, Float price) throws GroupMismatchException{
         Group group = groupRepository.findById(groupId).orElseThrow();
         Item item = itemRepository.findByIdAndGroup(itemId, group).orElseThrow();
-        if(!groupId.equals(item.getId())){
-            return new ResponseEntity<Item>(item, HttpStatus.BAD_REQUEST);
+        if(!group.equals(item.getGroup())){
+            throw new GroupMismatchException("Group and Item do not match");
         }
         item.setName(name);
         item.setDescription(description);
         item.setCategory(category);
         item.setPrice(price);
         item = itemRepository.save(item);
-        return new ResponseEntity<>(item, HttpStatus.OK);
+        return itemToItemDTO(item);
     }
 
     
 
-    public ResponseEntity<Item> deleteItem(Integer itemId, Integer groupId){
+    public String deleteItem(Integer itemId, Integer groupId) throws GroupMismatchException{
         Group group = groupRepository.findById(groupId).orElseThrow();
         Item item = itemRepository.findByIdAndGroup(itemId, group).orElseThrow();
-        if(!groupId.equals(item.getId())){
-            return new ResponseEntity<Item>(item, HttpStatus.BAD_REQUEST);
+        if(!group.equals(item.getGroup())){
+            throw new GroupMismatchException("Group and Item do not match");
         }
         itemRepository.deleteById(itemId);
-        return new ResponseEntity<>(item, HttpStatus.OK);
+        return "Item deleted";
     }
 
     

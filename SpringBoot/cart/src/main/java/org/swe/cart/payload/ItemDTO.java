@@ -1,18 +1,23 @@
 package org.swe.cart.payload;
 
+import org.swe.cart.entities.Group;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
+//@NoArgsConstructor
 public class ItemDTO {
-    private String name;
-    private Integer groupId;
-    private String createdAtFormatted;
-    private String category;
-    private String description;
-    private Integer price;
     private Integer itemId;
+    private String name;
+    private String description;
+    private String category;
+    private Float price;
+    private Group group;
+    private String createdAtFormatted;
+    
+    
+    
+    
 }
