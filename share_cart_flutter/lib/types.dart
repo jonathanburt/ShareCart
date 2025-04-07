@@ -66,11 +66,10 @@ class ShareCartList {
   factory ShareCartList.fromJson(Map<String, dynamic> input){
     DateTime createdAt = HttpDate.parse(input["createdAt"]);
     List<ShareCartListItem> listItems = List.from((input["items"].map((item) => ShareCartListItem.fromJson(item))));
-    return ShareCartList.all(input["name"], input["listId"], input["groupId"], createdAt, listItems);
+    return ShareCartList(input["name"], input["listId"], input["groupId"], createdAt, listItems);
   }
 
-  ShareCartList(this.name, this.id, this.groupId, this.createdAt);
-  ShareCartList.all(this.name, this.id, this.groupId, this.createdAt, this.items);
+  ShareCartList(this.name, this.id, this.groupId, this.createdAt, this.items);
 }
 
 class ShareCartListItem {
@@ -96,6 +95,11 @@ class ShareCartGroup {
   final DateTime createdAt;
   final GroupRole role;
 
+  factory ShareCartGroup.fromJson(Map<String, dynamic> input, GroupRole role){
+    DateTime createdAt = HttpDate.parse(input["createdAtFormatted"]);
+    return ShareCartGroup(input["name"], input["groupId"], role, createdAt);
+  }
+
 
   ShareCartGroup(this.name, this.id, this.role, this.createdAt);
 }
@@ -109,24 +113,6 @@ class ThisUserDetails {
   const ThisUserDetails(this.username, this.email, this.userId, this.createdAt);
 }
 
-class ShallowGroupDetails { //The system will fetch and save these details about all groups the user is a member of
-  final String name;
-  final int groupId;
-  final DateTime createdAt;
-  final List<GroupMember> members;
-  final List<GroupInvite> invites;
-
-  factory ShallowGroupDetails.fromJson(Map<String,dynamic> input){
-    DateTime createdAtFormatted = HttpDate.parse(input["createdAtFormatted"]);
-    List<GroupMember> inputMembers = List.from((input["members"]).map((member) => GroupMember.fromJson(member)));
-    List<GroupInvite> inputInvites = List.from((input["invites"]).map((invite) => GroupInvite.fromJson(invite)));
-    ShallowGroupDetails details = ShallowGroupDetails(input["name"], input["groupId"], createdAtFormatted, inputMembers, inputInvites);
-    return details;
-  }
-
-  const ShallowGroupDetails(this.name, this.groupId, this.createdAt, this.members, this.invites);
-}
-
 typedef GroupReturn = ({ShareCartGroup group, List<GroupMember> members, List<GroupInvite> invites});
 
 class GroupMember {
@@ -136,7 +122,7 @@ class GroupMember {
   final DateTime joinedAt;
 
   factory GroupMember.fromJson(Map<String, dynamic> input){
-    DateTime joinedAtFormatted = HttpDate.parse(input["joinedAtFormatted"]!);
+    DateTime joinedAtFormatted = HttpDate.parse(input["joinedAtFormatted"]);
     GroupMember member = GroupMember(input["username"], input["userId"], input["role"].toString().groupRole, joinedAtFormatted);
     return member;
   }
@@ -150,7 +136,7 @@ class GroupInvite {
   final DateTime invitedAt;
 
   factory GroupInvite.fromJson(Map<String, dynamic> input){
-    DateTime joinedAtFormatted = HttpDate.parse(input["invitedAtFormatted"]!);
+    DateTime joinedAtFormatted = HttpDate.parse(input["invitedAtFormatted"]);
     GroupInvite invite = GroupInvite(input["username"], input["userId"], joinedAtFormatted);
     return invite;
   }

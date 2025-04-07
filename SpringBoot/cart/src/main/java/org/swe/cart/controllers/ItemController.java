@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.swe.cart.entities.Item;
 import org.swe.cart.entities.ListItem;
+import org.swe.cart.payload.AddItemToListDTO;
 import org.swe.cart.payload.ItemCreateDTO;
 import org.swe.cart.payload.ItemDTO;
 import org.swe.cart.services.ItemService;
@@ -44,11 +45,11 @@ public class ItemController {
         return ResponseEntity.status(HttpStatus.CREATED).body(item);
     }
     
-    @PostMapping("/{listId}/add")
-    public ResponseEntity<ListItem> addItem(@PathVariable Integer groupId, Integer listId, Integer itemId, Integer quantity, Boolean communal, @RequestBody String entity) {
+    @PostMapping("/{listId}/addItem")
+    public ResponseEntity<ListItem> addItemToList(@PathVariable Integer groupId,@PathVariable Integer listId, @RequestBody AddItemToListDTO addItemToListDTO) {
         //TODO: process POST request
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        ListItem item = listItemService.addItemToList(groupId, listId, itemId, quantity, communal);
+        ListItem item = listItemService.addItemToList(groupId, listId, addItemToListDTO.getItemId(), addItemToListDTO.getQuantity(), addItemToListDTO.getCommunal());
         if(item == null) return new ResponseEntity<>(null, HttpStatus.CONFLICT);
         return ResponseEntity.status(HttpStatus.CREATED).body(item);
         
