@@ -24,7 +24,7 @@ import org.swe.cart.exceptions.UserAlreadyInvitedToGroupException;
 import org.swe.cart.exceptions.UserNotInvitedToGroupException;
 import org.swe.cart.payload.GroupCreateDTO;
 import org.swe.cart.payload.GroupDTO;
-import org.swe.cart.payload.GroupInviteDTO;
+import org.swe.cart.payload.GroupInviteDTO1;
 import org.swe.cart.payload.GroupMemberDTO;
 import org.swe.cart.repositories.GroupInviteRepository;
 import org.swe.cart.repositories.GroupMemberRepository;
@@ -59,8 +59,8 @@ public class GroupService {
                     formatInstantToHTTP(member.getCreated_at())
                 ))
                 .collect(Collectors.toList()),
-            (List<GroupInviteDTO>) group.getInvites().stream()
-                .map(invite -> new GroupInviteDTO(
+            (List<GroupInviteDTO1>) group.getInvites().stream()
+                .map(invite -> new GroupInviteDTO1(
                     invite.getUser().getUsername(),
                     invite.getUser().getId(),
                     formatInstantToHTTP(invite.getCreated_at())
@@ -199,8 +199,8 @@ public class GroupService {
                                                 formatInstantToHTTP(member.getCreated_at())
                                             ))
                                             .collect(Collectors.toList()),
-                                         (List<GroupInviteDTO>) group.getInvites().stream()
-                                            .map(invite -> new GroupInviteDTO(
+                                         (List<GroupInviteDTO1>) group.getInvites().stream()
+                                            .map(invite -> new GroupInviteDTO1(
                                                 invite.getUser().getUsername(),
                                                 invite.getUser().getId(),
                                                 formatInstantToHTTP(invite.getCreated_at())

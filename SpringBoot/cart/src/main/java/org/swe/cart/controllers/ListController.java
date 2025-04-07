@@ -28,6 +28,7 @@ public class ListController {
     private final ListService listService;
 
     @GetMapping("/getall")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId) or hasAuthority('ROLE_MEMBER_GROUP_' + #groupId)")
     public ResponseEntity<List<ShopListDTO>> getAllLists(@PathVariable Integer groupId) {
         try {
             return ResponseEntity.ok(listService.getAllLists(groupId));
@@ -35,8 +36,17 @@ public class ListController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-    
 
+    @GetMapping("/{listId}/get")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId) or hasAuthority('ROLE_MEMBER_GROUP_' + #groupId)")
+    public ResponseEntity<ShopListDTO> getList(@PathVariable Integer groupId, @PathVariable Integer listId) {
+        try {
+            return ResponseEntity.ok(listService.getList(listId));
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+    
     @PostMapping("/add")
     @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId)")
     public ResponseEntity<ShopList> addListToGroup(@PathVariable Integer groupId,

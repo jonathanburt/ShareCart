@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GroupInviteDTO {
+public class GroupInviteDTO1 {
     private String username;
     private Integer userId;
     private String invitedAtFormatted;

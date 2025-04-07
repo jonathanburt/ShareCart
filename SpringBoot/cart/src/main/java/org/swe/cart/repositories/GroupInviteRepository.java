@@ -1,5 +1,6 @@
 package org.swe.cart.repositories;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,4 +15,5 @@ public interface GroupInviteRepository extends JpaRepository<GroupInvite, GroupI
     Optional<GroupInvite> findByUserAndGroup(User user, Group group);
     GroupInviteKey deleteByUserAndGroup(User user, Group group);
     Boolean existsByUserAndGroup(User user, Group group);
+    List<GroupInvite> findAllByUser(User user);
 }

@@ -3,8 +3,11 @@ package org.swe.cart.controllers;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.NoSuchElementException;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,16 +15,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.swe.cart.entities.GlobalRole;
+import org.swe.cart.entities.GroupInvite;
 import org.swe.cart.entities.User;
 import org.swe.cart.payload.AuthResponseDTO;
+import org.swe.cart.payload.GroupInviteDTO2;
 import org.swe.cart.payload.LoginDTO;
 import org.swe.cart.payload.RegisterResponseDTO;
 import org.swe.cart.payload.SignUpDTO;
+import org.swe.cart.repositories.GroupInviteRepository;
 import org.swe.cart.repositories.UserRepository;
 import org.swe.cart.security.CustomUserDetails;
 import org.swe.cart.security.JwtUtil;
@@ -49,6 +55,9 @@ public class UserController {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private GroupInviteRepository groupInviteRepository;
 
     @PostMapping("/auth/signin")
     public ResponseEntity<AuthResponseDTO> authenticateUser(@RequestBody LoginDTO loginDTO) {
@@ -83,9 +92,17 @@ public class UserController {
 
     }
 
-    @GetMapping("/users/{userId}/invites/get") //TODO
-    public String getInvites(@PathVariable Integer userId, @RequestParam String param) {
-        return new String();
+    @GetMapping("/users/invites/get") //TODO
+    public ResponseEntity<List<GroupInviteDTO2>> getInvites() {
+        try {
+            Integer userId = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+            User user = userRepository.findById(userId).orElseThrow();
+            List<GroupInvite> invites = groupInviteRepository.findAllByUser(user);
+            List<GroupInviteDTO2> inviteDTO2s = invites.stream().map(invite -> new GroupInviteDTO2(userId, invite.getGroup().getName(), formatInstantToHTTP(invite.getCreated_at()))).collect(Collectors.toList());
+            return ResponseEntity.ok(inviteDTO2s);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
     }
 
     @DeleteMapping("/users/{userId}/remove")

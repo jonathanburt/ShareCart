@@ -43,6 +43,9 @@ class GroupProvider extends ChangeNotifier { //This may be a bit chunky as far a
   Map<int /*groupId*/, List<GroupInvite>> _inviteLists = {};
   Map<int, List<GroupMember>> get memberLists => _memberLists;
   Map<int, List<GroupInvite>> get inviteLists => _inviteLists;
+
+  Map<int, List<GroupInvite>> _groupInvites = {};
+  Map<int, List<GroupInvite>> get myInvites => _groupInvites;
   
   Map<int /*groupId*/, Map<int /*itemId*/, ShareCartItem>> _groupItems = {};
   Map<int /*groupId*/, Map<int /*listId*/, ShareCartList>> _groupLists = {};
@@ -73,7 +76,6 @@ class GroupProvider extends ChangeNotifier { //This may be a bit chunky as far a
 
   Future<void> loadGroupsBasic({bool forceRefresh = false}) async {
     if(!forceRefresh && !shouldRefreshGroups) return;
-
     _groups = [];
     _memberLists = {};
     _inviteLists = {};
@@ -108,16 +110,27 @@ class GroupProvider extends ChangeNotifier { //This may be a bit chunky as far a
   }
 
   Future<void> refreshList(int groupId, int listId) async {
-    ShareCartList? list = await apiService.fetchList(listId);
+    ShareCartList? list = await apiService.fetchList(groupId, listId);
     if(list == null) throw UnimplementedError();
-    _groupLists[groupId]![listId] = list;
+    (_groupLists[groupId] as Map<int, ShareCartList>)[listId] = list;
     notifyListeners();
   }
 
   Future<void> refreshItem(int groupId, int itemId) async {
-    ShareCartItem? item = await apiService.fetchItem(itemId);
+    ShareCartItem? item = await apiService.fetchItem(groupId, itemId);
     if(item == null) throw UnimplementedError();
-    _groupItems[groupId]![itemId] = item;
+    (_groupItems[groupId] as Map<int, ShareCartItem>)[itemId] = item;
     notifyListeners();
   }
+
+  Future<void> getInvites() async {notifyListeners();}
+
+  Future<void> createItem(String name, int groupId) async {notifyListeners();}
+  Future<void> createList(String name, int groupId) async {notifyListeners();}
+  Future<void> addItemToList(int groupId, int listId, int itemId, int quantity, bool communal) async {notifyListeners();}
+  Future<void> createGroup(String name) async {notifyListeners();}
+  Future<void> inviteToGroup(int groupId, String username) async {notifyListeners();}
+  Future<void> acceptInvite(int groupId) async {notifyListeners();}
+  Future<void> declineInvite(int groupId) async {notifyListeners();}
+
 }

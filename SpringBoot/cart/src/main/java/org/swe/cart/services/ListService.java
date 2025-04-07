@@ -66,26 +66,27 @@ public class ListService {
         Group group = groupRepository.findById(groupId).orElseThrow();
         List<ShopList> lists = listRepository.findAllByGroup(group);
 
-        List<ShopListDTO> listDTOs = lists.stream()
-        .map(list -> new ShopListDTO(
-                list.getName(), 
-                list.getId(), 
-                list.getGroup().getId(), 
-                formatInstantToHTTP(list.getCreatedAt()),
-                list.getItems().stream().map(
-                    listItem -> new ListItemDTO(
-                        listItem.getItem().getId(),
-                        list.getId(),
-                        listItem.getUser().getId(),
-                        listItem.getCommunal(),
-                        listItem.getQuantity(),
-                        formatInstantToHTTP(listItem.getCreatedAt())
-                    )).collect(Collectors.toList())
-                )).collect(Collectors.toList());
-
-        return listDTOs;
+        return lists.stream()
+        .map(list -> shopListToShopListDTO(list)).collect(Collectors.toList());
     }
 
+    public ShopListDTO getList(Integer listId){
+        ShopList list = listRepository.findById(listId).orElseThrow();
+        return shopListToShopListDTO(list);
+    }
+
+    private ShopListDTO shopListToShopListDTO(ShopList list){
+        return new ShopListDTO(list.getName(), list.getId(),list.getGroup().getId(),formatInstantToHTTP(list.getCreatedAt()),
+                    list.getItems().stream().map(
+                        listItem -> new ListItemDTO(
+                            listItem.getId().getItemid(), 
+                            list.getId(), 
+                            listItem.getId().getUserid(), 
+                            listItem.getCommunal(), 
+                            listItem.getQuantity(), 
+                            formatInstantToHTTP(listItem.getCreatedAt()))
+                    ).collect(Collectors.toList()));
+    }
     private String formatInstantToHTTP(Instant instant) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(
             "EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
