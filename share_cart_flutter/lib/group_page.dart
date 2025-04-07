@@ -5,9 +5,9 @@ import 'package:share_cart_flutter/list_page.dart';
 import 'package:share_cart_flutter/types.dart';
 
 class GroupPage extends StatefulWidget {
-  final ShareCartGroup group;
+  final int groupId;
 
-  GroupPage({required this.group});
+  GroupPage({required this.groupId});
 
   @override
   State createState() => _GroupPageState();

@@ -113,6 +113,18 @@ class ThisUserDetails {
   const ThisUserDetails(this.username, this.email, this.userId, this.createdAt);
 }
 
+class MyInvite {
+  final String groupName;
+  final int groupId;
+  final DateTime createdAt;
+
+  factory MyInvite.fromJson(Map<String, dynamic> input){
+    return MyInvite(input["groupName"], input["groupId"], HttpDate.parse(input["invitedAt"]));
+  }
+
+  MyInvite(this.groupName, this.groupId, this.createdAt);
+}
+
 typedef GroupReturn = ({ShareCartGroup group, List<GroupMember> members, List<GroupInvite> invites});
 
 class GroupMember {

@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -92,10 +93,10 @@ public class UserController {
 
     }
 
-    @GetMapping("/users/invites/get") //TODO
-    public ResponseEntity<List<GroupInviteDTO2>> getInvites() {
+    @GetMapping("/users/{userId}/invites/get") //TODO
+    public ResponseEntity<List<GroupInviteDTO2>> getInvites(@PathVariable Integer userId) {
         try {
-            Integer userId = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+            if(userId != ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId()) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); //Make sure that the provieded userId is the user that is making the request
             User user = userRepository.findById(userId).orElseThrow();
             List<GroupInvite> invites = groupInviteRepository.findAllByUser(user);
             List<GroupInviteDTO2> inviteDTO2s = invites.stream().map(invite -> new GroupInviteDTO2(userId, invite.getGroup().getName(), formatInstantToHTTP(invite.getCreated_at()))).collect(Collectors.toList());
