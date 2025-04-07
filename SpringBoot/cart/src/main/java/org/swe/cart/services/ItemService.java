@@ -69,6 +69,7 @@ public class ItemService {
         if(!group.equals(item.getGroup())){
             throw new GroupMismatchException("Group and Item do not match");
         }
+        item.setGroup(group);
         item.setName(name);
         item.setDescription(description);
         item.setCategory(category);

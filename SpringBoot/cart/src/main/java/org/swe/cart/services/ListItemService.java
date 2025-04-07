@@ -1,6 +1,11 @@
 package org.swe.cart.services;
 
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +17,7 @@ import org.swe.cart.entities.Item;
 import org.swe.cart.entities.ListItem;
 import org.swe.cart.entities.ShopList;
 import org.swe.cart.entities.User;
+import org.swe.cart.payload.ListItemDTO;
 import org.swe.cart.repositories.GroupRepository;
 import org.swe.cart.repositories.ItemRepository;
 import org.swe.cart.repositories.ListItemRepository;
@@ -36,7 +42,7 @@ public class ListItemService {
     }
 
 
-    public ListItem addItemToList(Integer groupId, Integer listId, Integer itemId, Integer quantity, Boolean communal){
+    public ListItemDTO addItemToList(Integer groupId, Integer listId, Integer itemId, Integer quantity, Boolean bought, Boolean communal){
         Group group = groupRepository.findById(groupId).orElseThrow();
         
         ShopList list = listRepository.findById(listId).orElseThrow();
@@ -54,6 +60,7 @@ public class ListItemService {
         listItem.setItem(item);
         listItem.setList(list);
         listItem.setQuantity(quantity);
+        listItem.setBought(bought);
 
         ListItemKey listItemKey = new ListItemKey();
         listItemKey.setItemid(itemId);
@@ -64,12 +71,26 @@ public class ListItemService {
         listItem.setCommunal(communal);
         listItem = listItemRepository.save(listItem);
 
-        return listItem;
+        ListItemDTO listItemDTO = listItemToListItemDTO(listItem);
+
+        return listItemDTO;
 
 
     }
 
-    public ResponseEntity<ListItem> updateListItem(Integer listId, Integer itemId, Integer quantity, Boolean communal, Boolean bought){
+    private String formatInstantToHTTP(Instant instant) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+            "EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return dateFormat.format(Date.from(instant));
+    }
+
+    private ListItemDTO listItemToListItemDTO(ListItem listItem){
+        ListItemDTO listItemDTO = new ListItemDTO(listItem.getItem().getId(), listItem.getList().getId(), listItem.getUser().getId(), listItem.getCommunal(), listItem.getQuantity(), listItem.getBought(), formatInstantToHTTP(listItem.getCreatedAt()));
+        return listItemDTO;
+    }
+
+    public ListItemDTO updateListItem(Integer listId, Integer itemId, Integer quantity, Boolean communal, Boolean bought){
         Item item = itemRepository.findById(itemId).orElseThrow();
         ShopList list = listRepository.findById(listId).orElseThrow();
 
@@ -78,7 +99,8 @@ public class ListItemService {
         listItem.setCommunal(communal);
         listItem.setBought(bought);
         listItem = listItemRepository.save(listItem);
-        return new ResponseEntity<>(listItem, HttpStatus.OK);
+        ListItemDTO listItemDTO = listItemToListItemDTO(listItem);
+        return listItemDTO;
     }
 
     public ResponseEntity<ListItem> deleteListItem(Integer itemId, Integer listId){
@@ -89,7 +111,7 @@ public class ListItemService {
         return new ResponseEntity<>(listItem, HttpStatus.OK);
     }
 
-    public ResponseEntity<ListItem> buyItem(Integer listId, Integer itemId){
+    public ListItemDTO buyItem(Integer listId, Integer itemId){
         ShopList list = listRepository.findById(listId).orElseThrow();
         Item item = itemRepository.findById(itemId).orElseThrow();
         ListItem listItem = listItemRepository.findByListAndItem(list, item);

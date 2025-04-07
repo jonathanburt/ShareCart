@@ -11,5 +11,6 @@ public class ListItemDTO {
     private Integer userId;
     private Boolean communal;
     private Integer quantity;
+    private Boolean bought;
     private String createdAt;
 }

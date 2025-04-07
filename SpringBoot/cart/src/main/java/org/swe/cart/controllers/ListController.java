@@ -6,19 +6,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.swe.cart.entities.ShopList;
+import org.swe.cart.exceptions.GroupDoesNotExistException;
+import org.swe.cart.exceptions.ListAlreadyAddedToGroupException;
 import org.swe.cart.payload.ListCreateDTO;
 import org.swe.cart.payload.ShopListDTO;
 import org.swe.cart.services.ListService;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
 
 
 @RestController
@@ -49,21 +50,23 @@ public class ListController {
     
     @PostMapping("/add")
     @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId)")
-    public ResponseEntity<ShopList> addListToGroup(@PathVariable Integer groupId,
-                                                    @RequestBody ListCreateDTO listCreateDTO) {
+    public ResponseEntity<ShopListDTO> addListToGroup(@PathVariable Integer groupId,
+                                                    @RequestBody ListCreateDTO listCreateDTO) throws GroupDoesNotExistException, ListAlreadyAddedToGroupException {
         
-        return listService.addListToGroup(groupId, listCreateDTO.getName());
+        ShopListDTO shopListDTO = listService.addListToGroup(groupId, listCreateDTO.getName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(shopListDTO);
     }
 
     @DeleteMapping("/{listId}/delete")
     @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId)")
-    public ResponseEntity<ShopList> deleteList(@PathVariable Integer groupId, @PathVariable Integer listId) {
+    public String deleteList(@PathVariable Integer groupId, @PathVariable Integer listId) {
         return listService.deleteList(listId);
     }
 
     @PutMapping("/{listId}/update")
     @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId)")
-    public ResponseEntity<ShopList> updateList(@PathVariable Integer listId, String name, @PathVariable Integer groupId){
-        return listService.updateList(listId, name, groupId);
+    public ResponseEntity<ShopListDTO> updateList(@PathVariable Integer listId, String name, @PathVariable Integer groupId){
+        ShopListDTO shopListDTO = listService.updateList(listId, name, groupId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(shopListDTO);
     }
 }

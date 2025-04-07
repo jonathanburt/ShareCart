@@ -16,10 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.swe.cart.entities.Item;
-import org.swe.cart.entities.ListItem;
-import org.swe.cart.payload.AddItemToListDTO;
-import org.swe.cart.payload.ItemCreateDTO;
+import org.swe.cart.exceptions.GroupMismatchException;
 import org.swe.cart.payload.ItemDTO;
+import org.swe.cart.payload.ListItemDTO;
 import org.swe.cart.services.ItemService;
 import org.swe.cart.services.ListItemService;
 
@@ -29,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping(path="/api/group/{groupId}/item")
 @RequiredArgsConstructor
 public class ItemController {
+
     private final ItemService itemService;
     private final ListItemService listItemService;
     
@@ -39,32 +39,38 @@ public class ItemController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ItemDTO> createItem(@PathVariable Integer groupId, @RequestBody ItemCreateDTO itemCreateDTO){
-        ItemDTO item = itemService.createItem(itemCreateDTO);
-        item.setGroupId(groupId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(item);
-    }
+    public ResponseEntity<ItemDTO> createItem(
+        @PathVariable Integer groupId,
+        @RequestParam String name,
+        @RequestParam String description,
+        @RequestParam String category,
+        @RequestParam Float price) {
     
-    @PostMapping("/{listId}/addItem")
-    public ResponseEntity<ListItem> addItemToList(@PathVariable Integer groupId,@PathVariable Integer listId, @RequestBody AddItemToListDTO addItemToListDTO) {
+    ItemDTO item = itemService.createItem(name, description, category, price, groupId);
+    return ResponseEntity.status(HttpStatus.CREATED).body(item);
+    }
+
+    
+    @PostMapping("/{listId}/add")
+    public ResponseEntity<ListItemDTO> addItem(@PathVariable Integer groupId, @PathVariable Integer listId, @RequestParam Integer itemId, @RequestParam Integer quantity, @RequestParam Boolean bought, @RequestParam Boolean communal) {
         //TODO: process POST request
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        ListItem item = listItemService.addItemToList(groupId, listId, addItemToListDTO.getItemId(), addItemToListDTO.getQuantity(), addItemToListDTO.getCommunal());
-        if(item == null) return new ResponseEntity<>(null, HttpStatus.CONFLICT);
-        return ResponseEntity.status(HttpStatus.CREATED).body(item);
-        
+        ListItemDTO listItemDTO = listItemService.addItemToList(groupId, listId, itemId, quantity, bought, communal);
+        if(listItemDTO == null) return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+        return ResponseEntity.status(HttpStatus.CREATED).body(listItemDTO);
     }
 
 
     @PutMapping("/{itemId}/update")
-    public ResponseEntity<Item> updateItem(@PathVariable Integer itemId, @PathVariable Integer groupId, String name, String description, String category, Float price, @RequestBody String entity) {
+    public ResponseEntity<ItemDTO> updateItem(@PathVariable Integer itemId, @PathVariable Integer groupId, String name, String description, String category, Float price, @RequestBody String entity) throws GroupMismatchException {
         //TODO: process PUT request
-        return itemService.updateItem(itemId, groupId, name, description, category, price);
+        ItemDTO itemDTO = itemService.updateItem(itemId, groupId, name, description, category, price);
+        return ResponseEntity.status(HttpStatus.CREATED).body(itemDTO);
     }
 
     @DeleteMapping("/{itemId}/delete")
     @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId)")
-    public ResponseEntity<Item> deleteItem(@PathVariable Integer itemId, @PathVariable Integer groupId){
+    public String deleteItem(@PathVariable Integer itemId, @PathVariable Integer groupId) throws GroupMismatchException{
         return itemService.deleteItem(itemId, groupId);
     }
     

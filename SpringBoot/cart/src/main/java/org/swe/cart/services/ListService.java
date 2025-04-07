@@ -10,11 +10,11 @@ import java.util.Optional;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.swe.cart.entities.Group;
 import org.swe.cart.entities.ShopList;
+import org.swe.cart.exceptions.GroupDoesNotExistException;
+import org.swe.cart.exceptions.ListAlreadyAddedToGroupException;
 import org.swe.cart.payload.ListItemDTO;
 import org.swe.cart.payload.ShopListDTO;
 import org.swe.cart.repositories.GroupRepository;
@@ -28,13 +28,13 @@ public class ListService {
     private final GroupRepository groupRepository;
     private final ListRepository listRepository;
 
-    public ResponseEntity<ShopList> addListToGroup(Integer groupId, String name){
+    public ShopListDTO addListToGroup(Integer groupId, String name) throws GroupDoesNotExistException, ListAlreadyAddedToGroupException{
         Optional<Group> optionalGroup = groupRepository.findById(groupId);
-        if(optionalGroup.isEmpty()) return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        if(optionalGroup.isEmpty()) throw new GroupDoesNotExistException("Group does not exist");
         
         Group group = optionalGroup.get();
 
-        if(listRepository.existsByGroupAndName(group, name)) return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+        if(listRepository.existsByGroupAndName(group, name)) throw new ListAlreadyAddedToGroupException("List already added to group");
 
         ShopList list = new ShopList();
         list.setGroup(group);
@@ -44,22 +44,23 @@ public class ListService {
         //TODO Handle potential ConstraintViolationException
         listRepository.save(list);
 
-        return new ResponseEntity<>(list, HttpStatus.CREATED);  //Change this to a better return type
+        return shopListToShopListDTO(list); 
     }
 
-    public ResponseEntity<ShopList> deleteList(Integer listId){
+    public String deleteList(Integer listId){
         ShopList list = listRepository.findById(listId).orElseThrow();
         listRepository.deleteById(listId);
-        return new ResponseEntity<ShopList>(list, HttpStatus.OK);
+        return "List deleted";
     }
 
-    public ResponseEntity<ShopList> updateList(Integer listId, String name, Integer groupId){
+    public ShopListDTO updateList(Integer listId, String name, Integer groupId){
         ShopList list = listRepository.findById(listId).orElseThrow();
         Group group = groupRepository.findById(groupId).orElseThrow();
         list.setName(name);
         list.setGroup(group);
         list = listRepository.save(list);
-        return new ResponseEntity<ShopList>(list, HttpStatus.OK);
+        ShopListDTO shopListDTO = shopListToShopListDTO(list);
+        return shopListDTO;
     }
 
     public List<ShopListDTO> getAllLists(Integer groupId){
@@ -84,6 +85,7 @@ public class ListService {
                             listItem.getId().getUserid(), 
                             listItem.getCommunal(), 
                             listItem.getQuantity(), 
+                            listItem.getBought(),
                             formatInstantToHTTP(listItem.getCreatedAt()))
                     ).collect(Collectors.toList()));
     }
