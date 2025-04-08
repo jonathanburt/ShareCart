@@ -7,4 +7,5 @@ public class AddItemToListDTO {
     Integer itemId;
     Integer quantity;
     Boolean communal;
+    Boolean bought;
 }

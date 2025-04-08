@@ -17,6 +17,7 @@ import org.swe.cart.exceptions.GroupDoesNotExistException;
 import org.swe.cart.exceptions.ListAlreadyAddedToGroupException;
 import org.swe.cart.payload.ListCreateDTO;
 import org.swe.cart.payload.ShopListDTO;
+import org.swe.cart.payload.UpdateListDTO;
 import org.swe.cart.services.ListService;
 
 import lombok.RequiredArgsConstructor;
@@ -65,7 +66,8 @@ public class ListController {
 
     @PutMapping("/{listId}/update")
     @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId)")
-    public ResponseEntity<ShopListDTO> updateList(@PathVariable Integer listId, String name, @PathVariable Integer groupId){
+    public ResponseEntity<ShopListDTO> updateList(@PathVariable Integer listId, @PathVariable Integer groupId, @RequestBody UpdateListDTO updateListDTO){
+        String name = updateListDTO.getName();
         ShopListDTO shopListDTO = listService.updateList(listId, name, groupId);
         return ResponseEntity.status(HttpStatus.CREATED).body(shopListDTO);
     }

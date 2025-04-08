@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.swe.cart.embeddables.ListItemKey;
@@ -42,7 +40,7 @@ public class ListItemService {
     }
 
 
-    public ListItemDTO addItemToList(Integer groupId, Integer listId, Integer itemId, Integer quantity, Boolean bought, Boolean communal){
+    public ListItemDTO addItemToList(Integer groupId, Integer listId, Integer userId, Integer itemId, Integer quantity, Boolean bought, Boolean communal){
         Group group = groupRepository.findById(groupId).orElseThrow();
         
         ShopList list = listRepository.findById(listId).orElseThrow();
@@ -59,6 +57,7 @@ public class ListItemService {
         ListItem listItem = new ListItem();
         listItem.setItem(item);
         listItem.setList(list);
+        listItem.setUser(user);
         listItem.setQuantity(quantity);
         listItem.setBought(bought);
 
@@ -103,12 +102,11 @@ public class ListItemService {
         return listItemDTO;
     }
 
-    public ResponseEntity<ListItem> deleteListItem(Integer itemId, Integer listId){
+    public String deleteListItem(Integer itemId, Integer listId){
         Item item = itemRepository.findById(itemId).orElseThrow();
         ShopList list = listRepository.findById(listId).orElseThrow();
-        ListItem listItem = listItemRepository.findByListAndItem(list, item);
         listItemRepository.deleteByListAndItem(list, item);
-        return new ResponseEntity<>(listItem, HttpStatus.OK);
+        return "Item removed from list";
     }
 
     public ListItemDTO buyItem(Integer listId, Integer itemId){
