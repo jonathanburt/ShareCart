@@ -21,6 +21,14 @@ class GroupDetailsProvider extends ChangeNotifier {
   bool get _shouldRefreshLists =>
       _lastFetchedLists == null || DateTime.now().difference(_lastFetchedLists!) > cacheDuration;
 
+  ShareCartList? getList(int listId){
+    return _lists[listId];
+  }
+
+  ShareCartItem? getItem(int itemId){
+    return _items[itemId];
+  }
+
   Future<void> loadItems({bool forceRefresh = false}) async {
     if (!forceRefresh && !_shouldRefreshItems) return;
     _items = await apiService.fetchItems(groupId);
@@ -48,8 +56,11 @@ class GroupDetailsProvider extends ChangeNotifier {
     if (list != null) {
       _lists[listId] = list;
       notifyListeners();
+      //print("List $listId in group $groupId is refreshing");
     }
   }
+
+  Future<void> changeItemQuantity(int listId, int itemId, int quantity) async {notifyListeners();}
 
   // Future<void> createList(String name) async {
   //   await apiService.createList(name, groupId);

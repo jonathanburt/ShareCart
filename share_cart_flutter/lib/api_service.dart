@@ -77,7 +77,7 @@ class MockApiService implements ApiService {
   };
   final Map<int, Map<int, ShareCartList>> lists = {
     103: {
-      1: ShareCartList("Weekley Groceries", 1, 103, DateTime.now(), [
+      1: ShareCartList("Weekly Groceries", 1, 103, DateTime.now(), [
         ShareCartListItem(5, 1, 21, false, 2, DateTime.now()),
         ShareCartListItem(1, 1, 90, true, 10, DateTime.now()),
         ShareCartListItem(3, 1, 9, false, 2, DateTime.now())
@@ -95,7 +95,7 @@ class MockApiService implements ApiService {
     }
   };
 
-  Duration loadTime = Duration(seconds: 5);
+  Duration loadTime = Duration(seconds: 1);
 
   @override
   Future<void> authenticateUser(String username, String password, VoidCallback onSuccess, VoidCallback onFailure) async {
@@ -115,7 +115,7 @@ class MockApiService implements ApiService {
 
   @override
   Future<List<GroupReturn>> fetchGroups() async {
-    Future.delayed(loadTime);
+    await Future.delayed(loadTime);
     List<GroupReturn> ret = [];
     for(ShareCartGroup group in groups){
       ret.add((group: group, members: groupMemberships[group.id]!, invites: groupInvites[group.id]!));
@@ -125,19 +125,20 @@ class MockApiService implements ApiService {
 
   @override
   Future<ShareCartItem?> fetchItem(int groupId, int itemId) async {
-    Future.delayed(loadTime);
+    await Future.delayed(loadTime);
     return items[groupId]![itemId];
   }
 
   @override
   Future<Map<int, ShareCartItem>> fetchItems(int groupId) async {
-    Future.delayed(loadTime);
+    await Future.delayed(loadTime);
     return items[groupId]!;
   }
 
   @override
   Future<ShareCartList?> fetchList(int groupId, int listId) async {
-    Future.delayed(loadTime);
+    print("List $listId in group $groupId is refreshing ${lists[groupId]![listId]!.items[0].quantity}");
+    await Future.delayed(loadTime);
     return lists[groupId]![listId];
   }
 
@@ -149,7 +150,7 @@ class MockApiService implements ApiService {
 
   @override
   Future<Map<int, ShareCartList>> fetchLists(int groupId) async {
-    Future.delayed(loadTime);
+    await Future.delayed(loadTime);
     return lists[groupId]!;
   }
 

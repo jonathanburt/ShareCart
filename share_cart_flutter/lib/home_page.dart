@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_cart_flutter/group_page.dart';
+import 'package:share_cart_flutter/providers/group_details_provider.dart';
 import 'package:share_cart_flutter/providers/group_provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -25,7 +26,7 @@ class _GroupsHomePageState extends State<HomePage> {
         builder: (context, groupProvider, _) {
           final groups = groupProvider.groups;
           return RefreshIndicator(
-            onRefresh: () => groupProvider.loadGroups(force: true),
+            onRefresh: () async => await groupProvider.loadGroups(force: true),
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -64,7 +65,10 @@ class _GroupsHomePageState extends State<HomePage> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (_) => GroupPage(groupId: group.id),
+                                        builder: (_) => ChangeNotifierProvider(
+                                          create: (_) => GroupDetailsProvider(group.id)..loadLists()..loadItems(),
+                                          child: GroupPage(group: group,),
+                                        ),
                                       ),
                                     );
                                   },

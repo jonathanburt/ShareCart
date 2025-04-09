@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:share_cart_flutter/api_service.dart';
+import 'package:provider/provider.dart';
 import 'package:share_cart_flutter/app_bar.dart';
 import 'package:share_cart_flutter/list_item.dart';
+import 'package:share_cart_flutter/providers/group_details_provider.dart';
 import 'package:share_cart_flutter/types.dart';
 
 class ListPage extends StatefulWidget {
-  final ShareCartList list;
-
-  ListPage({required this.list});
+  final int listId;
+  final String listName;
+  ListPage({super.key, required this.listId, required this.listName});
 
   @override
   State createState() => _ListPageState();
@@ -15,42 +16,59 @@ class ListPage extends StatefulWidget {
 
 class _ListPageState extends State<ListPage> {
 
-  List<ShareCartListItem> listItems = [];
-
   @override
   void initState() {
     super.initState();
-    apiService.fetchListItems(widget.list.id).then((result) => setState(() {
-      listItems = result ?? [];
-    }));
   }
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
-      appBar: MyAppBar(Icon(Icons.list), widget.list.name),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            ElevatedButton.icon(
-              onPressed: () {},
-              icon: Icon(Icons.add),
-              label: Text('Add items'),
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size.fromHeight(50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
-            Expanded(
-              child: ListView(
-                children: listItems.map((listItem) => ListItemTile(listItem: listItem)).toList(),
+      appBar: MyAppBar(Icon(Icons.list), widget.listName),
+      body: Consumer<GroupDetailsProvider>(
+        builder: (context, groupDetailsProvider, _) { 
+          return RefreshIndicator(
+            onRefresh: () => groupDetailsProvider.refreshList(widget.listId),
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () {},
+                    icon: Icon(Icons.add),
+                    label: Text('Add items'),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: Size.fromHeight(50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                        itemCount: groupDetailsProvider.getList(widget.listId)?.items.length ?? 0,
+                        itemBuilder: (context, index) {
+                          final list = groupDetailsProvider.getList(widget.listId);
+                          if(list == null) return const SizedBox.shrink();
+                          final listItem = list.items[index];
+                          final item = groupDetailsProvider.getItem(listItem.itemId);
+                          if(item == null) return const SizedBox.shrink();
+                          return ShareCartItemWidget(
+                            item: item, 
+                            listItem: listItem, 
+                            onQuantityChanged: (newQuantity) {
+                              groupDetailsProvider.changeItemQuantity(list.id, item.id, newQuantity);
+                            }
+                          );
+                          }
+                        ),
+                  )
+                ]
               )
-            )
-          ]
-        )
+            ),
+          );
+        }
       )
     );
   }
