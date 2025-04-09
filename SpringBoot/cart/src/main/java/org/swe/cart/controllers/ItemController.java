@@ -102,14 +102,14 @@ public class ItemController {
 
 
     @PutMapping("/{listId}/{itemId}/quantity")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId)")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId) or hasAuthority('ROLE_MEMBER_GROUP_' + #groupId)")
     public ResponseEntity<ListItemDTO> changeQuantity(@PathVariable Integer listId, @PathVariable Integer groupId, @PathVariable Integer itemId, @RequestBody ChangeQuantityDTO changeQuantityDTO){
         ShopList list = listRepository.findById(listId).orElseThrow();
         Item item = itemRepository.findById(itemId).orElseThrow();
         ListItem listItem = listItemRepository.findByListAndItem(list, item);
         Integer quantity = changeQuantityDTO.getQuantity();
         ListItemDTO listItemDTO = listItemService.updateListItem(listId, itemId, quantity, listItem.getCommunal(), listItem.getBought());
-        return ResponseEntity.status(HttpStatus.CREATED).body(listItemDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(listItemDTO);
     }
 
     @PutMapping("/{listId}/{itemId}/remove")

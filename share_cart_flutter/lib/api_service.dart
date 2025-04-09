@@ -13,10 +13,12 @@ abstract class ApiService {
   Future<ShareCartStore?> fetchStore(int storeId);
   Future<Map<int, ShareCartList>> fetchLists(int groupId);
   Future<ShareCartList?> fetchList(int groupId, int listId);
-  Future<List<ShareCartListItem>?> fetchListItems(int listId);
   Future<List<GroupReturn>> fetchGroups();
   Future<ShareCartGroup?> fetchGroup(int groupId);
   Future<List<MyInvite>> fetchInvites();
+  Future<ShareCartListItem> changeItemQuantity(int groupId, int listId, int itemId, int quantity);
+  Future<ShareCartGroup?> acceptInvite(int groupId);
+  Future<void> declineInvite(int groupId);
 
   Future<ShareCartGroup?> createGroup(String name);
 
@@ -78,22 +80,26 @@ class MockApiService implements ApiService {
   final Map<int, Map<int, ShareCartList>> lists = {
     103: {
       1: ShareCartList("Weekly Groceries", 1, 103, DateTime.now(), [
-        ShareCartListItem(5, 1, 21, false, 2, DateTime.now()),
-        ShareCartListItem(1, 1, 90, true, 10, DateTime.now()),
-        ShareCartListItem(3, 1, 9, false, 2, DateTime.now())
+        ShareCartListItem(5, 1, 21, false, false, 2, DateTime.now()),
+        ShareCartListItem(1, 1, 90, true, false, 10, DateTime.now()),
+        ShareCartListItem(3, 1, 9, false, false, 2, DateTime.now())
       ]),
     },
     921: {
       2: ShareCartList("Sunday Party", 2, 921, DateTime.now(), [
-        ShareCartListItem(17, 2, 9, true, 3, DateTime.now()),
-        ShareCartListItem(18, 2, 2735, true, 3, DateTime.now())
+        ShareCartListItem(17, 2, 9, true, false, 3, DateTime.now()),
+        ShareCartListItem(18, 2, 2735, true, false, 3, DateTime.now())
       ]),
       3: ShareCartList("Weekley Groceries", 3, 921, DateTime.now(), [
-        ShareCartListItem(20, 3, 9, false, 2, DateTime.now()),
-        ShareCartListItem(16, 3, 2735, false, 1, DateTime.now())
+        ShareCartListItem(20, 3, 9, false, false, 2, DateTime.now()),
+        ShareCartListItem(16, 3, 2735, false, false, 1, DateTime.now())
       ])
     }
   };
+
+  final List<MyInvite> myInvites = [
+    MyInvite("THE HOMIES", 2, DateTime.now())
+  ];
 
   Duration loadTime = Duration(seconds: 1);
 
@@ -137,15 +143,8 @@ class MockApiService implements ApiService {
 
   @override
   Future<ShareCartList?> fetchList(int groupId, int listId) async {
-    print("List $listId in group $groupId is refreshing ${lists[groupId]![listId]!.items[0].quantity}");
     await Future.delayed(loadTime);
     return lists[groupId]![listId];
-  }
-
-  @override
-  Future<List<ShareCartListItem>?> fetchListItems(int listId) {
-    // TODO: implement fetchListItems
-    throw UnimplementedError();
   }
 
   @override
@@ -177,15 +176,37 @@ class MockApiService implements ApiService {
   }
   
   @override
-  Future<List<MyInvite>> fetchInvites() {
-    // TODO: implement fetchInvites
-    throw UnimplementedError();
+  Future<List<MyInvite>> fetchInvites() async {
+    await Future.delayed(loadTime);
+    return myInvites;
   }
   
   @override
   Future<ShareCartGroup?> createGroup(String name) {
     // TODO: implement createGroup
     throw UnimplementedError();
+  }
+
+  @override
+  Future<ShareCartGroup?> acceptInvite(int groupId) {
+    // TODO: implement acceptInvite
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<void> declineInvite(int groupId) {
+    // TODO: implement declineInvite
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<ShareCartListItem> changeItemQuantity(int groupId, int listId, int itemId, int quantity) async {
+    await Future.delayed(loadTime);
+    var groupLists = lists[groupId] ?? {};
+    ShareCartList list = groupLists[listId] as ShareCartList;
+    int itemIndex = list.items.indexWhere((listItem) => listItem.itemId == itemId);
+    ShareCartListItem item = list.items[itemIndex];
+    return ShareCartListItem(item.itemId, item.listId, item.userId, item.communal, item.bought, quantity, item.createdAt);
   }
 
 }
@@ -251,7 +272,7 @@ class RealApiService implements ApiService {
       return;
     } else {
       onFailure.call();
-      return; //TODO replace this with a throw, then the calling method can catch
+      return;
     }
   }
 
@@ -313,12 +334,6 @@ class RealApiService implements ApiService {
       return ShareCartList.fromJson(jsonResponse);
     }
     // TODO: implement fetchList fail state
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<ShareCartListItem>?> fetchListItems(int listId) async {
-    // TODO: implement fetchListItems
     throw UnimplementedError();
   }
 
@@ -398,7 +413,40 @@ class RealApiService implements ApiService {
     throw UnimplementedError();
   }
 
-  Future<Map<String, String>> authorizedHeaders() async {
+  @override
+  Future<ShareCartListItem> changeItemQuantity(int groupId, int listId, int itemId, int quantity) async {
+    var headers = await authorizedHeaders();
+    var response = await client.put(Uri.parse('$baseUrl/api/group/$groupId/item/$listId/$itemId/quantity'), 
+      headers: headers,
+      body: jsonEncode({"quantity" : quantity}));
+    
+    if(response.statusCode == 200) {
+      return ShareCartListItem.fromJson(jsonDecode(response.body));
+    }
+
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<ShareCartGroup?> acceptInvite(int groupId) async {
+    var headers = await authorizedHeaders();
+    var response = await client.post(Uri.parse('$baseUrl/api/group/$groupId/invite/accept'), headers: headers);
+
+    if(response.statusCode == 200){
+      Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      return ShareCartGroup.fromJson(jsonResponse, _roleFromGroupResponse(jsonResponse) as GroupRole);
+    }
+    // TODO: implement acceptInvite fail stat
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<void> declineInvite(int groupId) {
+    // TODO: implement declineInvite
+    throw UnimplementedError();
+  }
+
+    Future<Map<String, String>> authorizedHeaders() async {
     var headers = baseHeaders;
     String jwt = await getJWT();
     headers["Authorization"] = "Bearer $jwt";
@@ -409,5 +457,6 @@ class RealApiService implements ApiService {
     Iterable members = input["members"];
     return (members.firstWhere((member) => member["userId"] == userDetails!.userId))["role"].toString().groupRole;
   }
+
 }
 

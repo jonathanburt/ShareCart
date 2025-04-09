@@ -78,15 +78,16 @@ class ShareCartListItem {
   final int? userId;
   final DateTime createdAt;
 
-  bool communal;
+  final bool communal;
+  final bool bought;
   int quantity;
 
   factory ShareCartListItem.fromJson(Map<String, dynamic> input){
     DateTime createdAt = HttpDate.parse(input["createdAt"]);
-    return ShareCartListItem(input["itemId"], input["listId"], input["userId"], input["communal"], input["quantity"], createdAt);
+    return ShareCartListItem(input["itemId"], input["listId"], input["userId"], input["communal"], input["bought"], input["quantity"], createdAt);
   }
 
-  ShareCartListItem(this.itemId, this.listId, this.userId, this.communal, this.quantity, this.createdAt);
+  ShareCartListItem(this.itemId, this.listId, this.userId, this.communal, this.bought, this.quantity, this.createdAt);
 }
 
 class ShareCartGroup {

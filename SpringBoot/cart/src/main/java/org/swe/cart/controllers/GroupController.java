@@ -84,11 +84,11 @@ public class GroupController {
     }
 
     @PostMapping("/{groupId}/invite/decline")
-    public ResponseEntity<GroupDTO> declineInvite(@PathVariable Integer groupId) {
+    public ResponseEntity<String> declineInvite(@PathVariable Integer groupId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         try {
-            GroupDTO response = groupService.declineInvite(groupId, auth);
-            return ResponseEntity.ok(response);
+            groupService.declineInvite(groupId, auth);
+            return ResponseEntity.ok("Invitation Declined");
         } catch (UserAlreadyInGroupException e) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         } catch (UserNotInvitedToGroupException e){

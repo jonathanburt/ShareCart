@@ -56,11 +56,16 @@ class GroupDetailsProvider extends ChangeNotifier {
     if (list != null) {
       _lists[listId] = list;
       notifyListeners();
-      //print("List $listId in group $groupId is refreshing");
     }
   }
 
-  Future<void> changeItemQuantity(int listId, int itemId, int quantity) async {notifyListeners();}
+  //This is not an ideal way of doing this, we should proably cache these changes and submit them later, but that is an issue for later
+  Future<void> changeItemQuantity(int listId, int itemId, int quantity) async {
+    ShareCartListItem newItem = await apiService.changeItemQuantity(groupId, listId, itemId, quantity);
+    ShareCartList list = lists[listId] as ShareCartList;
+    list.items[list.items.indexWhere((listItem) => listItem.itemId == itemId)] = newItem;
+    notifyListeners();
+  }
 
   // Future<void> createList(String name) async {
   //   await apiService.createList(name, groupId);

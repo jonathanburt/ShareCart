@@ -144,7 +144,7 @@ public class GroupService {
         return groupToGroupDTO(groupRepository.findById(groupId).get());
     }
 
-    public GroupDTO declineInvite(Integer groupId, Authentication auth) throws UserNotInvitedToGroupException, UserAlreadyInGroupException{
+    public void declineInvite(Integer groupId, Authentication auth) throws UserNotInvitedToGroupException, UserAlreadyInGroupException{
         String username = auth.getName();
         User user = userRepository.findByUsername(username)
             .orElseThrow(() -> new UsernameNotFoundException("User could not be found"));
@@ -156,8 +156,6 @@ public class GroupService {
         if(groupMemberRepository.findByUserAndGroup(user, group).isPresent()) throw new UserAlreadyInGroupException(username);
 
         groupInviteRepository.deleteByUserAndGroup(user, group);
-
-        return groupToGroupDTO(groupRepository.findById(groupId).get());
     }
 
     public GroupDTO removeUser(Integer groupId, Integer userId){

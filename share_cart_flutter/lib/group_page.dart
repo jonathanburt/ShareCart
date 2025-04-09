@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:share_cart_flutter/api_service.dart';
 import 'package:share_cart_flutter/app_bar.dart';
 import 'package:share_cart_flutter/list_page.dart';
 import 'package:share_cart_flutter/providers/group_details_provider.dart';

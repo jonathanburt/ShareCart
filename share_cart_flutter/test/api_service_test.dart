@@ -65,7 +65,7 @@ void main(){
       expect(userDetails.username, 'Jonah');
       expect(userDetails.userId, 1);
       expect(userDetails.email, 'jbl113@case.edu');
-      String jwt = (await realApiService.getJWT())!;
+      String jwt = (await realApiService.getJWT());
       expect(jwt, "mock_value"); //We are mocking flutter_secure_store in this instance
     });
   });
