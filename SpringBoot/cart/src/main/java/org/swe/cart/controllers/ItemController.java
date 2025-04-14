@@ -64,7 +64,7 @@ public class ItemController {
 
     
     @PostMapping("/{listId}/add")
-    public ResponseEntity<ListItemDTO> addItem(@PathVariable Integer groupId, @PathVariable Integer listId, @RequestBody AddItemToListDTO addItemToListDTO) {
+    public ResponseEntity<ListItemDTO> addItemToList(@PathVariable Integer groupId, @PathVariable Integer listId, @RequestBody AddItemToListDTO addItemToListDTO) {
         //TODO: process POST request
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findByUsername(username).orElseThrow();

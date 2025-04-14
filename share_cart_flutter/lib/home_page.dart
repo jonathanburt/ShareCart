@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:share_cart_flutter/app_bar.dart';
 import 'package:share_cart_flutter/group_page.dart';
 import 'package:share_cart_flutter/providers/group_details_provider.dart';
 import 'package:share_cart_flutter/providers/group_provider.dart';
@@ -21,7 +22,7 @@ class _GroupsHomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("My Groups")),
+      appBar: MyAppBar(Icon(Icons.people) ,"My Groups"),
       body: Consumer<GroupProvider>(
         builder: (context, groupProvider, _) {
           final groups = groupProvider.groups;

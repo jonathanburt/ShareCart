@@ -21,6 +21,9 @@ abstract class ApiService {
   Future<void> declineInvite(int groupId);
 
   Future<ShareCartGroup?> createGroup(String name);
+  Future<ShareCartList?> createList(int groupId, String name);
+  Future<ShareCartItem?> createItem(int groupId, String name, {String description = "", String category = "", double price = 0.0});
+  Future<ShareCartList?> addItemToList(int groupId, int listId, int itemId, int quantity, {bool communal = false});
 
   Future<void> authenticateUser(String username, String password, VoidCallback onSuccess, VoidCallback onFailure);
   Future<void> createUser(String username, String email, String password, VoidCallback onSuccess, VoidCallback onFailure);
@@ -208,10 +211,29 @@ class MockApiService implements ApiService {
     ShareCartListItem item = list.items[itemIndex];
     return ShareCartListItem(item.itemId, item.listId, item.userId, item.communal, item.bought, quantity, item.createdAt);
   }
+  
+  @override
+  Future<ShareCartList?> addItemToList(int groupId, int listId, int itemId, int quantity, {bool communal = false}) {
+    // TODO: implement addItemToList
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<ShareCartItem?> createItem(int groupId, String name, {String description = "", String category = "", double price = 0.0}) {
+    // TODO: implement createItem
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<ShareCartList?> createList(int groupId, String name) {
+    // TODO: implement createList
+    throw UnimplementedError();
+  }
 
 }
 
-final ApiService apiService = MockApiService();
+//final ApiService apiService = MockApiService();
+final ApiService apiService = RealApiService(baseUrl: "http://localhost:8080");
 
 class RealApiService implements ApiService {
   final String baseUrl;
@@ -331,6 +353,7 @@ class RealApiService implements ApiService {
 
     if(response.statusCode == 200){
       var jsonResponse = jsonDecode(response.body);
+      print(jsonResponse);
       return ShareCartList.fromJson(jsonResponse);
     }
     // TODO: implement fetchList fail state
@@ -344,9 +367,9 @@ class RealApiService implements ApiService {
 
     if(response.statusCode == 200){
       Iterable jsonResponse = jsonDecode(response.body);
-      return List.from(jsonResponse.map((group) => (ShareCartGroup.fromJson(group, _roleFromGroupResponse(group)!), //This is ugly and idk if it will work
-                                                    List.from((jsonDecode(group["members"]) as Iterable).map( (member) => GroupMember.fromJson(member))),
-                                                    List.from((jsonDecode(group["invites"]) as Iterable).map( (invite) => GroupInvite.fromJson(invite))))));
+      return List<GroupReturn>.from(jsonResponse.map((group) => (group: ShareCartGroup.fromJson(group, _roleFromGroupResponse(group)!), //This is ugly and idk if it will work
+                                                    members: List<GroupMember>.from((group["members"] as Iterable).map((member) => GroupMember.fromJson(member))),
+                                                    invites: List<GroupInvite>.from((group["invites"] as Iterable).map((invite) => GroupInvite.fromJson(invite))))));
     }
     throw UnimplementedError();
   }
@@ -441,8 +464,32 @@ class RealApiService implements ApiService {
   }
   
   @override
-  Future<void> declineInvite(int groupId) {
-    // TODO: implement declineInvite
+  Future<void> declineInvite(int groupId) async {
+    var headers = await authorizedHeaders();
+    var response = await client.post(Uri.parse('$baseUrl/api/$groupId/invite/decline'), headers: headers);
+
+    if(response.statusCode == 200){
+      return;
+    }
+    //TODO implement fail state
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<ShareCartList?> addItemToList(int groupId, int listId, int itemId, int quantity, {bool communal = false}) {
+    // TODO: implement addItemToList
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<ShareCartItem?> createItem(int groupId, String name, {String description = "", String category = "", double price = 0.0}) {
+    // TODO: implement createItem
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<ShareCartList?> createList(int groupId, String name) {
+    // TODO: implement createList
     throw UnimplementedError();
   }
 
@@ -457,6 +504,5 @@ class RealApiService implements ApiService {
     Iterable members = input["members"];
     return (members.firstWhere((member) => member["userId"] == userDetails!.userId))["role"].toString().groupRole;
   }
-
 }
 

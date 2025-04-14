@@ -52,7 +52,7 @@ public class ListItemService {
 
         if(!group.getLists().contains(list)) return null;
         
-        if(!listItemRepository.existsByListAndItem(list, item)) return null;
+        if(listItemRepository.existsByListAndItem(list, item)) return null;
         
         ListItem listItem = new ListItem();
         listItem.setItem(item);
