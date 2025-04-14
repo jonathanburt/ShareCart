@@ -47,8 +47,8 @@ public class ItemController {
     private final ItemRepository itemRepository;
     
     @GetMapping("/getall")
-    public ResponseEntity<List<Item>> getAllItems(@PathVariable Integer groupId) {
-        List<Item> items = itemService.getItems(groupId);
+    public ResponseEntity<List<ItemDTO>> getAllItems(@PathVariable Integer groupId) {
+        List<ItemDTO> items = itemService.getItems(groupId);
         return ResponseEntity.ok(items);
     }
 

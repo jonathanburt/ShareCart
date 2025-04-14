@@ -2,6 +2,7 @@ package org.swe.cart.services;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -29,9 +30,14 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final ListItemRepository listItemRepository;
 
-    public List<Item> getItems(Integer groupId){
+    public List<ItemDTO> getItems(Integer groupId){
         Group group = groupRepository.findById(groupId).orElseThrow();
-        return itemRepository.findByGroup(group);
+        List<Item> items = itemRepository.findByGroup(group);
+        List<ItemDTO> dtos = new ArrayList<>();
+        for(Item item : items){
+            dtos.add(itemToItemDTO(item));
+        }
+        return dtos;
     }
 
     public ItemDTO createItem(String name, String description, String category, Float price, Integer groupId){
