@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_cart_flutter/app_bar.dart';
-import 'package:share_cart_flutter/create_list_dialog.dart';
+import 'package:share_cart_flutter/create_group_dialog.dart';
 import 'package:share_cart_flutter/list_page.dart';
 import 'package:share_cart_flutter/providers/group_details_provider.dart';
 import 'package:share_cart_flutter/types.dart';
@@ -41,9 +41,9 @@ class _GroupPageState extends State<GroupPage> {
                 children: [
                   ElevatedButton.icon(
                     onPressed: () async {
-                      final newListName = await showDialog<String>(
+                      final newGroupName = await showDialog<String>(
                         context: context,
-                        builder: (context) => const CreateListDialog(),
+                        builder: (context) => const CreateGroupDialog(),
                       );
                     },
                     icon: Icon(Icons.add),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_cart_flutter/app_bar.dart';
+import 'package:share_cart_flutter/create_list_dialog.dart';
 import 'package:share_cart_flutter/list_item.dart';
 import 'package:share_cart_flutter/providers/group_details_provider.dart';
 class ListPage extends StatefulWidget {
@@ -33,7 +34,12 @@ class _ListPageState extends State<ListPage> {
               child: Column(
                 children: [
                   ElevatedButton.icon(
-                    onPressed: () {},
+                    onPressed: () async {
+                      final newListName = await showDialog<String>(
+                        context: context,
+                        builder: (context) => const CreateListDialog(),
+                      );
+                    },
                     icon: Icon(Icons.add),
                     label: Text('Add items'),
                     style: ElevatedButton.styleFrom(
