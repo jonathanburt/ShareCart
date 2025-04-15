@@ -53,8 +53,14 @@ public class ListController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId)")
     public ResponseEntity<ShopListDTO> addListToGroup(@PathVariable Integer groupId,
                                                     @RequestBody ListCreateDTO listCreateDTO) throws GroupDoesNotExistException, ListAlreadyAddedToGroupException {
-        
-        ShopListDTO shopListDTO = listService.addListToGroup(groupId, listCreateDTO.getName());
+        ShopListDTO shopListDTO = null;
+        try{
+            shopListDTO = listService.addListToGroup(groupId, listCreateDTO.getName());
+        } catch (GroupDoesNotExistException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(shopListDTO);
+        } catch (ListAlreadyAddedToGroupException e){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(shopListDTO);
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(shopListDTO);
     }
 
