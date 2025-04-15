@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:share_cart_flutter/exceptions.dart';
 import 'package:share_cart_flutter/types.dart';
 import 'package:http/http.dart' as http;
 
@@ -225,9 +226,11 @@ class MockApiService implements ApiService {
   }
   
   @override
-  Future<ShareCartList?> createList(int groupId, String name) {
-    // TODO: implement createList
-    throw UnimplementedError();
+  Future<ShareCartList?> createList(int groupId, String name) async {
+    await Future.delayed(loadTime);
+    var list = ShareCartList(name, 3, groupId, DateTime.now(), []);
+    lists[groupId]![3] = list;
+    return list;
   }
 
 }
@@ -312,7 +315,7 @@ class RealApiService implements ApiService {
 
     if(itemsResponse.statusCode == 200){
       Iterable jsonResponse = jsonDecode(itemsResponse.body);
-      return <int, ShareCartItem>{for (var item in jsonResponse) item["listId"]: ShareCartItem.fromJson(item)};
+      return <int, ShareCartItem>{for (var item in jsonResponse) item["itemId"]: ShareCartItem.fromJson(item)};
     }
     // TODO: implement fetchItems
     throw UnimplementedError();
@@ -488,9 +491,18 @@ class RealApiService implements ApiService {
   }
   
   @override
-  Future<ShareCartList?> createList(int groupId, String name) {
-    // TODO: implement createList
-    throw UnimplementedError();
+  Future<ShareCartList?> createList(int groupId, String name) async {
+    var headers = await authorizedHeaders();
+    var response = await client.post(Uri.parse('$baseUrl/api/group/$groupId/list/add'), headers: headers, body: jsonEncode({'name' : name}));
+
+    switch(response.statusCode){
+      case 201:
+        return ShareCartList.fromJson(jsonDecode(response.body));
+      case 409:
+        throw ApiConflictException("List already exists with this name in this group");
+      default:
+        throw ApiUnauthorizedException("Cannot create list");
+    }
   }
 
     Future<Map<String, String>> authorizedHeaders() async {

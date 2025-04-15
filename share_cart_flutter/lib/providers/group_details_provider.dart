@@ -67,10 +67,10 @@ class GroupDetailsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Future<void> createList(String name) async {
-  //   await apiService.createList(name, groupId);
-  //   await loadLists(forceRefresh: true);
-  // }
+  Future<void> createList(String name) async {
+    await apiService.createList(groupId, name);
+    await loadLists(forceRefresh: true);
+  }
 
   // Future<void> createItem(String name) async {
   //   await apiService.createItem(name, groupId);

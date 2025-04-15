@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:share_cart_flutter/providers/group_details_provider.dart';
 
 class CreateListDialog extends StatefulWidget {
   const CreateListDialog({super.key});
 
   @override
-  _CreateListDialogState createState() => _CreateListDialogState();
+  State createState() => _CreateListDialogState();
 }
 
 class _CreateListDialogState extends State<CreateListDialog> {

@@ -14,10 +14,5 @@ public class ItemDTO {
     private String description;
     private String category;
     private Float price;
-    private Group group;
-    private String createdAtFormatted;
-    
-    
-    
-    
+    private String createdAtFormatted;    
 }

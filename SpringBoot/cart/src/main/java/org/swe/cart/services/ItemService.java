@@ -63,7 +63,7 @@ public class ItemService {
 
     private ItemDTO itemToItemDTO(Item item){
         ItemDTO itemDTO = new ItemDTO(item.getId(), item.getName(), item.getDescription(), item.getCategory(), 
-                        item.getPrice(), item.getGroup(), formatInstantToHTTP(item.getCreatedAt()));
+                        item.getPrice(), formatInstantToHTTP(item.getCreatedAt()));
         return itemDTO;
     }
 
