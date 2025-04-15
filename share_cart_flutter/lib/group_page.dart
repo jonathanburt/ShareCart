@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_cart_flutter/app_bar.dart';
+import 'package:share_cart_flutter/create_list_dialog.dart';
 import 'package:share_cart_flutter/list_page.dart';
 import 'package:share_cart_flutter/providers/group_details_provider.dart';
 import 'package:share_cart_flutter/types.dart';
@@ -39,7 +40,12 @@ class _GroupPageState extends State<GroupPage> {
               child: Column(
                 children: [
                   ElevatedButton.icon(
-                    onPressed: () {},
+                    onPressed: () async {
+                      final newListName = await showDialog<String>(
+                        context: context,
+                        builder: (context) => const CreateListDialog(),
+                      );
+                    },
                     icon: Icon(Icons.add),
                     label: Text('Create List'),
                     style: ElevatedButton.styleFrom(
