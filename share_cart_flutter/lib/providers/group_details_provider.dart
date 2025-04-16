@@ -77,8 +77,8 @@ class GroupDetailsProvider extends ChangeNotifier {
   //   await loadItems(forceRefresh: true);
   // }
 
-  // Future<void> addItemToList(int listId, int itemId, int quantity, bool communal) async {
-  //   await apiService.addItemToList(groupId, listId, itemId, quantity, communal);
-  //   await refreshList(listId);
-  // }
+  Future<void> addItemToList(int listId, int itemId, int quantity, {bool communal = false}) async {
+    await apiService.addItemToList(groupId, listId, itemId, quantity, communal: communal);
+    await refreshList(listId);
+  }
 }

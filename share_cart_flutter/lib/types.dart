@@ -90,6 +90,13 @@ class ShareCartListItem {
   ShareCartListItem(this.itemId, this.listId, this.userId, this.communal, this.bought, this.quantity, this.createdAt);
 }
 
+class AddItemToList {
+  final int quantity;
+  final bool communal;
+
+  AddItemToList(this.communal, this.quantity);
+}
+
 class ShareCartGroup {
   final int id;
   final String name;

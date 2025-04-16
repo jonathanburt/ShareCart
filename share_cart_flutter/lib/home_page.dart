@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_cart_flutter/app_bar.dart';
+import 'package:share_cart_flutter/create_group_dialog.dart';
+import 'package:share_cart_flutter/exceptions.dart';
 import 'package:share_cart_flutter/group_page.dart';
 import 'package:share_cart_flutter/providers/group_details_provider.dart';
 import 'package:share_cart_flutter/providers/group_provider.dart';
@@ -33,8 +35,25 @@ class _GroupsHomePageState extends State<HomePage> {
               child: Column(
                 children: [
                   ElevatedButton.icon(
-                    onPressed: () {
+                    onPressed: () async {
                       // TODO: Implement group creation logic via GroupProvider
+                      final newGroupName = await showDialog<String>(
+                        context: context,
+                        builder: (_) => const CreateGroupDialog());
+                      if(newGroupName == null) return;
+                      try{
+                        await groupProvider.createGroup(newGroupName);
+                      } on ApiConflictException catch (e){
+                        if(!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(e.message))
+                        );
+                      } on ApiFailureException catch (e){
+                        if(!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(e.message))
+                        );
+                      }
                     },
                     icon: const Icon(Icons.add),
                     label: const Text('Create Group'),

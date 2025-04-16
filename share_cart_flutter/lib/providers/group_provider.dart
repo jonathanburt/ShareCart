@@ -33,7 +33,11 @@ class GroupProvider extends ChangeNotifier {
   }
 
   Future<void> createGroup(String name) async {
-    await apiService.createGroup(name);
-    await loadGroups(force: true);
+    try{
+      await apiService.createGroup(name);
+      await loadGroups(force: true);
+    } catch (e){
+      rethrow;
+    } 
   }
 }

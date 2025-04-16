@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:share_cart_flutter/providers/group_details_provider.dart';
 
 class CreateListDialog extends StatefulWidget {
   const CreateListDialog({super.key});

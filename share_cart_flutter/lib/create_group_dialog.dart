@@ -4,7 +4,7 @@ class CreateGroupDialog extends StatefulWidget {
   const CreateGroupDialog({super.key});
 
   @override
-  _CreateGroupDialogState createState() => _CreateGroupDialogState();
+  State createState() => _CreateGroupDialogState();
 }
 
 class _CreateGroupDialogState extends State<CreateGroupDialog> {

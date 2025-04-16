@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_cart_flutter/app_bar.dart';
-import 'package:share_cart_flutter/create_list_dialog.dart';
 import 'package:share_cart_flutter/list_item.dart';
 import 'package:share_cart_flutter/providers/group_details_provider.dart';
+import 'package:share_cart_flutter/shop_page.dart';
 class ListPage extends StatefulWidget {
   final int listId;
   final String listName;
@@ -34,11 +34,11 @@ class _ListPageState extends State<ListPage> {
               child: Column(
                 children: [
                   ElevatedButton.icon(
-                    onPressed: () async {
-                      final newListName = await showDialog<String>(
-                        context: context,
-                        builder: (context) => const CreateListDialog(),
-                      );
+                    onPressed: ()  {
+                      Navigator.push(context, 
+                      MaterialPageRoute(builder: (_) => ChangeNotifierProvider.value(
+                        value: Provider.of<GroupDetailsProvider>(context, listen: false),
+                        child: ShopPage(widget.listId),)));
                     },
                     icon: Icon(Icons.add),
                     label: Text('Add items'),

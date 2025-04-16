@@ -1,148 +1,165 @@
-// import 'package:flutter/material.dart';
-// import 'package:share_cart_flutter/types.dart';
-// import 'package:share_cart_flutter/api_service.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:share_cart_flutter/add_item_to_list_dialog.dart';
+import 'package:share_cart_flutter/app_bar.dart';
+import 'package:share_cart_flutter/providers/group_details_provider.dart';
+import 'package:share_cart_flutter/types.dart';
+import 'package:share_cart_flutter/api_service.dart';
 
-// class ShopPage extends StatefulWidget {
-//   @override
-//   State createState() => _SearchPageState();
-// }
+class ShopPage extends StatefulWidget {
+  final int listId;
+  ShopPage(this.listId);
+  @override
+  State createState() => _SearchPageState();
+}
 
-// class _SearchPageState extends State<ShopPage> {
+class _SearchPageState extends State<ShopPage> {
 
-//   List<ShareCartItem> items = [];
-//   String sortByValue = "alphabetical";
-//   Location userLocation = Location("123 Broadway, New York, NY 10001, USA", 40.7099, -74.0113);
+  String _searchQuery = '';
+  String sortByValue = "alphabetical";
 
-//   @override
-//   void initState() {
-//     super.initState();
-//     apiService.fetchItems().then((result) => setState(() {
-//       items = result;
-//       sortItems();
-//     }));
-//   }
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = Provider.of<GroupDetailsProvider>(context, listen: false);
+      provider.loadLists();
+      provider.loadItems();
+    });
+  }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Center(
-//       child: Column(
-//         children: [
-//           Padding(
-//             padding: EdgeInsets.all(16.0),
-//             child: Column(
-//               children: [
-//                 TextField(
-//                   decoration: InputDecoration(
-//                     border: OutlineInputBorder(),
-//                     labelText: 'Query'
-//                   ),
-//                   onChanged: (value) async {
-//                     await filterItems(value);
-//                     await sortItems();
-//                     setState(() {
-//                       items = items;
-//                     });
-//                   },
-//                 ),
-//                 Row(
-//                   children: [
-//                     Text("Sort by "),
-//                     DropdownButton<String>(
-//                       value: sortByValue,
-//                       onChanged: (String? value) async {
-//                         sortByValue = value!;
-//                         await sortItems();
-//                         setState(() {
-//                           items = items;
-//                         });
-//                       },
-//                       items: [
-//                         DropdownMenuItem<String>(value: "alphabetical", child: Text("alphabetical")),
-//                         DropdownMenuItem<String>(value: "price", child: Text("price")),
-//                         DropdownMenuItem<String>(value: "distance", child: Text("distance")),
-//                       ],
-//                       isDense: true,
-//                     )
-//                   ]
-//                 ),
-//                 Visibility(
-//                   visible: sortByValue == "distance",
-//                   child: Row(
-//                     children: [
-//                       Text("Current Location: "),
-//                       Text(userLocation.address, style: TextStyle(fontSize: 10)) // TODO: Implement location selector to change user location
-//                     ]
-//                   )
-//                 )
-//               ]
-//             )
-//           ),
-//           Expanded(
-//             child: ListView(
-//               children: items.map((item) => 
-//                 ListTile(
-//                   title: Text(item.name),
-//                   subtitle: FutureBuilder<ShareCartStore?>(
-//                     future: apiService.fetchStore(item.storeId),
-//                     builder: (context, snapshot) {
-//                       ShareCartStore? store = snapshot.data;
-//                       return store == null ? Text("Loading...") : Column(
-//                         crossAxisAlignment: CrossAxisAlignment.start,
-//                         children: [
-//                           Text(store.name, style: TextStyle(fontSize: 12)),
-//                           Text(store.location.address, style: TextStyle(fontSize: 10)),
-//                           Text("${(10 * store.location.distanceTo(userLocation)).round() / 10} mi", style: TextStyle(fontSize: 10)),
-//                         ],
-//                       );
-//                     }
-//                   ),
-//                   trailing: Row(
-//                     mainAxisSize: MainAxisSize.min,
-//                     children: [
-//                       Text("\$${item.price}"),
-//                       IconButton(
-//                         icon: const Icon(Icons.add),
-//                         tooltip: 'Add item to list',
-//                         onPressed: () {
-//                           print("User wants to add ${item.name} to some list."); // TODO: implement adding item to list from search page
-//                         },
-//                       ),
-//                     ]
-//                   )
-//                 )
-//               ).toList()
-//             )
-//           )
-//         ]
-//       )
-//     );
-//   }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: MyAppBar(Icon(Icons.local_grocery_store), "Items"),
+      body: Consumer<GroupDetailsProvider>(
+        builder: (context, groupDetailsProvider, _){
+          var items = groupDetailsProvider.items.values.toList();
+          List<ShareCartItem> filteredItems = items
+            .where((item) =>
+                item.name.toLowerCase().contains(_searchQuery) ||
+                item.description.toLowerCase().contains(_searchQuery))
+            .toList();
+          if (sortByValue == 'alphabetical') {
+            filteredItems.sort((a, b) => a.name.compareTo(b.name));
+          }  else if (sortByValue == 'price') {
+            filteredItems.sort((a, b) => a.price.compareTo(b.price));
+          }
+          return RefreshIndicator(
+            onRefresh: () async {
+              await groupDetailsProvider.loadItems(forceRefresh: true);
+            },
+            child: Center(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        TextField(
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'Query'
+                          ),
+                          onChanged: (value) {
+                            setState(() => _searchQuery = value.toLowerCase());
+                          },
+                        ),
+                        Row(
+                          children: [
+                            Text("Sort by "),
+                            DropdownButton<String>(
+                              value: sortByValue,
+                              onChanged: (String? value) async {
+                                if(value != null){
+                                  setState(() => sortByValue = value);
+                                }
+                              },
+                              items: [
+                                DropdownMenuItem<String>(value: "alphabetical", child: Text("Alphabetical")),
+                                DropdownMenuItem<String>(value: "price", child: Text("Price")),
+                              ],
+                              isDense: true,
+                            )
+                          ]
+                        ),
+                      ]
+                    )
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: filteredItems.length,
+                      itemBuilder:  (context, index) {
+                        final item = filteredItems[index];
+                        return ShareCartItemDetailsWidget(item: item, onTap: () async {
+                          final newListItem = await showDialog<AddItemToList>(context: context, 
+                          builder: (_) => AddItemToListDialog(item: item));
+                          if(newListItem == null) return;
+                          try{
+                            await groupDetailsProvider.addItemToList(widget.listId, item.id, newListItem.quantity, communal: newListItem.communal);
+                          } catch (e) {
+                            //TODO
+                          }
+                        });
+                      })
+                  )
+                ]
+              )
+            ),
+          );
+        }
+      ),
+    );
+  }
+}
 
-//   Future<void> filterItems(String value) async {
-//     items = (await apiService.fetchItems()).where((item) {
-//       String valueLower = value.toLowerCase();
-//       return item.name.toLowerCase().contains(valueLower) || item.keywords.any((keyword) => keyword.toLowerCase().contains(valueLower));
-//     }).toList();
-//   }
+class ShareCartItemDetailsWidget extends StatelessWidget {
+  final ShareCartItem item;
+  final VoidCallback onTap;
 
-//   Future<void> sortItems() async {
-    
-//     if (sortByValue == "alphabetical") {
-//       items.sort((a, b) => a.name.compareTo(b.name));
-//     }
-//     else if (sortByValue == "price") {
-//       items.sort((a, b) => (100 * (a.price - b.price)).round());
-//     }
-//     else if (sortByValue == "distance") {
+  ShareCartItemDetailsWidget({required this.item, required this.onTap});
 
-//       var mappedItems = await Future.wait(items.map((item) async {
-//         double distance = (await apiService.fetchStore(item.storeId))?.location.distanceTo(userLocation) ?? 10000;
-//         return (distance, item);
-//       }));
-
-//       mappedItems.sort((a, b) => (100 * (a.$1 - b.$1)).round());
-
-//       items = mappedItems.map((mappedItem) => mappedItem.$2).toList();
-//     }
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Card(
+        margin: EdgeInsets.symmetric(vertical: 8.0),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                item.name,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Category: ${item.category}',
+                style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                  color: Colors.grey[700],
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(item.description),
+              SizedBox(height: 12),
+              Text(
+                '\$${item.price.toStringAsFixed(2)}',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Colors.green[700],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

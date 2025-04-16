@@ -56,16 +56,16 @@ class MockApiService implements ApiService {
   };
   final Map<int, Map<int, ShareCartItem>> items = {
     103: {
-      1: ShareCartItem("Bananas", "Fresh ripe bananas", "produce", 1.29, 1, DateTime.now()),
-      2: ShareCartItem("Whole Milk", "1 gallon whole milk", "dairy", 3.49, 2, DateTime.now()),
-      3: ShareCartItem("Ground Beef", "Lean ground beef 1 lb", "meat", 5.99, 3, DateTime.now()),
-      4: ShareCartItem("Pasta", "Spaghetti noodles 16 oz", "pasta", 1.79, 4, DateTime.now()),
-      5: ShareCartItem("Tomato Sauce", "Classic marinara sauce", "canned", 2.19, 5, DateTime.now()),
-      6: ShareCartItem("Apples", "Red delicious apples (3 lb)", "produce", 4.29, 6, DateTime.now()),
-      7: ShareCartItem("Bread", "Whole wheat sandwich bread", "bakery", 2.99, 7, DateTime.now()),
-      8: ShareCartItem("Eggs", "Dozen large eggs", "dairy", 2.79, 8, DateTime.now()),
-      9: ShareCartItem("Orange Juice", "Fresh squeezed OJ 64 oz", "beverages", 4.59, 9, DateTime.now()),
-      10: ShareCartItem("Cheddar Cheese", "Shredded cheddar cheese", "dairy", 3.89, 10, DateTime.now()),
+      1: ShareCartItem("Bananas", "Fresh ripe bananas", "Produce", 1.29, 1, DateTime.now()),
+      2: ShareCartItem("Whole Milk", "1 gallon whole milk", "Pairy", 3.49, 2, DateTime.now()),
+      3: ShareCartItem("Ground Beef", "Lean ground beef 1 lb", "Meat", 5.99, 3, DateTime.now()),
+      4: ShareCartItem("Pasta", "Spaghetti noodles 16 oz", "Pasta", 1.79, 4, DateTime.now()),
+      5: ShareCartItem("Tomato Sauce", "Classic marinara sauce", "Canned", 2.19, 5, DateTime.now()),
+      6: ShareCartItem("Apples", "Red delicious apples (3 lb)", "Produce", 4.29, 6, DateTime.now()),
+      7: ShareCartItem("Bread", "Whole wheat sandwich bread", "Bakery", 2.99, 7, DateTime.now()),
+      8: ShareCartItem("Eggs", "Dozen large eggs", "Dairy", 2.79, 8, DateTime.now()),
+      9: ShareCartItem("Orange Juice", "Fresh squeezed OJ 64 oz", "Beverages", 4.59, 9, DateTime.now()),
+      10: ShareCartItem("Cheddar Cheese", "Shredded cheddar cheese", "Dairy", 3.89, 10, DateTime.now()),
     },
     921: {
       11: ShareCartItem("Chicken Breast", "Boneless skinless chicken breasts", "meat", 6.49, 11, DateTime.now()),
@@ -431,12 +431,14 @@ class RealApiService implements ApiService {
   Future<ShareCartGroup?> createGroup(String name) async {
     var headers = await authorizedHeaders();
     var response = await client.post(Uri.parse('$baseUrl/api/group/create'), body: jsonEncode({"name" : name}), headers: headers);
-
-    if(response.statusCode == 201){
-      return ShareCartGroup.fromJson(jsonDecode(response.body) as Map<String, dynamic>, GroupRole.ADMIN);
+    switch(response.statusCode){
+      case 201:
+        return ShareCartGroup.fromJson(jsonDecode(response.body) as Map<String, dynamic>, GroupRole.ADMIN);
+      case 409:
+        throw ApiConflictException("A group with name $name already exists");
+      default:
+        throw ApiFailureException("Could not create group $name, request failed with code ${response.statusCode}");
     }
-    //TODO fail state (409 conflict or other)
-    throw UnimplementedError();
   }
 
   @override
@@ -479,9 +481,22 @@ class RealApiService implements ApiService {
   }
 
   @override
-  Future<ShareCartList?> addItemToList(int groupId, int listId, int itemId, int quantity, {bool communal = false}) {
-    // TODO: implement addItemToList
-    throw UnimplementedError();
+  Future<ShareCartList?> addItemToList(int groupId, int listId, int itemId, int quantity, {bool communal = false}) async {
+    var headers = await authorizedHeaders();
+    var response = await client.post(Uri.parse('$baseUrl/api/group/$groupId/item/$listId/add'), headers: headers, 
+      body: jsonEncode({
+        "itemId" : itemId,
+        "quantity" : quantity,
+        "communal" : communal,
+        "bought" : false
+      }));
+    
+    switch (response.statusCode) {
+      case 409:
+        throw ApiConflictException("Item has already been added to list");
+      default:
+        throw ApiFailureException("Could not add item to list");
+    }
   }
   
   @override

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_cart_flutter/app_bar.dart';
-import 'package:share_cart_flutter/create_group_dialog.dart';
 import 'package:share_cart_flutter/create_list_dialog.dart';
 import 'package:share_cart_flutter/exceptions.dart';
 import 'package:share_cart_flutter/list_page.dart';
