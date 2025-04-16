@@ -7,6 +7,8 @@ import 'package:share_cart_flutter/exceptions.dart';
 import 'package:share_cart_flutter/list_page.dart';
 import 'package:share_cart_flutter/providers/group_details_provider.dart';
 import 'package:share_cart_flutter/types.dart';
+import 'package:share_cart_flutter/create_item_dialog.dart';
+
 
 class GroupPage extends StatefulWidget {
   final ShareCartGroup group;
@@ -70,6 +72,22 @@ class _GroupPageState extends State<GroupPage> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () async {
+                        final newItemData = await showDialog<Map<String, dynamic>>(
+                          context: context,
+                          builder: (context) => const CreateItemDialog(),
+                        );
+                        if (newItemData != null) {
+                          // call provider
+                        }
+                      },
+                      icon: Icon(Icons.add_shopping_cart),
+                      label: Text('New Item'),
                     ),
                   ),
                   Expanded(
