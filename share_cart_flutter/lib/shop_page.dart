@@ -39,6 +39,7 @@ class _SearchPageState extends State<ShopPage> {
           List<ShareCartItem> filteredItems = items
             .where((item) =>
                 item.name.toLowerCase().contains(_searchQuery) ||
+                item.category.toLowerCase().contains(_searchQuery) ||
                 item.description.toLowerCase().contains(_searchQuery))
             .toList();
           if (sortByValue == 'alphabetical') {
