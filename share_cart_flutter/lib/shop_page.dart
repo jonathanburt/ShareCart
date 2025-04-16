@@ -5,7 +5,6 @@ import 'package:share_cart_flutter/app_bar.dart';
 import 'package:share_cart_flutter/exceptions.dart';
 import 'package:share_cart_flutter/providers/group_details_provider.dart';
 import 'package:share_cart_flutter/types.dart';
-import 'package:share_cart_flutter/api_service.dart';
 
 class ShopPage extends StatefulWidget {
   final int listId;
