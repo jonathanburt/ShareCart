@@ -74,20 +74,41 @@ class _GroupPageState extends State<GroupPage> {
                     ),
                   ),
                   SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () async {
-                        final newItemData = await showDialog<Map<String, dynamic>>(
-                          context: context,
-                          builder: (context) => const CreateItemDialog(),
-                        );
-                        if (newItemData != null) {
-                          // call provider
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      final newItemData = await showDialog<Map<String, dynamic>>(
+                        context: context,
+                        builder: (context) => const CreateItemDialog(),
+                      );
+                      if (newItemData != null) {
+                        try{
+                          groupDetailsProvider.createItem(newItemData['name'], newItemData['description'], newItemData['category'], newItemData['price']);
+                        } on ApiConflictException catch (e){
+                          if(!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(e.message))
+                          );
+                        } on ApiUnauthorizedException catch (e){
+                          if(!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(e.message))
+                          );
+                        } on ApiFailureException catch (e) {
+                          if(!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(e.message))
+                          );
                         }
-                      },
-                      icon: Icon(Icons.add_shopping_cart),
-                      label: Text('New Item'),
-                    ),
+                      }
+                    },
+                    icon: Icon(Icons.add_shopping_cart),
+                    label: Text('New Item'),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: Size.fromHeight(50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    )
                   ),
                   Expanded(
                     child: ListView(

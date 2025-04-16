@@ -55,7 +55,7 @@ public class ItemController {
     @PostMapping("/create")
     public ResponseEntity<ItemDTO> createItem(@PathVariable Integer groupId, @RequestBody ItemCreateDTO itemCreateDTO) {
         String name = itemCreateDTO.getName();
-        String description = itemCreateDTO.getName();
+        String description = itemCreateDTO.getDescription();
         String category = itemCreateDTO.getCategory();
         Float price = itemCreateDTO.getPrice();
         ItemDTO item = itemService.createItem(name, description, category, price, groupId);

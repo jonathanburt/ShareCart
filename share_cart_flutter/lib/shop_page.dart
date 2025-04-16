@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_cart_flutter/add_item_to_list_dialog.dart';
 import 'package:share_cart_flutter/app_bar.dart';
+import 'package:share_cart_flutter/exceptions.dart';
 import 'package:share_cart_flutter/providers/group_details_provider.dart';
 import 'package:share_cart_flutter/types.dart';
 import 'package:share_cart_flutter/api_service.dart';
@@ -97,8 +98,16 @@ class _SearchPageState extends State<ShopPage> {
                           if(newListItem == null) return;
                           try{
                             await groupDetailsProvider.addItemToList(widget.listId, item.id, newListItem.quantity, communal: newListItem.communal);
-                          } catch (e) {
-                            //TODO
+                          } on ApiConflictException catch (e) {
+                            if(!context.mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(e.message))
+                            );
+                          } on ApiFailureException catch (e) {
+                            if(!context.mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(e.message))
+                            );
                           }
                         });
                       })

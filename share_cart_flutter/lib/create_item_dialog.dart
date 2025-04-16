@@ -4,7 +4,7 @@ class CreateItemDialog extends StatefulWidget {
   const CreateItemDialog({super.key});
 
   @override
-  _CreateItemDialogState createState() => _CreateItemDialogState();
+  State createState() => _CreateItemDialogState();
 }
 
 class _CreateItemDialogState extends State<CreateItemDialog> {

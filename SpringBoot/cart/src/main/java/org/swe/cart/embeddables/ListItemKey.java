@@ -3,19 +3,15 @@ package org.swe.cart.embeddables;
 import java.io.Serializable;
 import java.util.Objects;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class ListItemKey implements Serializable {
     
-    @Column(name="item_id")
     private Integer itemid;
 
-    @Column(name="list_id")
     private Integer listid;
 
-    @Column(name="user_id")
     private Integer userid;
 
     public ListItemKey(){}

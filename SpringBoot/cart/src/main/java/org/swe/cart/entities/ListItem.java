@@ -23,7 +23,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="listItem", uniqueConstraints = @UniqueConstraint(columnNames = {"item_id", "list_id", "user_id"}))
+@Table(name="listItem")
 public class ListItem {
 
     @EmbeddedId
@@ -31,7 +31,7 @@ public class ListItem {
 
     @ManyToOne
     @MapsId("itemid")
-    @JoinColumn(name="item_id", nullable=false, unique=true) //We probably shouldnt have this field be unique, we should ensure uniqueness within a list using other logic
+    @JoinColumn(name="item_id", nullable=false)
     private Item item;
 
     @ManyToOne

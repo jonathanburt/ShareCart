@@ -492,6 +492,8 @@ class RealApiService implements ApiService {
       }));
     
     switch (response.statusCode) {
+      case 201:
+        return null;
       case 409:
         throw ApiConflictException("Item has already been added to list");
       default:
@@ -500,9 +502,26 @@ class RealApiService implements ApiService {
   }
   
   @override
-  Future<ShareCartItem?> createItem(int groupId, String name, {String description = "", String category = "", double price = 0.0}) {
-    // TODO: implement createItem
-    throw UnimplementedError();
+  Future<ShareCartItem?> createItem(int groupId, String name, {String description = "", String category = "", double price = 0.0}) async {
+    var headers = await authorizedHeaders();
+    var response = await client.post(Uri.parse('$baseUrl/api/group/$groupId/item/create'), headers: headers,
+    body: jsonEncode({
+      "name" : name,
+      "description" : description,
+      "category" : category,
+      "price" : price
+    }));
+
+    switch (response.statusCode) {
+      case 201:
+        return ShareCartItem.fromJson(jsonDecode(response.body));
+      case 401:
+        throw ApiUnauthorizedException("Do not have permissions to create items in this group");
+      case 409:
+        throw ApiConflictException("Item already exists in this group");
+      default:
+        throw ApiFailureException("Could not create item");
+    }
   }
   
   @override

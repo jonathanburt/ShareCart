@@ -67,6 +67,7 @@ public class ListItemService {
         listItemKey.setUserid(user.getId());
 
         listItem.setId(listItemKey);
+        System.err.println(listItemKey.hashCode());
         listItem.setCommunal(communal);
         listItem = listItemRepository.save(listItem);
 
