@@ -46,6 +46,12 @@ public class ItemController {
     private final ListRepository listRepository;
     private final ItemRepository itemRepository;
     
+    /**
+     * this method only performs actions on the network layer, and calls Item Service for the rest
+     * @author Jeremy Bullis jab525@case.edu
+     * @param groupId the ID of the group to which the user is retrieving the items, found in the URL
+     * @return a formatted http response with information about the items that the method is retrieving from the specified group
+     */
     @GetMapping("/getall")
     @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId) or hasAuthority('ROLE_MEMBER_GROUP_' + #groupId)")
     public ResponseEntity<List<ItemDTO>> getAllItems(@PathVariable Integer groupId) {
@@ -53,6 +59,13 @@ public class ItemController {
         return ResponseEntity.ok(items);
     }
 
+    /**
+     * this method performs actions only on the network layer and calls to ItemService
+     * @author Jeremy Bullis jab525@case.edu
+     * @param groupId the ID of the group to which the use is adding the item, found in the URL
+     * @param itemCreateDTO the data transfer object representing the item that the user is creating, containing the item's name, description, category, and price
+     * @return a formatted http response containing information about the new item that was created
+     */
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId)")
     public ResponseEntity<ItemDTO> createItem(@PathVariable Integer groupId, @RequestBody ItemCreateDTO itemCreateDTO) {
@@ -64,7 +77,14 @@ public class ItemController {
         return ResponseEntity.status(HttpStatus.CREATED).body(item);
     }
 
-    
+    /**
+     * this method performs actions on the network layer and calls to ListItemService
+     * @author Jeremy Bullis jab525@case.edu
+     * @param groupId the ID of the group to which the user is adding the item, found in the URL
+     * @param listId the ID of the list to which the user is adding the item, found in the URL
+     * @param addItemToListDTO the data transfer objecting representing the addition of the item to the list, containing the item ID, the quantity, whether the item is communal, and whether the item has been bought
+     * @return a formatted http response containing the list item data transfer object
+     */
     @PostMapping("/{listId}/add")
     @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId) or hasAuthority('ROLE_MEMBER_GROUP_' + #groupId)")
     public ResponseEntity<ListItemDTO> addItemToList(@PathVariable Integer groupId, @PathVariable Integer listId, @RequestBody AddItemToListDTO addItemToListDTO) {
@@ -82,6 +102,15 @@ public class ItemController {
     }
 
 
+    /**
+     * this method performs actions only on the network layer and calls to ItemService for the rest
+     * @author Jeremy Bullis jab525@case.edu
+     * @param itemId the ID of the item which is being updated, found in the URL
+     * @param groupId the ID of the group to which the item belongs, also found in the URL
+     * @param updateItemDTO a data transfer object containing the item's name, description, category, and price
+     * @return formatted http response containing the data transfer object corresponding to the item being updated
+     * @throws GroupMismatchException
+     */
     @PutMapping("/{itemId}/update")
     @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId)")
     public ResponseEntity<ItemDTO> updateItem(@PathVariable Integer itemId, @PathVariable Integer groupId, @RequestBody UpdateItemDTO updateItemDTO) throws GroupMismatchException {
@@ -94,6 +123,14 @@ public class ItemController {
         return ResponseEntity.status(HttpStatus.CREATED).body(itemDTO);
     }
 
+    /**
+     * this method performs actions only on the network layer and calls ListItemService for the rest
+     * @author Jeremy Bullis jab525@case.edu
+     * @param groupId the ID of the group to which the specified item belongs, found in the URL
+     * @param listId the ID of the list to which the specified item belongs, found in the URL
+     * @param itemId the ID of the item being bought, found in the URL
+     * @return formatted http response containing the data transfer object corresponding to the specific list item
+     */
     @PutMapping("/{listId}/{itemId}/buy")
     @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId)")
     public ResponseEntity<ListItemDTO> buyItem(@PathVariable Integer groupId, @PathVariable Integer listId, @PathVariable Integer itemId){
@@ -104,7 +141,15 @@ public class ItemController {
         return ResponseEntity.status(HttpStatus.CREATED).body(listItemDTO);
     }
 
-
+    /**
+     * this method performs actions only on the network layer and calls listItemService for the rest
+     * @author Jeremy Bullis jab525@case.edu
+     * @param listId the ID of the list to which the specified item belongs, found in the URL
+     * @param groupId the ID of the group to which the specified item belongs, found in the URL
+     * @param itemId the ID of the item whose quantity is being changed, found in the URL
+     * @param changeQuantityDTO data transfer object containing the quantity of the item
+     * @return formatted http response containing the specified ListItem's data transfer object
+     */
     @PutMapping("/{listId}/{itemId}/quantity")
     @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId) or hasAuthority('ROLE_MEMBER_GROUP_' + #groupId)")
     public ResponseEntity<ListItemDTO> changeQuantity(@PathVariable Integer listId, @PathVariable Integer groupId, @PathVariable Integer itemId, @RequestBody ChangeQuantityDTO changeQuantityDTO){
@@ -116,12 +161,28 @@ public class ItemController {
         return ResponseEntity.status(HttpStatus.OK).body(listItemDTO);
     }
 
+    /**
+     * this method performs actions only on the network layer and calls ListItemService for the rest
+     * @author Jeremy Bullis jab525@case.edu
+     * @param listId the ID of the list from which the item is being removed, found in the URL
+     * @param itemId the ID of the item being removed from the list, found in the URL
+     * @param groupId the ID of the group to which the item belongs, found in the URL
+     * @return calls deleteListItem from ListItemService, which returns a message verifying that the item has been deleted from the list
+     */
     @PutMapping("/{listId}/{itemId}/remove")
     @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId)")
     public String removeItemFromList(@PathVariable Integer listId, @PathVariable Integer itemId, @PathVariable Integer groupId){
         return listItemService.deleteListItem(itemId, listId);
     }
 
+    /**
+     * this method performs actions only on the network layer and calls ItemService for the rest
+     * @author Jeremy Bullis jab525@case.edu
+     * @param itemId the ID of the item being deleted, found in the URL
+     * @param groupId the ID of the group from which the item is being deleted, found in the URL
+     * @return calls deleteItem from ItemService, which returns a message verifying that the item has been deleted from the group
+     * @throws GroupMismatchException
+     */
     @DeleteMapping("/{itemId}/delete")
     @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId)")
     public String deleteItem(@PathVariable Integer itemId, @PathVariable Integer groupId) throws GroupMismatchException{

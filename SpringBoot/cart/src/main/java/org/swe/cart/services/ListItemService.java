@@ -34,12 +34,30 @@ public class ListItemService {
     private final ItemRepository itemRepository;
     private final ListItemRepository listItemRepository;
 
+    /**
+     * gets a list of all items from a given list
+     * @author Jeremy Bullis jab525@case.edu
+     * @param listId the ID of the list from which the items are being retrieved, found in the URL
+     * @return list of the ListItems contained in the given list
+     */
     public List<ListItem> getListItems(Integer listId){
         ShopList list = listRepository.findById(listId).orElseThrow();
         return listItemRepository.findByList(list);
     }
 
 
+    /**
+     * adds an already-created item to a list
+     * @author Jeremy Bullis jab525@case.edu
+     * @param groupId the ID of the group to which the list belongs, where the user is adding the item, found in the URL
+     * @param listId the ID of the list to which the item is being added, found in the URL
+     * @param userId the ID of the current user
+     * @param itemId the ID of the item which is being added to the list, found in the URL
+     * @param quantity the quantity that the user wants of the item
+     * @param bought whether or not the item has been bought (defaults to false)
+     * @param communal whether the item is for an individual or for a group
+     * @return data transfer object corresponding to the list item
+     */
     public ListItemDTO addItemToList(Integer groupId, Integer listId, Integer userId, Integer itemId, Integer quantity, Boolean bought, Boolean communal){
         Group group = groupRepository.findById(groupId).orElseThrow();
         
@@ -78,6 +96,12 @@ public class ListItemService {
 
     }
 
+    /**
+     * formats a given time to HTTP
+     * @author Jeremy Bullis jab525@case.edu
+     * @param instant the time which will be converted to HTTP format
+     * @return the correctly HTTP-formatted date time
+     */
     private String formatInstantToHTTP(Instant instant) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(
             "EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
@@ -85,11 +109,27 @@ public class ListItemService {
         return dateFormat.format(Date.from(instant));
     }
 
+    /**
+     * converts a given List Item to the corresponding data transfer object
+     * @author Jeremy Bullis jab525@case.edu
+     * @param listItem the list item whose data transfer object we want
+     * @return the data transfer object corresponding to the given list item
+     */
     private ListItemDTO listItemToListItemDTO(ListItem listItem){
         ListItemDTO listItemDTO = new ListItemDTO(listItem.getItem().getId(), listItem.getList().getId(), listItem.getUser().getId(), listItem.getCommunal(), listItem.getQuantity(), listItem.getBought(), formatInstantToHTTP(listItem.getCreatedAt()));
         return listItemDTO;
     }
 
+    /**
+     * updates the information for a given List Item
+     * @author Jeremy Bullis jab525@case.edu
+     * @param listId the ID of the list to which the item belongs, found in the URL
+     * @param itemId the ID of the item being updated, found in the URL
+     * @param quantity the new quantity of the item
+     * @param communal whether the item is for an individual or the group as a whole
+     * @param bought whether or not the item has been bought
+     * @return the data transfer object corresponding to the list item
+     */
     public ListItemDTO updateListItem(Integer listId, Integer itemId, Integer quantity, Boolean communal, Boolean bought){
         Item item = itemRepository.findById(itemId).orElseThrow();
         ShopList list = listRepository.findById(listId).orElseThrow();
@@ -103,6 +143,13 @@ public class ListItemService {
         return listItemDTO;
     }
 
+    /**
+     * removes a given item from a list
+     * @author Jeremy Bullis jab525@case.edu
+     * @param itemId the ID of the item being removed from the list, found in the URL
+     * @param listId the ID of the list from which the item is being removed, found in the URL
+     * @return a message verifying that the item has been removed from the list
+     */
     public String deleteListItem(Integer itemId, Integer listId){
         Item item = itemRepository.findById(itemId).orElseThrow();
         ShopList list = listRepository.findById(listId).orElseThrow();
@@ -110,6 +157,13 @@ public class ListItemService {
         return "Item removed from list";
     }
 
+    /**
+     * updates a given list item to reflect that it has been bought
+     * @author Jeremy Bullis jab525@case.edu
+     * @param listId the ID of the list to which the item belongs, found in the URL
+     * @param itemId the ID of the item being bought, found in the URL
+     * @return the data transfer object of the item being bought
+     */
     public ListItemDTO buyItem(Integer listId, Integer itemId){
         ShopList list = listRepository.findById(listId).orElseThrow();
         Item item = itemRepository.findById(itemId).orElseThrow();
