@@ -1,7 +1,4 @@
 # ShareCart
-Streamline grocery shopping in shared living 
-
-ShareCart: Collaborative Shopping List Application
 
 Project Description:
 ShareCart is an innovative mobile application designed to revolutionize the way groups manage their shopping needs. At its core, ShareCart serves as a digital platform that enables seamless collaboration between users when creating and managing shopping lists. The application is built using Flutter, providing a cross-platform solution that works on both iOS and Android devices. ShareCart addresses a common pain point in shared living situations: the coordination of shopping responsibilities and the management of household supplies. Whether it's roommates sharing an apartment, families managing their grocery needs, or friends planning a group shopping trip, ShareCart provides an intuitive solution to keep everyone on the same page.
