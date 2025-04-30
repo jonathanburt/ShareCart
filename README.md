@@ -16,6 +16,40 @@ The application features a robust user authentication system, allowing individua
 ### Front End Preview
 ![alt text](imgs/frontend.png)
 
+### Dependencies
+#### Frontend
+Flutter Dependencies:
+- `provider ^6.1.2`
+- `cupertino_icons ^1.0.8`
+- `fetch_client ^1.1.2`
+- `http ^1.3.0`
+- `flutter_secure_storage ^9.2.4`
+
+Flutter Testing Dependencies:
+- `mockito ^5.4.5`
+- `build_runner ^2.4.15`
+- `flutter_lints ^5.0.0`
+- `test ^1.25.8`
+
+#### Backend
+Spring Boot Dependencies:
+- `org.springframework.boot:spring-boot-starter-data-jpa`
+- `org.springframework.boot:spring-boot-docker-compose`
+- `org.springframework.boot:spring-boot-starter-security`
+- `org.springframework.boot:spring-boot-starter-web`
+- `org.springframework.boot:spring-boot-starter-validation`
+- `com.auth0:java-jwt:4.4.0`
+- `org.projectlombok:lombok`
+- `com.mysql:mysql-connector-j`
+- `org.springframework.boot:spring-boot-starter-actuator`
+- `org.springframework.boot:spring-boot-starter-test`
+- `org.springframework.boot:spring-boot-testcontainers`
+- `org.testcontainers:junit-jupiter`
+- `org.testcontainers:mysql`
+- `org.springframework.security:spring-security-test`
+- `org.junit.platform:junit-platform-launcher`
+- `jakarta.persistence:jakarta.persistence-api:3.1.0`
+
 ## Startup Guide
 
 The following guide assumes you use VSCode as your IDE.
