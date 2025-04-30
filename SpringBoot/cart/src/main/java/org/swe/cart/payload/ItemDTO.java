@@ -1,7 +1,5 @@
 package org.swe.cart.payload;
 
-import org.swe.cart.entities.Group;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

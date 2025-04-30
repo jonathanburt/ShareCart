@@ -18,6 +18,9 @@ public class CustomUserDetails implements UserDetails {
         this.user = user;
     }
 
+    /**
+     * GrantedAuthorities for a User are thier GlobalRole, as well as Role in each group they are a member of.
+     */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> authorities = new HashSet<>();
@@ -30,24 +33,39 @@ public class CustomUserDetails implements UserDetails {
         return authorities;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getPassword(){
         return user.getPassword();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getUsername(){
         return user.getUsername();
     }
 
+    /**
+     * @return The ID of User
+     */
     public Integer getId(){
         return user.getId();
     }
 
+    /**
+     * @return The Email of User
+     */
     public String getEmail(){
         return user.getEmail();
     }
 
+    /**
+     * @return The creation timestamp of User
+     */
     public Instant getCreatedAt(){
         return user.getCreatedAt();
     }

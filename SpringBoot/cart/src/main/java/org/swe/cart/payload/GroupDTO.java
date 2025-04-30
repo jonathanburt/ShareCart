@@ -3,8 +3,6 @@ package org.swe.cart.payload;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.swe.cart.entities.GroupRole;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
