@@ -27,6 +27,7 @@ The following guide assumes you use VSCode as your IDE.
 - Install VSCode and the Flutter VSCode extension
 
 ### Starting the Back End
+Ensure that Docker is running, as Gradle will create the mysql container automatically.
 ```bash
 cd SpringBoot/cart
 ./gradlew bootRun # (if you're on Windows, use gradlew.bat instead)
