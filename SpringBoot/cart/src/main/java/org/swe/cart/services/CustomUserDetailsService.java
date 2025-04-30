@@ -19,6 +19,9 @@ public class CustomUserDetailsService implements UserDetailsService{
     @Autowired
     private UserRepository userRepository;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
@@ -27,6 +30,12 @@ public class CustomUserDetailsService implements UserDetailsService{
         return new CustomUserDetails(user);
     }
 
+    /**
+     * Saves a new User entity in the DB with a hashed password
+     * @author Jonah Lorenzo jbl113@case.edu
+     * @param user The user to be saved.
+     * @return The User entity saved in the database.
+     */
     public User saveUser(User user) {
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         return userRepository.save(user);

@@ -2,7 +2,6 @@ package org.swe.cart.services;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -43,6 +42,12 @@ public class GroupService {
     private final GroupMemberRepository groupMemberRepository;
     private final GroupInviteRepository groupInviteRepository;
 
+    /**
+     * Finds all groups the user corresponding to username is a member of.
+     * @author Jonah Lorenzo jbl113@case.edu
+     * @param username The username corresponding to the user that the method finds GroupMember objects for
+     * @return A list of data transfer objects containg information on the groups the client is a member of: a String name, Integer ID, String creation timestamp, a lsit of GroupMemberDTOs, and a list of GroupInviteDTOs.
+     */
     public List<GroupDTO> getUserGroups(String username) {
     User user = userRepository.findByUsername(username)
         .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
@@ -71,7 +76,12 @@ public class GroupService {
         .collect(Collectors.toList());
     }
 
-
+    /**
+     * Finds a single group from the provided ID
+     * @author Jonah Lorenzo jbl113@case.edu
+     * @param groupId The ID of the group to locate
+     * @return A data transfer object containg details of the found group
+     */
     public GroupDTO getGroupById(Integer groupId){
         Group group = groupRepository.findById(groupId).orElseThrow();
         GroupDTO groupDTO = groupToGroupDTO(group);
@@ -79,6 +89,13 @@ public class GroupService {
         return groupDTO;
     }
 
+    /**
+     * Creates a new Group in the DB
+     * @author Jonah Lorenzo jbl113@case.edu
+     * @param username The username corresponding to the user creating the group
+     * @param groupCreateDTO A data transfer object containing a unique String name that will be assigned to the new group
+     * @return A data transfer object containg details of the new group.
+     */
     public GroupDTO createGroup(String username, GroupCreateDTO groupCreateDTO){
         User user = userRepository.findByUsername(username)
             .orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -100,6 +117,15 @@ public class GroupService {
         return groupDTO;
     }
 
+    /**
+     * Creates a new GroupInvite object in the DB
+     * @author Jonah Lorenzo jbl113@case.edu
+     * @param groupId The ID corresponding to the group the invite is created in.
+     * @param username The username corresponding to the user to be invited to the group.
+     * @return An updated data transfer object containg group details
+     * @throws UserAlreadyInGroupException
+     * @throws UserAlreadyInvitedToGroupException
+     */
     public GroupDTO inviteUser(Integer groupId, String username) throws UserAlreadyInGroupException, UserAlreadyInvitedToGroupException{ //TODO Change to useful return type
         Group group = groupRepository.findById(groupId).orElseThrow();
         User user = userRepository.findByUsername(username).orElseThrow();
@@ -118,6 +144,16 @@ public class GroupService {
 
         return groupToGroupDTO(groupRepository.findById(groupId).get());
     }
+
+    /**
+     * Removes an existing GroupInvite enrty from the DB and creates a new GroupMember entity.
+     * @author Jonah Lorenzo jbl113@case.edu
+     * @param groupId The ID corresponding to the group the invite exists in.
+     * @param auth An Authentication object corresponding to the requester
+     * @return An updated data transfer object for the Group.
+     * @throws UserNotInvitedToGroupException
+     * @throws UserAlreadyInGroupException
+     */
     @Transactional
     public GroupDTO acceptInvite(Integer groupId, Authentication auth) throws UserNotInvitedToGroupException, UserAlreadyInGroupException{
         String username = auth.getName();
@@ -145,6 +181,15 @@ public class GroupService {
         return groupToGroupDTO(groupRepository.findById(groupId).get());
     }
 
+    /**
+     * Removes an existing GroupInvite entry from the DB.
+     * @author Jonah Lorenzo jbl113@case.edu
+     * @param groupId The ID corresponding to the group the invite exists for.
+     * @param auth An Authentication object corresponding to the requester.
+     * @throws UserNotInvitedToGroupException
+     * @throws UserAlreadyInGroupException
+     */
+    @Transactional
     public void declineInvite(Integer groupId, Authentication auth) throws UserNotInvitedToGroupException, UserAlreadyInGroupException{
         String username = auth.getName();
         User user = userRepository.findByUsername(username)
@@ -159,6 +204,13 @@ public class GroupService {
         groupInviteRepository.deleteByUserAndGroup(user, group);
     }
 
+    /**
+     * Deletes a GroupMember entity from the DB.
+     * @author Jonah Lorenzo jbl113@case.edu
+     * @param groupId The ID corresponding to the group the GroupMember entry is linked to.
+     * @param userId The ID corresponding to to the user in the GroupMember entry.
+     * @return An updated data transfer object with Group details.
+     */
     public GroupDTO removeUser(Integer groupId, Integer userId){
         User user = userRepository.findById(userId).orElseThrow();
         Group group = groupRepository.findById(groupId).orElseThrow();
@@ -169,6 +221,14 @@ public class GroupService {
         return groupToGroupDTO(groupRepository.findById(userId).get());
     }
 
+    /**
+     * Changes the GroupRole in a GroupMember entry.
+     * @author Jonah Lorenzo jbl113@case.edu
+     * @param groupId The ID corresponding to the group the GroupMember entry is in.
+     * @param userId The ID corresponding to the user linked to the GroupMember.
+     * @param role The new GroupRole to be assigned in the GroupMember entry.
+     * @return An updated data transfer object with Group details.
+     */
     public GroupDTO changeUserPermission(Integer groupId, Integer userId, GroupRole role){
         User user = userRepository.findById(userId).orElseThrow();
         Group group = groupRepository.findById(userId).orElseThrow();
@@ -181,11 +241,24 @@ public class GroupService {
         return groupToGroupDTO(groupRepository.findById(groupId).get());
     }
 
+    /**
+     * Removes a Group entry from the DB.
+     * @author Jonah Lorenzo jbl113@case.edu
+     * @param groupId The ID of the group to be deleted.
+     * @return A string that states that removal was succesful.
+     */
+    @Transactional
     public String deleteGroup(Integer groupId){
         groupRepository.deleteById(groupId);
         return "Group removed";
     }
 
+    /**
+     * Generated a data transfer object that contains the details of the provided group.
+     * @author Jonah Lorenzo jbl113@case.edu
+     * @param group The Group object to be transfered to a DTO.
+     * @return A data transfer object containing details of the provided group: An Integer ID, String name, String creation timestamp, and two lists of GroupMemberDTO and GroupInviteDTO respectively.
+     */
     private GroupDTO groupToGroupDTO(Group group){
         GroupDTO groupDTO = new GroupDTO(group.getName(),
                                          group.getId(),
@@ -209,6 +282,12 @@ public class GroupService {
         return groupDTO;
     }
 
+    /**
+     * Converts a Java Instant object to a String formatted according to ISO 8601 standards
+     * @author Jonah Lorenzo jbl113@case.edu
+     * @param instant The Instant object to be converted
+     * @return A String object with the information of instant in ISO 8601 format in GMT
+     */
     private String formatInstantToHTTP(Instant instant) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(
             "EEE, dd MMM yyyy HH:mm:ss z", Locale.US);

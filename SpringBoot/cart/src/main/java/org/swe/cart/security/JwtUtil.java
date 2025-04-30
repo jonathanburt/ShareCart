@@ -15,6 +15,14 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 public class JwtUtil {
     private final String SECRET_KEY = "your-secret-key"; // Use environment variables in production
     private final String ISSUER = "ShareCartApplicationServer";
+
+    /**
+     * Creates a new JWT used for authentication.
+     * @param username The username to be included in the JWT.
+     * @return A String JWT containing the username in the User Details subject, an issue date, an expiry date, an issuer, and a server signature.
+     * @throws IllegalArgumentException
+     * @throws JWTCreationException
+     */
     public String generateToken(String username) throws IllegalArgumentException, JWTCreationException{
         return JWT.create()
                 .withSubject("User Details")
@@ -25,6 +33,11 @@ public class JwtUtil {
                 .sign(Algorithm.HMAC256(SECRET_KEY)); //TODO Change encryption algorithm to something more secure
     }
 
+    /**
+     * Verifies the expiration time of the JWT.
+     * @param token The JWT to be verified, as a String.
+     * @return A boolean indicating true if the expiration time on the token has passed.
+     */
     public boolean isTokenExpired(String token) {
         try {
             Date expiration = JWT.require(Algorithm.HMAC256(SECRET_KEY))
@@ -37,6 +50,12 @@ public class JwtUtil {
         }
     }
 
+    /**
+     * Validates a JWT and finds the username.
+     * @param token The String JWT to be verified.
+     * @return A String username extracted from the JWT if verification succeeds.
+     * @throws JWTVerificationException
+     */
     public String validateTokenAndRetrieveUsername(String token) throws JWTVerificationException{
         JWTVerifier verifier = JWT.require(Algorithm.HMAC256(SECRET_KEY))
                 .withSubject("User Details")

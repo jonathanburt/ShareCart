@@ -59,16 +59,27 @@ public class UserController {
     @Autowired
     private GroupInviteRepository groupInviteRepository;
 
+    /**
+     * This is the primary authentication layer, it generates Authentication tokens for later use by the client
+     * @author Jonah Lorenzo jbl113@case.edu
+     * @param loginDTO A data transfer object that contains login information for the user: a String username and a String password
+     * @return A formatted HTTP response containing the JWT authentication token and some user details: the user ID, email and join timestamp
+     */
     @PostMapping("/auth/signin")
     public ResponseEntity<AuthResponseDTO> authenticateUser(@RequestBody LoginDTO loginDTO) {
         Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(
             loginDTO.getUsername(), loginDTO.getPassword()));
         String token = jwtUtil.generateToken(loginDTO.getUsername());
         CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
-        System.out.println(user.getId());
         return new ResponseEntity<>(new AuthResponseDTO(token, user.getId(), user.getEmail(), formatInstantToHTTP(user.getCreatedAt())), HttpStatus.OK);
     }
 
+    /**
+     * This is where user account creation takes place. This will recieve new user information and create a new DB entry.
+     * @author Jonah Lorenzo jbl113@case.edu
+     * @param signUpDTO A data transfer object containing a String username, String email, and String password. The email and username must be unique.
+     * @return A formatted HTTP response containing either the new user ID and creation timestamp, or nothing if registration fails
+     */
     @PostMapping("/auth/signup")
     public ResponseEntity<RegisterResponseDTO> registerUser(@RequestBody SignUpDTO signUpDTO) {
         if(userRepository.existsByUsername(signUpDTO.getUsername())){
@@ -90,6 +101,12 @@ public class UserController {
         return new ResponseEntity<>(new RegisterResponseDTO(user.getId(), formatInstantToHTTP(user.getCreatedAt())), HttpStatus.OK);
     }
 
+    /**
+     * This is how the requester gets a list of all groups they have been invited to
+     * @author Jonah Lorenzo jbl113@case.edu
+     * @param userId The ID corresponding to the user logged in on the client device. This is provided in the request URL.
+     * @return A formatted HTTP response containing list of data transfer objects with detail of a GroupInvite: an Integer group ID, String group name, and creation timestamp.
+     */
     @GetMapping("/users/{userId}/invites/get")
     public ResponseEntity<List<GroupInviteDTO2>> getInvites(@PathVariable Integer userId) {
         try {
@@ -105,12 +122,24 @@ public class UserController {
         }
     }
 
+    /**
+     * This method deletes a User object from the DB, and all corresponding GroupMember, GroupInvite, and ListItem entries.
+     * @author Jonah Lorenzo jbl113@case.edu
+     * @param userId The ID of the user to be removed, must match the user ID of the requester
+     * @return NOT FUNCTIONAL
+     */
     @DeleteMapping("/users/{userId}/remove")
     public String deleteUser(@PathVariable Integer userId){ //Maybe change to void return type, also maybe require additional password validation?
         //TODO
         return "";
     }
 
+    /**
+     * Converts a Java Instant object to a String formatted according to ISO 8601 standards
+     * @author Jonah Lorenzo jbl113@case.edu
+     * @param instant The Instant object to be converted
+     * @return A String object with the information of instant in ISO 8601 format in GMT
+     */
     private String formatInstantToHTTP(Instant instant) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(
             "EEE, dd MMM yyyy HH:mm:ss z", Locale.US);

@@ -26,8 +26,6 @@ import org.swe.cart.services.CustomUserDetailsService;
 public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtFilter;
-    // @Autowired
-    // private CustomUserDetailsService customUserDetailsService;
 
     /**
      * @author Jonah Lorenzo jbl113@case.edu
