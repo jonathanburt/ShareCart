@@ -25,6 +25,7 @@ The following guide assumes you use VSCode as your IDE.
 - Install Dart development packages
 - Install Docker
 - Install VSCode and the Flutter VSCode extension
+- Install Gradle for Java
 
 ### Starting the Back End
 Ensure that Docker is running, as Gradle will create the mysql container automatically.
@@ -41,7 +42,21 @@ cd SpringBoot/cart
 TODO
 
 ### Running Back End Tests
-TODO
+To run JUnit Tests:
+```bash
+cd SpringBoot/cart
+./gradlew test
+```
+Note: Some tests will fail, as implementations changed after these tests were written, however they were kept for the sake of posterity.
+
+To run Postman Tests:
+1. Follow above steps to start the backend
+2. Import `SWE Environment.postman_environment.json` into Postman
+3. Import `SWE Testing.postman_collection.json` into Postman
+4. Set the Environment in the SWE Testing collection to SWE Environment.
+4. In the SWE Testing collection, execute the `Sign Up` request with a unique username, email, and password.
+5. In the SWE Testing collection, execute the `Sign In` request with the username and password. Copy the returned token (without quotes) into the SWE Environment Variable titled `access_token`.
+6. All other tests can now be executed.
 
 ### Generating Front End Documentation
 ```bash
@@ -72,13 +87,31 @@ For example, consider a typical use case: a group of college students sharing an
 - `share_cart_flutter` - Flutter (front end) application root directory.
     - `doc` - Documentation.
     - `lib` - Application UI files.
-        - `providers` - Provider files (providers are a data sharing construct specific to Dart).
+        - `providers` - Provider files (providers are a data sharing construct specific to Flutter).
         - `pages` - Page files.
         - `common` - UI elements and types shared across the pages.
         - `main.dart` - The main dart file which is the entrypoint for the application.
     - `test` - Unit tests.
 - `SpringBoot` - SpringBoot (back end) application root directory.
-    - TODO
+    - `cart` - Spring Boot generated package directory.
+        - `gradle` 
+            - `wrapper` - Gradle jar file directory.
+        - `src` - Source code directory
+            - `main` - Primary source code
+                -  `java\org\swe\cart`- Backend end Java source directory where primary application is located
+                    - `configs` - Configuration files
+                    - `controllers` - REST Controller Java files
+                    - `embeddables` - Embeddable ID definitions
+                    - `entities` - Database Entity definitions
+                    - `exceptions` - Custom Exception Type definitions
+                    - `payload` - Data Transfer Object definitions
+                    - `repositories` - JPA Repository interface declarations
+                    - `security` - User Authentication system definitions
+                    - `services` - Backend services
+                -   `resources` - Application properties directory for Spring Boot
+            - `test` - Test source code
+                - `java\org\swe\cart` - Java tests
+                - `postman` - Manually performed Postman tests saved in JSON
 
 ## Tech Stack
 
@@ -118,7 +151,15 @@ As illustrated by the above diagram, our application consists for three main dep
 - Front end testing
 
 ## Development Retrospective
-TODO
+Our development roadblocks manifested in three primary points:
+1. Concurrent development of the front and backends lead to conflicting design ideologies that were difficult to merge.
+2. Poor communication often led to confusion and delays in implementation.
+3. Poor understanding of development frameworks led to team members spending time trying to make suboptimal solutions work, when there were better options available.
+
+Potential solutions could be:
+1. Spending more time in the early design stage to define server-client interactions more thoroughly could have allowed the front and back end teams to work independently without resulting in diverging implementations.
+2. Sticking to planned meeting times, and making better use of organizational tools such as Trello.
+3. This issue was inevitable, given that no members of the team were familiar with the tools used, and as the project progressed understanding improved. Doing more research could have been helpful making this process faster.
 
 ## License
 This project is licensed under the MIT License, a permissive free software license that places minimal restrictions on how the software can be used, modified, and distributed. The MIT License allows for commercial use, modification, distribution, and private use of the software.
