@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:share_cart_flutter/api_service.dart';
-import 'package:share_cart_flutter/exceptions.dart';
 import 'package:share_cart_flutter/types.dart';
 
 class GroupDetailsProvider extends ChangeNotifier {
