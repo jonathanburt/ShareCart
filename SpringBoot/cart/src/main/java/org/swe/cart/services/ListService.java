@@ -30,7 +30,7 @@ public class ListService {
 
     /**
      * adds a list to a given group
-     * @uthor Jeremy Bullis jab525@case.edu
+     * @author Jeremy Bullis jab525@case.edu
      * @param groupId the ID of the group to which the list is being added, found in the URL
      * @param name the name of the list
      * @return the data transfer object corresponding to the newly-created list
