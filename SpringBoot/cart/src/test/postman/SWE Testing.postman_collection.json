@@ -1,0 +1,523 @@
+{
+	"info": {
+		"_postman_id": "a3fc43ff-3c85-4ec0-b468-71adcaead276",
+		"name": "SWE Testing",
+		"description": "This collection contains Postman requests used to manually test endpoints of the ShareCart API.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39420343"
+	},
+	"item": [
+		{
+			"name": "Sign in",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\":\"Jonah\",\"password\":\"password\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/signin",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"signin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getAllGroups",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJVc2VyIERldGFpbHMiLCJ1c2VybmFtZSI6IkpvbmFoIiwiaWF0IjoxNzQ0OTA1ODc1LCJleHAiOjE3NDQ5NDE4NzUsImlzcyI6IlNoYXJlQ2FydEFwcGxpY2F0aW9uU2VydmVyIn0.kx6YaKlKdEYNlDog2tsETOCFhvIyygwBfAcojSOOmo8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/group/get/all",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"group",
+						"get",
+						"all"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Group",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJVc2VyIERldGFpbHMiLCJ1c2VybmFtZSI6IkpvbmFoIiwiaWF0IjoxNzQyNTA2ODA2LCJleHAiOjE3NDI1NDI4MDYsImlzcyI6IlNoYXJlQ2FydEFwcGxpY2F0aW9uU2VydmVyIn0.FLCLQ4IdpBOrqhZTvqnOYp7GYwkjre96AfYVocc-qvU",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"name\":\"test\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/group/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"group",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Sign Up",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"Jonah\",\"email\":\"jbl113@case.edu\",\"password\":\"password\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/auth/signup",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"auth",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add List",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJKb25haCIsImlhdCI6MTc0MjM5MjgxMywiZXhwIjoxNzQyNDI4ODEzfQ.MW6zG4xkKGXOgKHCloCzEtpAb1nnfdGGYzCTti5JvWk",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"name\" : \"List2\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/group/1/list/add",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"group",
+						"1",
+						"list",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Invite User",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJVc2VyIERldGFpbHMiLCJ1c2VybmFtZSI6IkpvbmFoIiwiaWF0IjoxNzQ0OTA1ODc1LCJleHAiOjE3NDQ5NDE4NzUsImlzcyI6IlNoYXJlQ2FydEFwcGxpY2F0aW9uU2VydmVyIn0.kx6YaKlKdEYNlDog2tsETOCFhvIyygwBfAcojSOOmo8",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\":\"Jonathan\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/group/2/invite",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"group",
+						"2",
+						"invite"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Group By Id",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJVc2VyIERldGFpbHMiLCJ1c2VybmFtZSI6IkpvbmFoIiwiaWF0IjoxNzQzNDMxNzQ1LCJleHAiOjE3NDM0Njc3NDUsImlzcyI6IlNoYXJlQ2FydEFwcGxpY2F0aW9uU2VydmVyIn0.23I-xx29pkUTkJrQ_0EhA0MCqfc5lyvTqLQRWMfoO1M",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/group/get/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"group",
+						"get",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Item",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJVc2VyIERldGFpbHMiLCJ1c2VybmFtZSI6IkpvbmFoIiwiaWF0IjoxNzQ0NDc5MTkwLCJleHAiOjE3NDQ1MTUxOTAsImlzcyI6IlNoYXJlQ2FydEFwcGxpY2F0aW9uU2VydmVyIn0.lT6GKbaOjmfRAAJ8-T1GfzwX2Wwhx7pERnbAukm-sbo",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\" : \"Apple\",\r\n    \"description\" : \"Red, Sweet, Fruit\",\r\n    \"category\" : \"Produce\",\r\n    \"price\" : 1.99\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/group/1/item/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"group",
+						"1",
+						"item",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Item To List",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJVc2VyIERldGFpbHMiLCJ1c2VybmFtZSI6IkpvbmFoIiwiaWF0IjoxNzQ0NDc5MTkwLCJleHAiOjE3NDQ1MTUxOTAsImlzcyI6IlNoYXJlQ2FydEFwcGxpY2F0aW9uU2VydmVyIn0.lT6GKbaOjmfRAAJ8-T1GfzwX2Wwhx7pERnbAukm-sbo",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"itemId\" : 1,\r\n    \"quantity\" : 5,\r\n    \"communal\" : false,\r\n    \"bought\" : false\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/group/1/item/1/add",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"group",
+						"1",
+						"item",
+						"1",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get List",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJVc2VyIERldGFpbHMiLCJ1c2VybmFtZSI6IkpvbmFoIiwiaWF0IjoxNzQ0NDc5MTkwLCJleHAiOjE3NDQ1MTUxOTAsImlzcyI6IlNoYXJlQ2FydEFwcGxpY2F0aW9uU2VydmVyIn0.lT6GKbaOjmfRAAJ8-T1GfzwX2Wwhx7pERnbAukm-sbo",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/group/1/list/1/get",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"group",
+						"1",
+						"list",
+						"1",
+						"get"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Invites",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJVc2VyIERldGFpbHMiLCJ1c2VybmFtZSI6IkpvbmF0aGFuIiwiaWF0IjoxNzQ0OTA2NjI3LCJleHAiOjE3NDQ5NDI2MjcsImlzcyI6IlNoYXJlQ2FydEFwcGxpY2F0aW9uU2VydmVyIn0.dAfk0st7DYOgSbtHCiVPcuG5Ayqo-o57nvAA3sH4tYc",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/users/2/invites/get",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"users",
+						"2",
+						"invites",
+						"get"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Accept Invite",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJVc2VyIERldGFpbHMiLCJ1c2VybmFtZSI6IkpvbmF0aGFuIiwiaWF0IjoxNzQ0OTA2NjI3LCJleHAiOjE3NDQ5NDI2MjcsImlzcyI6IlNoYXJlQ2FydEFwcGxpY2F0aW9uU2VydmVyIn0.dAfk0st7DYOgSbtHCiVPcuG5Ayqo-o57nvAA3sH4tYc",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/group/1/invite/accept",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"group",
+						"1",
+						"invite",
+						"accept"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Item",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJVc2VyIERldGFpbHMiLCJ1c2VybmFtZSI6IkpvbmFoIiwiaWF0IjoxNzQ0OTA3NjU0LCJleHAiOjE3NDQ5NDM2NTQsImlzcyI6IlNoYXJlQ2FydEFwcGxpY2F0aW9uU2VydmVyIn0.Ha7Wx4BWJ3x8Xm5OEGsA67I1AkHG0wZZonWjfXOAbD0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/group/1/item/52/delete",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"group",
+						"1",
+						"item",
+						"52",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Items",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJVc2VyIERldGFpbHMiLCJ1c2VybmFtZSI6IkpvbmF0aGFuIiwiaWF0IjoxNzQ0OTA2NjI3LCJleHAiOjE3NDQ5NDI2MjcsImlzcyI6IlNoYXJlQ2FydEFwcGxpY2F0aW9uU2VydmVyIn0.dAfk0st7DYOgSbtHCiVPcuG5Ayqo-o57nvAA3sH4tYc",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/group/1/item/getall",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"group",
+						"1",
+						"item",
+						"getall"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	}
+}
