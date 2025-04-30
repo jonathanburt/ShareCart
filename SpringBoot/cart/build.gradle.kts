@@ -41,3 +41,9 @@ tasks.withType<Test> {
 	useJUnitPlatform()
 }
 
+tasks.named<Javadoc>("javadoc") {
+    source = sourceSets["main"].allJava
+    classpath = sourceSets["main"].compileClasspath
+    destinationDir = file("$buildDir/docs/javadoc")
+    isFailOnError = false  // Optional: avoids build failure on minor javadoc issues
+}

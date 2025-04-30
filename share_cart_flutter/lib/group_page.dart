@@ -82,7 +82,7 @@ class _GroupPageState extends State<GroupPage> {
                       );
                       if (newItemData != null) {
                         try{
-                          groupDetailsProvider.createItem(newItemData['name'], newItemData['description'], newItemData['category'], newItemData['price']);
+                          await groupDetailsProvider.createItem(newItemData['name'], newItemData['description'], newItemData['category'], newItemData['price']);
                         } on ApiConflictException catch (e){
                           if(!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(

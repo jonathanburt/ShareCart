@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:share_cart_flutter/api_service.dart';
+import 'package:share_cart_flutter/exceptions.dart';
 import 'package:share_cart_flutter/types.dart';
 
 class GroupDetailsProvider extends ChangeNotifier {
@@ -73,8 +74,12 @@ class GroupDetailsProvider extends ChangeNotifier {
   }
 
   Future<void> createItem(String name, String description, String category, double price) async {
-    await apiService.createItem(groupId, name, description: description, category: category, price: price);
-    await loadItems(forceRefresh: true);
+    try{
+      await apiService.createItem(groupId, name, description: description, category: category, price: price);
+      await loadItems(forceRefresh: true);
+    } catch (e){
+      rethrow;
+    }
   }
 
   Future<void> addItemToList(int listId, int itemId, int quantity, {bool communal = false}) async {

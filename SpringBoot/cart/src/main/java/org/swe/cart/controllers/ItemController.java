@@ -47,12 +47,14 @@ public class ItemController {
     private final ItemRepository itemRepository;
     
     @GetMapping("/getall")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId) or hasAuthority('ROLE_MEMBER_GROUP_' + #groupId)")
     public ResponseEntity<List<ItemDTO>> getAllItems(@PathVariable Integer groupId) {
         List<ItemDTO> items = itemService.getItems(groupId);
         return ResponseEntity.ok(items);
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId)")
     public ResponseEntity<ItemDTO> createItem(@PathVariable Integer groupId, @RequestBody ItemCreateDTO itemCreateDTO) {
         String name = itemCreateDTO.getName();
         String description = itemCreateDTO.getDescription();
@@ -64,6 +66,7 @@ public class ItemController {
 
     
     @PostMapping("/{listId}/add")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId) or hasAuthority('ROLE_MEMBER_GROUP_' + #groupId)")
     public ResponseEntity<ListItemDTO> addItemToList(@PathVariable Integer groupId, @PathVariable Integer listId, @RequestBody AddItemToListDTO addItemToListDTO) {
         //TODO: process POST request
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -80,6 +83,7 @@ public class ItemController {
 
 
     @PutMapping("/{itemId}/update")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN_GROUP_' + #groupId) or hasAuthority('ROLE_SHOPPER_GROUP_' + #groupId)")
     public ResponseEntity<ItemDTO> updateItem(@PathVariable Integer itemId, @PathVariable Integer groupId, @RequestBody UpdateItemDTO updateItemDTO) throws GroupMismatchException {
         //TODO: process PUT request
         String name = updateItemDTO.getName();

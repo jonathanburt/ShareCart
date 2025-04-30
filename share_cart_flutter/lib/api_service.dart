@@ -356,7 +356,6 @@ class RealApiService implements ApiService {
 
     if(response.statusCode == 200){
       var jsonResponse = jsonDecode(response.body);
-      print(jsonResponse);
       return ShareCartList.fromJson(jsonResponse);
     }
     // TODO: implement fetchList fail state

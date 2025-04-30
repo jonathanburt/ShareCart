@@ -29,16 +29,30 @@ public class SecurityConfig {
     // @Autowired
     // private CustomUserDetailsService customUserDetailsService;
 
+    /**
+     * @author Jonah Lorenzo jbl113@case.edu
+     * @return returns the CustomUserDetailsService Bean used for authentication
+     */
     @Bean
     public CustomUserDetailsService customUserDetailsService() {
         return new CustomUserDetailsService();  // Use CustomUserDetailsService instead of default
     }
 
+    /**
+     * @author Jonah Lorenzo jbl113@case.edu
+     * @return returns the password encoder used to store passwords in DB using BCrypt
+     */
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * @author Jonah Lorenzo jbl113@case.edu
+     * @param userDetailsService User Details Service used to create the DaoAuthenticationProvider
+     * @param passwordEncoder Password Encoder used to create the DaoAuthenticationProvider
+     * @return returns the Auth manager used for user authentication
+     */
     @Bean
     public AuthenticationManager authenticationManager(UserDetailsService userDetailsService, BCryptPasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -47,6 +61,12 @@ public class SecurityConfig {
         return new ProviderManager(List.of(authProvider));  // Use Spring Security's authentication provider
     }
 
+    /**
+     * @author Jonah Lorenzo jbl113@case.edu
+     * @param http The HttpSecurity Object that is configured
+     * @return The SecurityFilterChain object built form http
+     * @throws Exception
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http

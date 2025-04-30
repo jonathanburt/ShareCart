@@ -31,6 +31,7 @@ import org.swe.cart.repositories.GroupMemberRepository;
 import org.swe.cart.repositories.GroupRepository;
 import org.swe.cart.repositories.UserRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -117,7 +118,7 @@ public class GroupService {
 
         return groupToGroupDTO(groupRepository.findById(groupId).get());
     }
-
+    @Transactional
     public GroupDTO acceptInvite(Integer groupId, Authentication auth) throws UserNotInvitedToGroupException, UserAlreadyInGroupException{
         String username = auth.getName();
         User user = userRepository.findByUsername(username)

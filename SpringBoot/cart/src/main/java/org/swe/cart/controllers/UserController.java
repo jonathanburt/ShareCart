@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
@@ -43,7 +44,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 @RequestMapping("/api")
 public class UserController {
-    //TODO Move this to CustomUserDetailsService
     @Autowired
     private UserRepository userRepository;
 
@@ -69,7 +69,6 @@ public class UserController {
         return new ResponseEntity<>(new AuthResponseDTO(token, user.getId(), user.getEmail(), formatInstantToHTTP(user.getCreatedAt())), HttpStatus.OK);
     }
 
-    //TODO
     @PostMapping("/auth/signup")
     public ResponseEntity<RegisterResponseDTO> registerUser(@RequestBody SignUpDTO signUpDTO) {
         if(userRepository.existsByUsername(signUpDTO.getUsername())){
@@ -89,16 +88,17 @@ public class UserController {
         user = userRepository.save(user);
 
         return new ResponseEntity<>(new RegisterResponseDTO(user.getId(), formatInstantToHTTP(user.getCreatedAt())), HttpStatus.OK);
-
     }
 
-    @GetMapping("/users/{userId}/invites/get") //TODO
+    @GetMapping("/users/{userId}/invites/get")
     public ResponseEntity<List<GroupInviteDTO2>> getInvites(@PathVariable Integer userId) {
         try {
-            if(userId != ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId()) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); //Make sure that the provieded userId is the user that is making the request
-            User user = userRepository.findById(userId).orElseThrow();
+            Optional<User> optUser = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+            if(optUser.isEmpty()) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); //Make sure that the provieded userId is the user that is making the request
+            if(optUser.get().getId() != userId) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            User user = optUser.get();
             List<GroupInvite> invites = groupInviteRepository.findAllByUser(user);
-            List<GroupInviteDTO2> inviteDTO2s = invites.stream().map(invite -> new GroupInviteDTO2(userId, invite.getGroup().getName(), formatInstantToHTTP(invite.getCreated_at()))).collect(Collectors.toList());
+            List<GroupInviteDTO2> inviteDTO2s = invites.stream().map(invite -> new GroupInviteDTO2(invite.getGroup().getId(), invite.getGroup().getName(), formatInstantToHTTP(invite.getCreated_at()))).collect(Collectors.toList());
             return ResponseEntity.ok(inviteDTO2s);
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
