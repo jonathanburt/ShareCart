@@ -40,7 +40,10 @@ cd SpringBoot/cart
 - Open up the `share_cart_flutter/lib/main.dart` file and click the run button in the top right.
 
 ### Running Front End Tests
-TODO
+```bash
+cd share_cart_flutter
+flutter test
+```
 
 ### Running Back End Tests
 To run JUnit Tests:
