@@ -1,7 +1,13 @@
 # Testing
 
 ## Front End Tests
-Frontend tests are located in `share_cart_flutter/test`. Tests are designed to cover the most important aspects of the major pages in the application.
+Frontend unit tests are located in `share_cart_flutter/test`. Tests are designed to cover the most important aspects of the major pages in the application.
+
+Run the tests using
+```bash
+cd share_cart_flutter
+flutter test
+```
 
 ## Back End Tests
 Backend tests are located in SpringBoot/cart/src/test
