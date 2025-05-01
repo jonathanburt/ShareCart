@@ -1,5 +1,6 @@
 import 'dart:io';
 
+/// Front end representation of an item (not yet associated with a list, only with a group).
 class ShareCartItem {
   final int id;
   
@@ -17,6 +18,7 @@ class ShareCartItem {
   const ShareCartItem(this.name, this.description,  this.category, this.price, this.id, this.createdAt);
 }
 
+/// Front end representation of a list associated with a given group.
 class ShareCartList {
   final int id; 
   final int groupId;
@@ -35,6 +37,7 @@ class ShareCartList {
   ShareCartList(this.name, this.id, this.groupId, this.createdAt, this.items);
 }
 
+/// Front end representation of a list-item relation.
 class ShareCartListItem {
   final int itemId;
   final int listId;
@@ -53,6 +56,7 @@ class ShareCartListItem {
   ShareCartListItem(this.itemId, this.listId, this.userId, this.communal, this.bought, this.quantity, this.createdAt);
 }
 
+/// Front end representation of a list-item relation during the creation process.
 class AddItemToList {
   final int quantity;
   final bool communal;
@@ -60,6 +64,7 @@ class AddItemToList {
   AddItemToList(this.communal, this.quantity);
 }
 
+/// Front end representation of a group.
 class ShareCartGroup {
   final int id;
   final String name;
@@ -75,6 +80,7 @@ class ShareCartGroup {
   ShareCartGroup(this.name, this.id, this.role, this.createdAt);
 }
 
+/// Front end representation of a user. 
 class ThisUserDetails {
   final String username;
   final String email;
@@ -84,6 +90,7 @@ class ThisUserDetails {
   const ThisUserDetails(this.username, this.email, this.userId, this.createdAt);
 }
 
+/// Front end representation of an invite to a group.
 class MyInvite {
   final String groupName;
   final int groupId;
@@ -98,6 +105,7 @@ class MyInvite {
 
 typedef GroupReturn = ({ShareCartGroup group, List<GroupMember> members, List<GroupInvite> invites});
 
+/// Front end representation of a group-user relation.
 class GroupMember {
   final String username;
   final int userId;
@@ -113,6 +121,7 @@ class GroupMember {
   const GroupMember(this.username, this.userId, this.role, this.joinedAt);
 }
 
+/// Front end representation of a group invite.
 class GroupInvite {
   final String username;
   final int userId;
@@ -127,12 +136,14 @@ class GroupInvite {
   const GroupInvite(this.username, this.userId, this.invitedAt);
 }
 
+/// Enum defining the role a member has in a group.
 enum GroupRole {
   MEMBER,
   SHOPPER,
   ADMIN;
 }
 
+/// Definition of mapping between strings and the group role enum. 
 extension GroupRoleString on String {
   GroupRole get groupRole {
     switch (this) {
