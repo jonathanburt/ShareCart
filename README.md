@@ -57,7 +57,8 @@ The following guide assumes you use VSCode as your IDE.
 ### Prerequisites
 - Install Java 21.0.7
 - Install Dart development packages
-- Install Docker
+- Install Flutter
+- Install Docker (with Docker Compose support)
 - Install VSCode and the Flutter VSCode extension
 - Install Gradle for Java
 

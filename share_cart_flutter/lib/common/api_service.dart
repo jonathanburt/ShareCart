@@ -9,25 +9,43 @@ import 'package:http/http.dart' as http;
 
 /// Abstract class for the ApiService which is inherited by both MockApiService and RealApiService. Defines the interface between the back end and front end. 
 abstract class ApiService {
+  /// Retrieves all Items belonging to groupId
   Future<Map<int, ShareCartItem>> fetchItems(int groupId);
-  Future<ShareCartItem?> fetchItem(int groupId, int itemId) ;
+  /// Retrieves the Item corresponding to itemId, and is in the Group corresponding to groupId
+  Future<ShareCartItem?> fetchItem(int groupId, int itemId);
+  /// Retrieves all Lists corresponding to groupId
   Future<Map<int, ShareCartList>> fetchLists(int groupId);
+  /// Retrieves the list corresponding to listId and is in the Group corresponding to groupId
   Future<ShareCartList?> fetchList(int groupId, int listId);
+  /// Retrieves all groups the current user is a member of
   Future<List<GroupReturn>> fetchGroups();
+  /// Retrieves the group specified by groupId
   Future<ShareCartGroup?> fetchGroup(int groupId);
+  /// Retrieves all pending invites corresponding to the current user
   Future<List<MyInvite>> fetchInvites();
+  /// Changes the quantity associated with the list item with itemId, listId, and groupId
   Future<ShareCartListItem> changeItemQuantity(int groupId, int listId, int itemId, int quantity);
+  /// Accepts a pending invite to the Group corresponding to groupId
   Future<ShareCartGroup?> acceptInvite(int groupId);
+  /// Declines a pending invite to the Group corresponding to groupId
   Future<void> declineInvite(int groupId);
 
+  /// Creates a new Group with the provided name
   Future<ShareCartGroup?> createGroup(String name);
+  /// Creates a new list in the provided Group with the provided name
   Future<ShareCartList?> createList(int groupId, String name);
+  /// Creates a new item with the provided name, description, category, and price in the provided Group
   Future<ShareCartItem?> createItem(int groupId, String name, {String description = "", String category = "", double price = 0.0});
+  /// Adds the item corresponding to itemId to provided list in the provided group, with the provided quantity
   Future<ShareCartList?> addItemToList(int groupId, int listId, int itemId, int quantity, {bool communal = false});
 
+  /// Authenticates the using the username and password, executes onSuccess if authentication succeeds, and onFailure otherwise 
   Future<void> authenticateUser(String username, String password, VoidCallback onSuccess, VoidCallback onFailure);
+  /// Creates a new user with username, email, and password, executes onSuccess if registration succeeds, and onFailure otherwise
   Future<void> createUser(String username, String email, String password, VoidCallback onSuccess, VoidCallback onFailure);
+  /// Logs out of the session by deleting the JWT authentication token, then executing onLogOut
   Future<void> logOut(VoidCallback onLogOut);
+  /// Attempts to removes the current user from the group corresponding to groupId, if success, calls onSuccess, if failure, calls onFailure
   Future<void> leaveGroup(String groupId, VoidCallback onSuccess, Function(String) onFailure);
 }
 

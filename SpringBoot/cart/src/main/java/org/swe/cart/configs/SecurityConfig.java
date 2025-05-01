@@ -62,7 +62,7 @@ public class SecurityConfig {
     /**
      * @author Jonah Lorenzo jbl113@case.edu
      * @param http The HttpSecurity Object that is configured
-     * @return The SecurityFilterChain object built form http
+     * @return The SecurityFilterChain object built from http
      * @throws Exception
      */
     @Bean
