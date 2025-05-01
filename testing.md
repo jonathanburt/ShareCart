@@ -1,9 +1,9 @@
 # Testing
 
 ## Front End Tests
-Frontend unit tests are located in `share_cart_flutter/test`. Tests are designed to cover the most important aspects of the major pages in the application.
+Frontend unit tests are located in `share_cart_flutter/test`. Each file contains a testing suite designed to ensure that the corresponding page functions as expected. The `utils.dart` file is used to contain functionality for setting up the mock flutter build context necessary for testing pages. apiService calls are mocked in order to ensure that unit tests strictly test the front end UI components without relying on successful calls to the back end.
 
-Run the tests using
+Run the front end unit tests with
 ```bash
 cd share_cart_flutter
 flutter test
