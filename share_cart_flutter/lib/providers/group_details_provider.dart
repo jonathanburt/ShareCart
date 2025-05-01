@@ -4,7 +4,6 @@ import 'package:share_cart_flutter/common/types.dart';
 
 /// Provides extra detailed information about a given group to be displayed by UI elements.
 class GroupDetailsProvider extends ChangeNotifier {
-
   final ApiService apiService;
   final int groupId;
   Map<int, ShareCartItem> _items = {};
@@ -18,17 +17,15 @@ class GroupDetailsProvider extends ChangeNotifier {
   Map<int, ShareCartItem> get items => _items;
   Map<int, ShareCartList> get lists => _lists;
 
-  bool get _shouldRefreshItems =>
-      _lastFetchedItems == null || DateTime.now().difference(_lastFetchedItems!) > cacheDuration;
+  bool get _shouldRefreshItems => _lastFetchedItems == null || DateTime.now().difference(_lastFetchedItems!) > cacheDuration;
 
-  bool get _shouldRefreshLists =>
-      _lastFetchedLists == null || DateTime.now().difference(_lastFetchedLists!) > cacheDuration;
+  bool get _shouldRefreshLists => _lastFetchedLists == null || DateTime.now().difference(_lastFetchedLists!) > cacheDuration;
 
-  ShareCartList? getList(int listId){
+  ShareCartList? getList(int listId) {
     return _lists[listId];
   }
 
-  ShareCartItem? getItem(int itemId){
+  ShareCartItem? getItem(int itemId) {
     return _items[itemId];
   }
 
@@ -76,10 +73,10 @@ class GroupDetailsProvider extends ChangeNotifier {
   }
 
   Future<void> createItem(String name, String description, String category, double price) async {
-    try{
+    try {
       await apiService.createItem(groupId, name, description: description, category: category, price: price);
       await loadItems(forceRefresh: true);
-    } catch (e){
+    } catch (e) {
       rethrow;
     }
   }

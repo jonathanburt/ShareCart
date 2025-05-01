@@ -34,31 +34,25 @@ class _SignUpPageState extends State<SignUpPage> {
               padding: const EdgeInsets.all(10),
               child: Text(
                 'ShareCart',
-                style: TextStyle(
-                  color: theme.primaryColor,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 30
-                ),
+                style: TextStyle(color: theme.primaryColor, fontWeight: FontWeight.w500, fontSize: 30),
               ),
             ),
             Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.all(10),
-              child: const Text(
-                'Create Account',
-                style: TextStyle(fontSize: 20),
-              )
-            ),
+                alignment: Alignment.center,
+                padding: const EdgeInsets.all(10),
+                child: const Text(
+                  'Create Account',
+                  style: TextStyle(fontSize: 20),
+                )),
             Container(
               alignment: Alignment.center,
               padding: const EdgeInsets.all(1),
               child: Visibility(
-                visible: signUpFailed,
-                child: Text(
-                  errorMessage,
-                  style: const TextStyle(color: Colors.redAccent),
-                )
-              ),
+                  visible: signUpFailed,
+                  child: Text(
+                    errorMessage,
+                    style: const TextStyle(color: Colors.redAccent),
+                  )),
             ),
             Container(
               padding: const EdgeInsets.all(10),
@@ -106,61 +100,44 @@ class _SignUpPageState extends State<SignUpPage> {
               height: 50,
               padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.zero
-                  ),
-                  backgroundColor: theme.primaryColor,
-                  foregroundColor: theme.colorScheme.onPrimary
-                ),
-                onPressed: () {
-                  if (passwordController.text != confirmPasswordController.text) {
-                    setState(() {
-                      signUpFailed = true;
-                      errorMessage = "Passwords do not match";
-                    });
-                    return;
-                  }
+                  style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero), backgroundColor: theme.primaryColor, foregroundColor: theme.colorScheme.onPrimary),
+                  onPressed: () {
+                    if (passwordController.text != confirmPasswordController.text) {
+                      setState(() {
+                        signUpFailed = true;
+                        errorMessage = "Passwords do not match";
+                      });
+                      return;
+                    }
 
-                  apiService.createUser(
-                    usernameController.text,
-                    emailController.text,
-                    passwordController.text,
-                    () { // onSuccess
-                      if(!context.mounted) return;
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => const LoginPage())
-                      );
-                    },
-                    () { // onFailure
-                      if(!context.mounted) return;
+                    apiService.createUser(usernameController.text, emailController.text, passwordController.text, () {
+                      // onSuccess
+                      if (!context.mounted) return;
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+                    }, () {
+                      // onFailure
+                      if (!context.mounted) return;
                       setState(() {
                         signUpFailed = true;
                         errorMessage = "Failed to create account";
                       });
-                    }
-                  );
-                },
-                child: const Text("Sign Up")
-              ),
+                    });
+                  },
+                  child: const Text("Sign Up")),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 const Text("Already have an account?"),
                 TextButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const LoginPage())
-                    );
-                  },
-                  child: const Text(
-                    "Sign In",
-                    style: TextStyle(fontSize: 15),
-                  )
-                )
+                    onPressed: () {
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+                    },
+                    child: const Text(
+                      "Sign In",
+                      style: TextStyle(fontSize: 15),
+                    ))
               ],
             )
           ],
@@ -168,4 +145,4 @@ class _SignUpPageState extends State<SignUpPage> {
       ),
     );
   }
-} 
+}

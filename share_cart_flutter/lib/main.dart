@@ -26,11 +26,9 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'ShareCart',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 82, 127, 34),
-            primary: const Color.fromARGB(255, 5, 81, 7)),
-            useMaterial3: true,
-          ),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 82, 127, 34), primary: const Color.fromARGB(255, 5, 81, 7)),
+          useMaterial3: true,
+        ),
         home: const LoginPage(),
       ),
     );

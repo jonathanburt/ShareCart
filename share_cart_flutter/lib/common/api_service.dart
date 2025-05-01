@@ -17,8 +17,7 @@ class ApiService {
 
   ApiService({required this.baseUrl});
 
-  final FlutterSecureStorage _storage =
-      const FlutterSecureStorage(); // TODO make sure this works with target platforms and everyones machines
+  final FlutterSecureStorage _storage = const FlutterSecureStorage(); // TODO make sure this works with target platforms and everyones machines
   var baseHeaders = {"Content-Type": "application/json"};
 
   /// Retrieves the JWT token from secure storage.
@@ -29,8 +28,7 @@ class ApiService {
   }
 
   /// Authenticates a user with the provided username and password.
-  Future authenticateUser(String username, String password,
-      VoidCallback onSuccess, VoidCallback onFailure) async {
+  Future authenticateUser(String username, String password, VoidCallback onSuccess, VoidCallback onFailure) async {
     final response = await client.post(
       Uri.parse('$baseUrl/api/auth/signin'),
       headers: baseHeaders,
@@ -57,8 +55,7 @@ class ApiService {
   }
 
   /// Creates a new user with the provided username, email, and password.
-  Future createUser(String username, String email, String password,
-      VoidCallback onSuccess, VoidCallback onFailure) async {
+  Future createUser(String username, String email, String password, VoidCallback onSuccess, VoidCallback onFailure) async {
     final response = await client.post(
       Uri.parse('$baseUrl/api/auth/signup'),
       headers: baseHeaders,
@@ -94,10 +91,7 @@ class ApiService {
 
     if (itemsResponse.statusCode == 200) {
       final Iterable jsonResponse = jsonDecode(itemsResponse.body);
-      return <int, ShareCartItem>{
-        for (final item in jsonResponse)
-          item["itemId"]: ShareCartItem.fromJson(item)
-      };
+      return <int, ShareCartItem>{for (final item in jsonResponse) item["itemId"]: ShareCartItem.fromJson(item)};
     }
     // TODO implement fetchItems
     throw UnimplementedError();
@@ -114,10 +108,7 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final Iterable responseBody = jsonDecode(response.body);
-      return <int, ShareCartList>{
-        for (final list in responseBody)
-          list["listId"]: ShareCartList.fromJson(list)
-      };
+      return <int, ShareCartList>{for (final list in responseBody) list["listId"]: ShareCartList.fromJson(list)};
     }
 
     // TODO implement fetchLists fail state
@@ -149,10 +140,10 @@ class ApiService {
     if (response.statusCode == 200) {
       final Iterable jsonResponse = jsonDecode(response.body);
       return List<GroupReturn>.from(jsonResponse.map((group) => (
-        group: ShareCartGroup.fromJson(group, _roleFromGroupResponse(group)!), //This is ugly and idk if it will work
-        members: List<GroupMember>.from((group["members"] as Iterable).map((member) => GroupMember.fromJson(member))),
-        invites: List<GroupInvite>.from((group["invites"] as Iterable).map((invite) => GroupInvite.fromJson(invite)))
-      )));
+            group: ShareCartGroup.fromJson(group, _roleFromGroupResponse(group)!), //This is ugly and idk if it will work
+            members: List<GroupMember>.from((group["members"] as Iterable).map((member) => GroupMember.fromJson(member))),
+            invites: List<GroupInvite>.from((group["invites"] as Iterable).map((invite) => GroupInvite.fromJson(invite)))
+          )));
     }
     throw UnimplementedError();
   }
@@ -171,8 +162,7 @@ class ApiService {
   }
 
   /// Allows the current user to leave a specific group.
-  Future leaveGroup(String groupId, VoidCallback onSuccess,
-      Function(String) onFailure) async {
+  Future leaveGroup(String groupId, VoidCallback onSuccess, Function(String) onFailure) async {
     final headers = await authorizedHeaders();
 
     final response = await client.post(
@@ -205,8 +195,7 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
-      return List.from((jsonDecode(response.body) as Iterable)
-          .map((invite) => MyInvite.fromJson(invite as Map<String, dynamic>)));
+      return List.from((jsonDecode(response.body) as Iterable).map((invite) => MyInvite.fromJson(invite as Map<String, dynamic>)));
     }
     // TODO fail state
     throw UnimplementedError();
@@ -222,19 +211,16 @@ class ApiService {
     );
     switch (response.statusCode) {
       case 201:
-        return ShareCartGroup.fromJson(
-            jsonDecode(response.body) as Map<String, dynamic>, GroupRole.ADMIN);
+        return ShareCartGroup.fromJson(jsonDecode(response.body) as Map<String, dynamic>, GroupRole.ADMIN);
       case 409:
         throw ApiConflictException("A group with name $name already exists");
       default:
-        throw ApiFailureException(
-            "Could not create group $name, request failed with code ${response.statusCode}");
+        throw ApiFailureException("Could not create group $name, request failed with code ${response.statusCode}");
     }
   }
 
   /// Changes the quantity of a specific item in a shopping list.
-  Future changeItemQuantity(
-      int groupId, int listId, int itemId, int quantity) async {
+  Future changeItemQuantity(int groupId, int listId, int itemId, int quantity) async {
     final headers = await authorizedHeaders();
     final response = await client.put(
       Uri.parse('$baseUrl/api/group/$groupId/item/$listId/$itemId/quantity'),
@@ -259,8 +245,7 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-      return ShareCartGroup.fromJson(
-          jsonResponse, _roleFromGroupResponse(jsonResponse) as GroupRole);
+      return ShareCartGroup.fromJson(jsonResponse, _roleFromGroupResponse(jsonResponse) as GroupRole);
     }
     // TODO implement acceptInvite fail stat
     throw UnimplementedError();
@@ -282,9 +267,7 @@ class ApiService {
   }
 
   /// Adds an existing item to a specific shopping list within a group.
-  Future<ShareCartList?> addItemToList(
-      int groupId, int listId, int itemId, int quantity,
-      {bool communal = false}) async {
+  Future<ShareCartList?> addItemToList(int groupId, int listId, int itemId, int quantity, {bool communal = false}) async {
     final headers = await authorizedHeaders();
     final response = await client.post(
       Uri.parse('$baseUrl/api/group/$groupId/item/$listId/add'),
@@ -308,8 +291,7 @@ class ApiService {
   }
 
   /// Creates a new item within a specific group.
-  Future<ShareCartItem?> createItem(int groupId, String name,
-      {String description = "", String category = "", double price = 0.0}) async {
+  Future<ShareCartItem?> createItem(int groupId, String name, {String description = "", String category = "", double price = 0.0}) async {
     final headers = await authorizedHeaders();
     final response = await client.post(
       Uri.parse('$baseUrl/api/group/$groupId/item/create'),
@@ -326,8 +308,7 @@ class ApiService {
       case 201:
         return ShareCartItem.fromJson(jsonDecode(response.body));
       case 401:
-        throw ApiUnauthorizedException(
-            "Do not have permissions to create items in this group");
+        throw ApiUnauthorizedException("Do not have permissions to create items in this group");
       case 409:
         throw ApiConflictException("Item already exists in this group");
       default:
@@ -348,8 +329,7 @@ class ApiService {
       case 201:
         return ShareCartList.fromJson(jsonDecode(response.body));
       case 409:
-        throw ApiConflictException(
-            "List already exists with this name in this group");
+        throw ApiConflictException("List already exists with this name in this group");
       default:
         throw ApiUnauthorizedException("Cannot create list");
     }
@@ -366,8 +346,6 @@ class ApiService {
   /// Extracts the user's role within a group from the group response.
   GroupRole? _roleFromGroupResponse(Map<String, dynamic> input) {
     final Iterable members = input["members"];
-    return (members.firstWhere((member) => member["userId"] == userDetails!.userId))["role"]
-        .toString()
-        .groupRole;
+    return (members.firstWhere((member) => member["userId"] == userDetails!.userId))["role"].toString().groupRole;
   }
 }

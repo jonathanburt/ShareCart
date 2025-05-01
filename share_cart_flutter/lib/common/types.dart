@@ -3,24 +3,24 @@ import 'dart:io';
 /// Front end representation of an item (not yet associated with a list, only with a group).
 class ShareCartItem {
   final int id;
-  
+
   final String name;
   final String description;
   final double price;
   final String category;
   final DateTime createdAt;
 
-  factory ShareCartItem.fromJson(Map<String, dynamic> input){
+  factory ShareCartItem.fromJson(Map<String, dynamic> input) {
     DateTime createdAt = HttpDate.parse(input["createdAtFormatted"]);
     return ShareCartItem(input["name"], input["description"], input["category"], input["price"], input["itemId"], createdAt); //TODO make sure this matches ItemDTO
   }
 
-  const ShareCartItem(this.name, this.description,  this.category, this.price, this.id, this.createdAt);
+  const ShareCartItem(this.name, this.description, this.category, this.price, this.id, this.createdAt);
 }
 
 /// Front end representation of a list associated with a given group.
 class ShareCartList {
-  final int id; 
+  final int id;
   final int groupId;
   final DateTime createdAt;
 
@@ -28,7 +28,7 @@ class ShareCartList {
 
   String name;
 
-  factory ShareCartList.fromJson(Map<String, dynamic> input){
+  factory ShareCartList.fromJson(Map<String, dynamic> input) {
     DateTime createdAt = HttpDate.parse(input["createdAt"]);
     List<ShareCartListItem> listItems = List.from((input["items"].map((item) => ShareCartListItem.fromJson(item))));
     return ShareCartList(input["name"], input["listId"], input["groupId"], createdAt, listItems);
@@ -48,7 +48,7 @@ class ShareCartListItem {
   final bool bought;
   int quantity;
 
-  factory ShareCartListItem.fromJson(Map<String, dynamic> input){
+  factory ShareCartListItem.fromJson(Map<String, dynamic> input) {
     DateTime createdAt = HttpDate.parse(input["createdAt"]);
     return ShareCartListItem(input["itemId"], input["listId"], input["userId"], input["communal"], input["bought"], input["quantity"], createdAt);
   }
@@ -71,16 +71,15 @@ class ShareCartGroup {
   final DateTime createdAt;
   final GroupRole role;
 
-  factory ShareCartGroup.fromJson(Map<String, dynamic> input, GroupRole role){
+  factory ShareCartGroup.fromJson(Map<String, dynamic> input, GroupRole role) {
     DateTime createdAt = HttpDate.parse(input["createdAtFormatted"]);
     return ShareCartGroup(input["name"], input["groupId"], role, createdAt);
   }
 
-
   ShareCartGroup(this.name, this.id, this.role, this.createdAt);
 }
 
-/// Front end representation of a user. 
+/// Front end representation of a user.
 class ThisUserDetails {
   final String username;
   final String email;
@@ -96,7 +95,7 @@ class MyInvite {
   final int groupId;
   final DateTime createdAt;
 
-  factory MyInvite.fromJson(Map<String, dynamic> input){
+  factory MyInvite.fromJson(Map<String, dynamic> input) {
     return MyInvite(input["groupName"], input["groupId"], HttpDate.parse(input["invitedAt"]));
   }
 
@@ -112,7 +111,7 @@ class GroupMember {
   final GroupRole role;
   final DateTime joinedAt;
 
-  factory GroupMember.fromJson(Map<String, dynamic> input){
+  factory GroupMember.fromJson(Map<String, dynamic> input) {
     DateTime joinedAtFormatted = HttpDate.parse(input["joinedAtFormatted"]);
     GroupMember member = GroupMember(input["username"], input["userId"], input["role"].toString().groupRole, joinedAtFormatted);
     return member;
@@ -127,7 +126,7 @@ class GroupInvite {
   final int userId;
   final DateTime invitedAt;
 
-  factory GroupInvite.fromJson(Map<String, dynamic> input){
+  factory GroupInvite.fromJson(Map<String, dynamic> input) {
     DateTime joinedAtFormatted = HttpDate.parse(input["invitedAtFormatted"]);
     GroupInvite invite = GroupInvite(input["username"], input["userId"], joinedAtFormatted);
     return invite;
@@ -143,7 +142,7 @@ enum GroupRole {
   ADMIN;
 }
 
-/// Definition of mapping between strings and the group role enum. 
+/// Definition of mapping between strings and the group role enum.
 extension GroupRoleString on String {
   GroupRole get groupRole {
     switch (this) {
@@ -153,7 +152,8 @@ extension GroupRoleString on String {
         return GroupRole.SHOPPER;
       case 'ADMIN':
         return GroupRole.ADMIN;
-      default: throw UnimplementedError(); //TODO figure out what to throw here
+      default:
+        throw UnimplementedError(); //TODO figure out what to throw here
     }
   }
 }

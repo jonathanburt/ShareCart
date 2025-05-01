@@ -1,9 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:share_cart_flutter/common/types.dart';
 
 /// Dialog for adding an item to a list from the shop page. Displays basic information about the item, it's quantity, and whether or not it is communal.
-class AddItemToListDialog extends StatefulWidget{
+class AddItemToListDialog extends StatefulWidget {
   final ShareCartItem item;
   const AddItemToListDialog({super.key, required this.item});
 
@@ -14,7 +13,7 @@ class AddItemToListDialog extends StatefulWidget{
 class _AddItemToListDialogState extends State<AddItemToListDialog> {
   int quantity = 1;
   bool communal = false;
-  
+
   void _submit() {
     Navigator.of(context).pop(AddItemToList(communal, quantity));
   }
@@ -25,11 +24,11 @@ class _AddItemToListDialogState extends State<AddItemToListDialog> {
       title: Row(
         children: [
           Expanded(
-            child: Text(
-              widget.item.name,
-              style: Theme.of(context).textTheme.headlineSmall,
-              overflow: TextOverflow.ellipsis,)
-            ),
+              child: Text(
+            widget.item.name,
+            style: Theme.of(context).textTheme.headlineSmall,
+            overflow: TextOverflow.ellipsis,
+          )),
           Text(
             '\$${widget.item.price.toStringAsFixed(2)}',
             style: Theme.of(context).textTheme.bodySmall,
@@ -101,7 +100,9 @@ class _AddItemToListDialogState extends State<AddItemToListDialog> {
           onPressed: () => Navigator.of(context).pop(),
           child: Text('Cancel'),
         ),
-        SizedBox(width: 10,),
+        SizedBox(
+          width: 10,
+        ),
         ElevatedButton(
           onPressed: _submit,
           child: Text('Add to List'),

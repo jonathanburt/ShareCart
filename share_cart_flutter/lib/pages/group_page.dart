@@ -32,37 +32,30 @@ class _GroupPageState extends State<GroupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppBar(Icon(Icons.people), widget.group.name),
-      body: Consumer<GroupDetailsProvider>(
-        builder: (context, groupDetailsProvider, _) {
+        appBar: MyAppBar(Icon(Icons.people), widget.group.name),
+        body: Consumer<GroupDetailsProvider>(builder: (context, groupDetailsProvider, _) {
           final lists = groupDetailsProvider.lists;
           return RefreshIndicator(
             onRefresh: () async => await groupDetailsProvider.loadLists(forceRefresh: true),
             child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Column(
-                children: [
+                padding: EdgeInsets.all(16.0),
+                child: Column(children: [
                   ElevatedButton.icon(
                     onPressed: () async {
                       final newListName = await showDialog<String>(
                         context: context,
                         builder: (_) => const CreateListDialog(),
                       );
-                      if(newListName == null) return;
-                      try{
+                      if (newListName == null) return;
+                      try {
                         await groupDetailsProvider.createList(newListName);
                       } on ApiConflictException catch (e) {
-                        if(!context.mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(e.message))
-                        );
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
                       } on ApiUnauthorizedException catch (e) {
-                        if(!context.mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(e.message))
-                        );
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
                       }
-                      
                     },
                     icon: Icon(Icons.add),
                     label: Text('Create List'),
@@ -75,70 +68,62 @@ class _GroupPageState extends State<GroupPage> {
                   ),
                   SizedBox(width: 10),
                   ElevatedButton.icon(
-                    onPressed: () async {
-                      final newItemData = await showDialog<Map<String, dynamic>>(
-                        context: context,
-                        builder: (context) => const CreateItemDialog(),
-                      );
-                      if (newItemData != null) {
-                        try{
-                          await groupDetailsProvider.createItem(newItemData['name'], newItemData['description'], newItemData['category'], newItemData['price']);
-                        } on ApiConflictException catch (e){
-                          if(!context.mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(e.message))
-                          );
-                        } on ApiUnauthorizedException catch (e){
-                          if(!context.mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(e.message))
-                          );
-                        } on ApiFailureException catch (e) {
-                          if(!context.mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(e.message))
-                          );
+                      onPressed: () async {
+                        final newItemData = await showDialog<Map<String, dynamic>>(
+                          context: context,
+                          builder: (context) => const CreateItemDialog(),
+                        );
+                        if (newItemData != null) {
+                          try {
+                            await groupDetailsProvider.createItem(newItemData['name'], newItemData['description'], newItemData['category'], newItemData['price']);
+                          } on ApiConflictException catch (e) {
+                            if (!context.mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+                          } on ApiUnauthorizedException catch (e) {
+                            if (!context.mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+                          } on ApiFailureException catch (e) {
+                            if (!context.mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+                          }
                         }
-                      }
-                    },
-                    icon: Icon(Icons.add_shopping_cart),
-                    label: Text('New Item'),
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: Size.fromHeight(50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    )
-                  ),
+                      },
+                      icon: Icon(Icons.add_shopping_cart),
+                      label: Text('New Item'),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: Size.fromHeight(50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      )),
                   Expanded(
-                    child: ListView(
-                      children: lists.entries.map((list) =>
-                        ListTile(
-                          title: Text(list.value.name),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => ChangeNotifierProvider.value(
-                                value: Provider.of<GroupDetailsProvider>(context, listen: false),
-                                child: ListPage(listId: list.value.id, listName: list.value.name,),))
-                            );
-                          },
-                          trailing: IconButton(
-                            onPressed: () {
-                              // TODO: Implement group editing
-                            },
-                            icon: Icon(Icons.edit),
-                          ),
-                        )
-                      ).toList(),
-                    )
-                  )
-                ]
-              )
-            ),
+                      child: ListView(
+                    children: lists.entries
+                        .map((list) => ListTile(
+                              title: Text(list.value.name),
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => ChangeNotifierProvider.value(
+                                              value: Provider.of<GroupDetailsProvider>(context, listen: false),
+                                              child: ListPage(
+                                                listId: list.value.id,
+                                                listName: list.value.name,
+                                              ),
+                                            )));
+                              },
+                              trailing: IconButton(
+                                onPressed: () {
+                                  // TODO: Implement group editing
+                                },
+                                icon: Icon(Icons.edit),
+                              ),
+                            ))
+                        .toList(),
+                  ))
+                ])),
           );
-        }
-      )
-    );
+        }));
   }
 }

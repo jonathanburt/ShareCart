@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Dialog for creating a new group. Asks for the name of the group to be created. 
+/// Dialog for creating a new group. Asks for the name of the group to be created.
 class CreateGroupDialog extends StatefulWidget {
   const CreateGroupDialog({super.key});
 

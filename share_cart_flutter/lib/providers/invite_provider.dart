@@ -4,7 +4,6 @@ import 'package:share_cart_flutter/common/types.dart';
 
 /// Provides information about group invites to be displayed by UI elements.
 class InviteProvider extends ChangeNotifier {
-
   final ApiService apiService;
 
   InviteProvider(this.apiService);
@@ -15,8 +14,7 @@ class InviteProvider extends ChangeNotifier {
 
   List<MyInvite> get invites => _invites;
 
-  bool get _shouldRefresh =>
-      _lastFetched == null || DateTime.now().difference(_lastFetched!) > cacheDuration;
+  bool get _shouldRefresh => _lastFetched == null || DateTime.now().difference(_lastFetched!) > cacheDuration;
 
   Future<void> loadInvites({bool force = false}) async {
     if (!force && !_shouldRefresh) return;

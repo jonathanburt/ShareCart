@@ -6,7 +6,7 @@ import 'package:share_cart_flutter/common/types.dart';
 class GroupProvider extends ChangeNotifier {
   final ApiService apiService;
 
-  GroupProvider (this.apiService);
+  GroupProvider(this.apiService);
 
   List<ShareCartGroup> _groups = [];
   Map<int, List<GroupMember>> _memberLists = {};
@@ -19,8 +19,7 @@ class GroupProvider extends ChangeNotifier {
   List<GroupMember> getMembers(int groupId) => _memberLists[groupId] ?? [];
   List<GroupInvite> getInvites(int groupId) => _inviteLists[groupId] ?? [];
 
-  bool get _shouldRefresh =>
-      _lastFetched == null || DateTime.now().difference(_lastFetched!) > cacheDuration;
+  bool get _shouldRefresh => _lastFetched == null || DateTime.now().difference(_lastFetched!) > cacheDuration;
 
   Future<void> loadGroups({bool force = false}) async {
     if (!force && !_shouldRefresh) return;
@@ -38,11 +37,11 @@ class GroupProvider extends ChangeNotifier {
   }
 
   Future<void> createGroup(String name) async {
-    try{
+    try {
       await apiService.createGroup(name);
       await loadGroups(force: true);
-    } catch (e){
+    } catch (e) {
       rethrow;
-    } 
+    }
   }
 }

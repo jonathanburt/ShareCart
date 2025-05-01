@@ -5,7 +5,7 @@ import 'package:share_cart_flutter/pages/home_page.dart';
 import 'package:share_cart_flutter/pages/signup_page.dart';
 
 /// Allows the input of a username / password in order to login. Also allows navigation to the Sign Up and Forgot Password pages.
-class LoginPage extends StatefulWidget{
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
@@ -32,113 +32,95 @@ class _LoginPageState extends State<LoginPage> {
               padding: EdgeInsets.all(10),
               child: Text(
                 'ShareCart',
-                style: TextStyle(
-                  color: theme.primaryColor,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 30
-                ),),
-                ),
-                Container(
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.all(10),
-                  child: const Text(
-                    'Sign In',
-                    style: TextStyle(fontSize: 20),
-                  )
-                ),
-                Container(
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.all(1),
-                  child: Visibility(
-                      visible: loginFailed,
-                      child: Text("Login attempt failed",
-                        style: TextStyle(color: Colors.redAccent),)
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  child: TextField(
-                    controller: usernameController,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Username',
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                  child: TextField(
-                    obscureText: true,
-                    controller: passwordController,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Password',
-                  ),
+                style: TextStyle(color: theme.primaryColor, fontWeight: FontWeight.w500, fontSize: 30),
+              ),
+            ),
+            Container(
+                alignment: Alignment.center,
+                padding: const EdgeInsets.all(10),
+                child: const Text(
+                  'Sign In',
+                  style: TextStyle(fontSize: 20),
+                )),
+            Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.all(1),
+              child: Visibility(
+                  visible: loginFailed,
+                  child: Text(
+                    "Login attempt failed",
+                    style: TextStyle(color: Colors.redAccent),
+                  )),
+            ),
+            Container(
+              padding: const EdgeInsets.all(10),
+              child: TextField(
+                controller: usernameController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Username',
                 ),
               ),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ForgotPasswordPage()));
-                  //TODO: Implement Forgot Password Screen
-                  
-                },
-                child: const Text("Forgot Password"),
+            ),
+            Container(
+              padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+              child: TextField(
+                obscureText: true,
+                controller: passwordController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Password',
+                ),
               ),
-              Container(
-                height: 50,
-                padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                child: ElevatedButton(
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const ForgotPasswordPage()));
+                //TODO: Implement Forgot Password Screen
+              },
+              child: const Text("Forgot Password"),
+            ),
+            Container(
+              height: 50,
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+              child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.zero
-                    ),
-                    backgroundColor: theme.primaryColor,
-                    foregroundColor: theme.colorScheme.onPrimary
-                  ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero), backgroundColor: theme.primaryColor, foregroundColor: theme.colorScheme.onPrimary),
                   onPressed: () async {
-                    await apiService.authenticateUser(usernameController.text, passwordController.text, 
-                    () async {
-                      if(!context.mounted) return;
-                      Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomePage())
-                    );
+                    await apiService.authenticateUser(usernameController.text, passwordController.text, () async {
+                      if (!context.mounted) return;
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
                     }, () {
-                      if(!context.mounted) return;
+                      if (!context.mounted) return;
                       setState(() {
                         loginFailed = true;
                       });
                     });
                   },
-                  child: const Text("Login")
-                ),
-              ),
-              Row(mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  const Text("Dont have an account?"),
-                  TextButton(
+                  child: const Text("Login")),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const Text("Dont have an account?"),
+                TextButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const SignUpPage()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const SignUpPage()));
                     },
                     child: const Text(
                       "Sign Up",
-                      style: TextStyle(fontSize: 15),))
-                ],
-                
-              )
+                      style: TextStyle(fontSize: 15),
+                    ))
+              ],
+            )
           ],
         ),
       ),
     );
-
   }
 }
 
-class ForgotPasswordPage extends StatefulWidget{
+class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
 
   @override
@@ -153,7 +135,6 @@ class _ForgotPasswordPage extends State<ForgotPasswordPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      
       body: Center(
         child: ListView(
           shrinkWrap: true,
@@ -163,48 +144,39 @@ class _ForgotPasswordPage extends State<ForgotPasswordPage> {
               padding: const EdgeInsets.all(10),
               child: Text(
                 'Forgot Password?',
-                style: TextStyle(
-                  color: theme.primaryColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 30
-                ),
+                style: TextStyle(color: theme.primaryColor, fontWeight: FontWeight.bold, fontSize: 30),
               ),
             ),
             Container(
-                padding: const EdgeInsets.all(10),
-                child: TextField(
-                  controller: emailController,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Email'
-                  ),
-                ),
+              padding: const EdgeInsets.all(10),
+              child: TextField(
+                controller: emailController,
+                decoration: const InputDecoration(border: OutlineInputBorder(), labelText: 'Email'),
               ),
+            ),
             Container(
               height: 50,
               padding: const EdgeInsets.all(10),
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.zero
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                    backgroundColor: theme.primaryColor,
+                    foregroundColor: theme.colorScheme.onPrimary,
                   ),
-                  backgroundColor: theme.primaryColor,
-                  foregroundColor: theme.colorScheme.onPrimary,
-                ),
+                  onPressed: () {
+                    //TODO Implement forgot password system, show something to indicate that button was pressed
+                  },
+                  child: const Text('Send Email')), //TODO: Possibly change to 'Resend Email' after pressed.
+            ),
+            TextButton(
                 onPressed: () {
-                  //TODO Implement forgot password system, show something to indicate that button was pressed
+                  //TODO Verify this is the correct action
+                  Navigator.pop(context);
                 },
-                child: const Text('Send Email')), //TODO: Possibly change to 'Resend Email' after pressed.
-              ),
-              TextButton(
-              onPressed: () {
-                //TODO Verify this is the correct action
-                Navigator.pop(context);
-              },
-              child: const Text('Return to Sign In'))
+                child: const Text('Return to Sign In'))
           ],
         ),
-        ),
+      ),
     );
   }
 }

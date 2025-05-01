@@ -12,7 +12,5 @@ void main() {
     test('can be instantiated', () {
       expect(HomePage(), isNotNull);
     });
-
-    
   });
 }

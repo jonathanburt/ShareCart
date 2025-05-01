@@ -16,7 +16,6 @@ class ListPage extends StatefulWidget {
 }
 
 class _ListPageState extends State<ListPage> {
-
   @override
   void initState() {
     super.initState();
@@ -24,23 +23,23 @@ class _ListPageState extends State<ListPage> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
-      appBar: MyAppBar(Icon(Icons.list), widget.listName),
-      body: Consumer<GroupDetailsProvider>(
-        builder: (context, groupDetailsProvider, _) { 
+        appBar: MyAppBar(Icon(Icons.list), widget.listName),
+        body: Consumer<GroupDetailsProvider>(builder: (context, groupDetailsProvider, _) {
           return RefreshIndicator(
             onRefresh: () => groupDetailsProvider.refreshList(widget.listId),
             child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Column(
-                children: [
+                padding: EdgeInsets.all(16.0),
+                child: Column(children: [
                   ElevatedButton.icon(
-                    onPressed: ()  {
-                      Navigator.push(context, 
-                      MaterialPageRoute(builder: (_) => ChangeNotifierProvider.value(
-                        value: Provider.of<GroupDetailsProvider>(context, listen: false),
-                        child: ShopPage(widget.listId),)));
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => ChangeNotifierProvider.value(
+                                    value: Provider.of<GroupDetailsProvider>(context, listen: false),
+                                    child: ShopPage(widget.listId),
+                                  )));
                     },
                     icon: Icon(Icons.add),
                     label: Text('Add items'),
@@ -56,26 +55,20 @@ class _ListPageState extends State<ListPage> {
                         itemCount: groupDetailsProvider.getList(widget.listId)?.items.length ?? 0,
                         itemBuilder: (context, index) {
                           final list = groupDetailsProvider.getList(widget.listId);
-                          if(list == null) return const SizedBox.shrink();
+                          if (list == null) return const SizedBox.shrink();
                           final listItem = list.items[index];
                           final item = groupDetailsProvider.getItem(listItem.itemId);
-                          if(item == null) return const SizedBox.shrink();
+                          if (item == null) return const SizedBox.shrink();
                           return ShareCartItemWidget(
-                            item: item, 
-                            listItem: listItem, 
-                            onQuantityChanged: (newQuantity) {
-                              groupDetailsProvider.changeItemQuantity(list.id, item.id, newQuantity);
-                            }
-                          );
-                          }
-                        ),
+                              item: item,
+                              listItem: listItem,
+                              onQuantityChanged: (newQuantity) {
+                                groupDetailsProvider.changeItemQuantity(list.id, item.id, newQuantity);
+                              });
+                        }),
                   )
-                ]
-              )
-            ),
+                ])),
           );
-        }
-      )
-    );
+        }));
   }
 }

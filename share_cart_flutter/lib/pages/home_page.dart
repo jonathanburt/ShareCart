@@ -41,22 +41,16 @@ class _GroupsHomePageState extends State<HomePage> {
                   ElevatedButton.icon(
                     onPressed: () async {
                       // TODO: Implement group creation logic via GroupProvider
-                      final newGroupName = await showDialog<String>(
-                        context: context,
-                        builder: (_) => const CreateGroupDialog());
-                      if(newGroupName == null) return;
-                      try{
+                      final newGroupName = await showDialog<String>(context: context, builder: (_) => const CreateGroupDialog());
+                      if (newGroupName == null) return;
+                      try {
                         await groupProvider.createGroup(newGroupName);
-                      } on ApiConflictException catch (e){
-                        if(!context.mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(e.message))
-                        );
-                      } on ApiFailureException catch (e){
-                        if(!context.mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(e.message))
-                        );
+                      } on ApiConflictException catch (e) {
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+                      } on ApiFailureException catch (e) {
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
                       }
                     },
                     icon: const Icon(Icons.add),
@@ -71,7 +65,8 @@ class _GroupsHomePageState extends State<HomePage> {
                   const SizedBox(height: 16),
                   Expanded(
                     child: groups.isEmpty
-                        ? ListView( // Required so RefreshIndicator works with empty list
+                        ? ListView(
+                            // Required so RefreshIndicator works with empty list
                             children: [
                               SizedBox(height: 400),
                               Center(child: Text("No groups found.")),
@@ -90,8 +85,12 @@ class _GroupsHomePageState extends State<HomePage> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (_) => ChangeNotifierProvider(
-                                          create: (_) => GroupDetailsProvider(apiService, group.id)..loadLists()..loadItems(),
-                                          child: GroupPage(group: group,),
+                                          create: (_) => GroupDetailsProvider(apiService, group.id)
+                                            ..loadLists()
+                                            ..loadItems(),
+                                          child: GroupPage(
+                                            group: group,
+                                          ),
                                         ),
                                       ),
                                     );
