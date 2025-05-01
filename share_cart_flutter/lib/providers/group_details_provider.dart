@@ -59,7 +59,7 @@ class GroupDetailsProvider extends ChangeNotifier {
     }
   }
 
-  //This is not an ideal way of doing this, we should proably cache these changes and submit them later, but that is an issue for later
+  // This is not an ideal way of doing this, we should proably cache these changes and submit them later, but that is an issue for later
   Future<void> changeItemQuantity(int listId, int itemId, int quantity) async {
     ShareCartListItem newItem = await apiService.changeItemQuantity(groupId, listId, itemId, quantity);
     ShareCartList list = lists[listId] as ShareCartList;

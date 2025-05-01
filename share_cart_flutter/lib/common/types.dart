@@ -12,7 +12,7 @@ class ShareCartItem {
 
   factory ShareCartItem.fromJson(Map<String, dynamic> input) {
     DateTime createdAt = HttpDate.parse(input["createdAtFormatted"]);
-    return ShareCartItem(input["name"], input["description"], input["category"], input["price"], input["itemId"], createdAt); //TODO make sure this matches ItemDTO
+    return ShareCartItem(input["name"], input["description"], input["category"], input["price"], input["itemId"], createdAt); // TODO make sure this matches ItemDTO
   }
 
   const ShareCartItem(this.name, this.description, this.category, this.price, this.id, this.createdAt);
@@ -153,7 +153,7 @@ extension GroupRoleString on String {
       case 'ADMIN':
         return GroupRole.ADMIN;
       default:
-        throw UnimplementedError(); //TODO figure out what to throw here
+        throw UnimplementedError(); // TODO figure out what to throw here
     }
   }
 }

@@ -76,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
             TextButton(
               onPressed: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => const ForgotPasswordPage()));
-                //TODO: Implement Forgot Password Screen
+                // TODO: Implement Forgot Password Screen
               },
               child: const Text("Forgot Password"),
             ),
@@ -164,13 +164,13 @@ class _ForgotPasswordPage extends State<ForgotPasswordPage> {
                     foregroundColor: theme.colorScheme.onPrimary,
                   ),
                   onPressed: () {
-                    //TODO Implement forgot password system, show something to indicate that button was pressed
+                    // TODO Implement forgot password system, show something to indicate that button was pressed
                   },
-                  child: const Text('Send Email')), //TODO: Possibly change to 'Resend Email' after pressed.
+                  child: const Text('Send Email')), // TODO Possibly change to 'Resend Email' after pressed.
             ),
             TextButton(
                 onPressed: () {
-                  //TODO Verify this is the correct action
+                  // TODO Verify this is the correct action
                   Navigator.pop(context);
                 },
                 child: const Text('Return to Sign In'))

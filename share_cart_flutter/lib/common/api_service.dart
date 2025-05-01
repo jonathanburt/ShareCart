@@ -140,7 +140,7 @@ class ApiService {
     if (response.statusCode == 200) {
       final Iterable jsonResponse = jsonDecode(response.body);
       return List<GroupReturn>.from(jsonResponse.map((group) => (
-            group: ShareCartGroup.fromJson(group, _roleFromGroupResponse(group)!), //This is ugly and idk if it will work
+            group: ShareCartGroup.fromJson(group, _roleFromGroupResponse(group)!), // This is ugly and idk if it will work
             members: List<GroupMember>.from((group["members"] as Iterable).map((member) => GroupMember.fromJson(member))),
             invites: List<GroupInvite>.from((group["invites"] as Iterable).map((invite) => GroupInvite.fromJson(invite)))
           )));
@@ -156,7 +156,7 @@ class ApiService {
 
   /// Clears all stored data and notifies the caller when finished.
   Future logOut(VoidCallback onLogOut) async {
-    await _storage.deleteAll(); //Clear all stored data on log out
+    await _storage.deleteAll(); // Clear all stored data on log out
     onLogOut.call();
     return;
   }
