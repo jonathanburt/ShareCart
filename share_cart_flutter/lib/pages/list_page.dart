@@ -4,6 +4,8 @@ import 'package:share_cart_flutter/common/app_bar.dart';
 import 'package:share_cart_flutter/common/list_item.dart';
 import 'package:share_cart_flutter/providers/group_details_provider.dart';
 import 'package:share_cart_flutter/pages/shop_page.dart';
+
+/// Displays the contents of a given list, as well as options for modifying that list.
 class ListPage extends StatefulWidget {
   final int listId;
   final String listName;

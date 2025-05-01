@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// Dialog for creating a new list for a given group. Asks for the name of the list to be created. 
 class CreateListDialog extends StatefulWidget {
   const CreateListDialog({super.key});
 

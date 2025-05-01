@@ -7,11 +7,10 @@ import 'package:share_cart_flutter/common/exceptions.dart';
 import 'package:share_cart_flutter/common/types.dart';
 import 'package:http/http.dart' as http;
 
+/// Abstract class for the ApiService which is inherited by both MockApiService and RealApiService. Defines the interface between the back end and front end. 
 abstract class ApiService {
   Future<Map<int, ShareCartItem>> fetchItems(int groupId);
   Future<ShareCartItem?> fetchItem(int groupId, int itemId) ;
-  Future<List<ShareCartStore>> fetchStores();
-  Future<ShareCartStore?> fetchStore(int storeId);
   Future<Map<int, ShareCartList>> fetchLists(int groupId);
   Future<ShareCartList?> fetchList(int groupId, int listId);
   Future<List<GroupReturn>> fetchGroups();
@@ -32,6 +31,7 @@ abstract class ApiService {
   Future<void> leaveGroup(String groupId, VoidCallback onSuccess, Function(String) onFailure);
 }
 
+/// The mock implementation of the ApiService. Used for testing.
 class MockApiService implements ApiService {
   final List<ShareCartGroup> groups = [
     ShareCartGroup("Family", 103, GroupRole.ADMIN, DateTime.now()),
@@ -158,18 +158,6 @@ class MockApiService implements ApiService {
   }
 
   @override
-  Future<ShareCartStore?> fetchStore(int storeId) {
-    // TODO: implement fetchStore
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<ShareCartStore>> fetchStores() {
-    // TODO: implement fetchStores
-    throw UnimplementedError();
-  }
-
-  @override
   Future<void> leaveGroup(String groupId, VoidCallback onSuccess, Function(String p1) onFailure) async {
     onSuccess.call();
   }
@@ -235,9 +223,10 @@ class MockApiService implements ApiService {
 
 }
 
-//final ApiService apiService = MockApiService();
+// final ApiService apiService = MockApiService();
 final ApiService apiService = RealApiService(baseUrl: "http://localhost:8080");
 
+/// The real implementation of the ApiService. Used for the actual app.
 class RealApiService implements ApiService {
   final String baseUrl;
   final http.Client client;
@@ -318,18 +307,6 @@ class RealApiService implements ApiService {
       return <int, ShareCartItem>{for (var item in jsonResponse) item["itemId"]: ShareCartItem.fromJson(item)};
     }
     // TODO: implement fetchItems
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<ShareCartStore?> fetchStore(int storeId) {
-    // TODO: implement fetchStore
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<ShareCartStore>> fetchStores() {
-    // TODO: implement fetchStores
     throw UnimplementedError();
   }
 

@@ -8,7 +8,7 @@ import 'package:share_cart_flutter/providers/group_details_provider.dart';
 import 'package:share_cart_flutter/common/types.dart';
 import 'package:share_cart_flutter/common/create_item_dialog.dart';
 
-
+/// Displays the contents of a given group, as well as options for modifying that group.
 class GroupPage extends StatefulWidget {
   final ShareCartGroup group;
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:share_cart_flutter/common/types.dart';
 
+/// Widget displaying information about an item in a given list. Includes the item's price, quantity, and buttons to increment or decrement the quantity. 
 class ShareCartItemWidget extends StatelessWidget {
   final ShareCartItem item;
   final ShareCartListItem listItem;

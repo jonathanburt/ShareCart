@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:share_cart_flutter/common/api_service.dart';
 import 'package:share_cart_flutter/common/types.dart';
 
+/// Provides information about group invites to be displayed by UI elements.
 class InviteProvider extends ChangeNotifier {
   List<MyInvite> _invites = [];
   DateTime? _lastFetched;

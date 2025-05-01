@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// Dialog for creating a new item for a given group. Asks for the name, description, category, and price of the item to be created. 
 class CreateItemDialog extends StatefulWidget {
   const CreateItemDialog({super.key});
 

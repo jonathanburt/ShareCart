@@ -3,6 +3,7 @@ import 'package:share_cart_flutter/common/api_service.dart';
 import 'package:share_cart_flutter/pages/home_page.dart';
 import 'package:share_cart_flutter/pages/signup_page.dart';
 
+/// Allows the input of a username / password in order to login. Also allows navigation to the Sign Up and Forgot Password pages.
 class LoginPage extends StatefulWidget{
   const LoginPage({super.key});
 

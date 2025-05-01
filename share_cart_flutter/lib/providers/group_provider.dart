@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:share_cart_flutter/common/api_service.dart';
 import 'package:share_cart_flutter/common/types.dart';
 
+/// Provides basic information about a given group to be displayed by UI elements.
 class GroupProvider extends ChangeNotifier {
   List<ShareCartGroup> _groups = [];
   Map<int, List<GroupMember>> _memberLists = {};

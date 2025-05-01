@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// The App Bar UI element shared across most pages. Includes an icon and title displaying information about the current page, as well as a button for navigating to the settings page. 
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Icon icon;
   final String title;

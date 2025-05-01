@@ -8,6 +8,7 @@ void main() {
   runApp(const MyApp());
 }
 
+/// The base MaterialApp widget and entrypoint for the entire Flutter application.
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 

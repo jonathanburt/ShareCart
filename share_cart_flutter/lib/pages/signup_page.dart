@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import 'package:share_cart_flutter/common/api_service.dart';
 import 'package:share_cart_flutter/pages/login_page.dart';
 
+/// Allows the user to create an account.
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
 

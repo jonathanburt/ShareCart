@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:share_cart_flutter/common/types.dart';
 
+/// Dialog for adding an item to a list from the shop page. Displays basic information about the item, it's quantity, and whether or not it is communal.
 class AddItemToListDialog extends StatefulWidget{
   final ShareCartItem item;
   const AddItemToListDialog({super.key, required this.item});

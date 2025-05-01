@@ -6,6 +6,7 @@ import 'package:share_cart_flutter/common/exceptions.dart';
 import 'package:share_cart_flutter/providers/group_details_provider.dart';
 import 'package:share_cart_flutter/common/types.dart';
 
+/// Displays a set of available items for a specific group to add to a given list. Allows the user to search for a given item, add that item to the list, and sort search results by various metrics. 
 class ShopPage extends StatefulWidget {
   final int listId;
   ShopPage(this.listId);

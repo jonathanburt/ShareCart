@@ -7,6 +7,7 @@ import 'package:share_cart_flutter/pages/group_page.dart';
 import 'package:share_cart_flutter/providers/group_details_provider.dart';
 import 'package:share_cart_flutter/providers/group_provider.dart';
 
+/// This page is the top of the page hierarchy. It displays a list of the user's groups.
 class HomePage extends StatefulWidget {
   @override
   State createState() => _GroupsHomePageState();
