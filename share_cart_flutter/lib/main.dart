@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:share_cart_flutter/login_page.dart';
+import 'package:share_cart_flutter/pages/login_page.dart';
 import 'package:share_cart_flutter/providers/group_provider.dart';
 import 'package:share_cart_flutter/providers/invite_provider.dart';
 

@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:share_cart_flutter/exceptions.dart';
-import 'package:share_cart_flutter/types.dart';
+import 'package:share_cart_flutter/common/exceptions.dart';
+import 'package:share_cart_flutter/common/types.dart';
 import 'package:http/http.dart' as http;
 
 abstract class ApiService {

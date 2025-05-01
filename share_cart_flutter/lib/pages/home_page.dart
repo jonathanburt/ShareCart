@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:share_cart_flutter/app_bar.dart';
-import 'package:share_cart_flutter/create_group_dialog.dart';
-import 'package:share_cart_flutter/exceptions.dart';
-import 'package:share_cart_flutter/group_page.dart';
+import 'package:share_cart_flutter/common/app_bar.dart';
+import 'package:share_cart_flutter/common/create_group_dialog.dart';
+import 'package:share_cart_flutter/common/exceptions.dart';
+import 'package:share_cart_flutter/pages/group_page.dart';
 import 'package:share_cart_flutter/providers/group_details_provider.dart';
 import 'package:share_cart_flutter/providers/group_provider.dart';
 

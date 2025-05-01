@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:share_cart_flutter/add_item_to_list_dialog.dart';
-import 'package:share_cart_flutter/app_bar.dart';
-import 'package:share_cart_flutter/exceptions.dart';
+import 'package:share_cart_flutter/common/add_item_to_list_dialog.dart';
+import 'package:share_cart_flutter/common/app_bar.dart';
+import 'package:share_cart_flutter/common/exceptions.dart';
 import 'package:share_cart_flutter/providers/group_details_provider.dart';
-import 'package:share_cart_flutter/types.dart';
+import 'package:share_cart_flutter/common/types.dart';
 
 class ShopPage extends StatefulWidget {
   final int listId;

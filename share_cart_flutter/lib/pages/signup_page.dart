@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
-import 'package:share_cart_flutter/api_service.dart';
-import 'package:share_cart_flutter/login_page.dart';
+import 'package:share_cart_flutter/common/api_service.dart';
+import 'package:share_cart_flutter/pages/login_page.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:share_cart_flutter/app_bar.dart';
-import 'package:share_cart_flutter/list_item.dart';
+import 'package:share_cart_flutter/common/app_bar.dart';
+import 'package:share_cart_flutter/common/list_item.dart';
 import 'package:share_cart_flutter/providers/group_details_provider.dart';
-import 'package:share_cart_flutter/shop_page.dart';
+import 'package:share_cart_flutter/pages/shop_page.dart';
 class ListPage extends StatefulWidget {
   final int listId;
   final String listName;

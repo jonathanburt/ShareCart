@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:share_cart_flutter/types.dart';
+import 'package:share_cart_flutter/common/types.dart';
 
 class ShareCartItemWidget extends StatelessWidget {
   final ShareCartItem item;

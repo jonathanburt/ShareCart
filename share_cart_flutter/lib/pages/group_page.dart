@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:share_cart_flutter/app_bar.dart';
-import 'package:share_cart_flutter/create_list_dialog.dart';
-import 'package:share_cart_flutter/exceptions.dart';
-import 'package:share_cart_flutter/list_page.dart';
+import 'package:share_cart_flutter/common/app_bar.dart';
+import 'package:share_cart_flutter/common/create_list_dialog.dart';
+import 'package:share_cart_flutter/common/exceptions.dart';
+import 'package:share_cart_flutter/pages/list_page.dart';
 import 'package:share_cart_flutter/providers/group_details_provider.dart';
-import 'package:share_cart_flutter/types.dart';
-import 'package:share_cart_flutter/create_item_dialog.dart';
+import 'package:share_cart_flutter/common/types.dart';
+import 'package:share_cart_flutter/common/create_item_dialog.dart';
 
 
 class GroupPage extends StatefulWidget {

@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
-import 'package:share_cart_flutter/api_service.dart';
+import 'package:share_cart_flutter/common/api_service.dart';
 import 'package:mockito/mockito.dart';
 import 'package:http/http.dart' as http;
-import 'package:share_cart_flutter/types.dart'; 
+import 'package:share_cart_flutter/common/types.dart'; 
 
 import 'api_service_test.mocks.dart';
 
