@@ -4,6 +4,8 @@ import 'package:share_cart_flutter/common/types.dart';
 
 /// Provides extra detailed information about a given group to be displayed by UI elements.
 class GroupDetailsProvider extends ChangeNotifier {
+
+  final ApiService apiService;
   final int groupId;
   Map<int, ShareCartItem> _items = {};
   Map<int, ShareCartList> _lists = {};
@@ -11,7 +13,7 @@ class GroupDetailsProvider extends ChangeNotifier {
   DateTime? _lastFetchedLists;
   Duration cacheDuration = const Duration(minutes: 5);
 
-  GroupDetailsProvider(this.groupId);
+  GroupDetailsProvider(this.apiService, this.groupId);
 
   Map<int, ShareCartItem> get items => _items;
   Map<int, ShareCartList> get lists => _lists;

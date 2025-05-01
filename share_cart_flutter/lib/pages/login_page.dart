@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import 'package:provider/provider.dart';
 import 'package:share_cart_flutter/common/api_service.dart';
 import 'package:share_cart_flutter/pages/home_page.dart';
 import 'package:share_cart_flutter/pages/signup_page.dart';
@@ -19,6 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final apiService = Provider.of<ApiService>(context, listen: false);
 
     return Scaffold(
       body: Center(

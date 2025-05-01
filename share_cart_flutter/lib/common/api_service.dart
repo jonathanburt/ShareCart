@@ -1,285 +1,53 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:share_cart_flutter/common/exceptions.dart';
 import 'package:share_cart_flutter/common/types.dart';
 import 'package:http/http.dart' as http;
 
-/// Abstract class for the ApiService which is inherited by both MockApiService and RealApiService. Defines the interface between the back end and front end. 
-abstract class ApiService {
-  /// Retrieves all Items belonging to groupId
-  Future<Map<int, ShareCartItem>> fetchItems(int groupId);
-  /// Retrieves the Item corresponding to itemId, and is in the Group corresponding to groupId
-  Future<ShareCartItem?> fetchItem(int groupId, int itemId);
-  /// Retrieves all Lists corresponding to groupId
-  Future<Map<int, ShareCartList>> fetchLists(int groupId);
-  /// Retrieves the list corresponding to listId and is in the Group corresponding to groupId
-  Future<ShareCartList?> fetchList(int groupId, int listId);
-  /// Retrieves all groups the current user is a member of
-  Future<List<GroupReturn>> fetchGroups();
-  /// Retrieves the group specified by groupId
-  Future<ShareCartGroup?> fetchGroup(int groupId);
-  /// Retrieves all pending invites corresponding to the current user
-  Future<List<MyInvite>> fetchInvites();
-  /// Changes the quantity associated with the list item with itemId, listId, and groupId
-  Future<ShareCartListItem> changeItemQuantity(int groupId, int listId, int itemId, int quantity);
-  /// Accepts a pending invite to the Group corresponding to groupId
-  Future<ShareCartGroup?> acceptInvite(int groupId);
-  /// Declines a pending invite to the Group corresponding to groupId
-  Future<void> declineInvite(int groupId);
-
-  /// Creates a new Group with the provided name
-  Future<ShareCartGroup?> createGroup(String name);
-  /// Creates a new list in the provided Group with the provided name
-  Future<ShareCartList?> createList(int groupId, String name);
-  /// Creates a new item with the provided name, description, category, and price in the provided Group
-  Future<ShareCartItem?> createItem(int groupId, String name, {String description = "", String category = "", double price = 0.0});
-  /// Adds the item corresponding to itemId to provided list in the provided group, with the provided quantity
-  Future<ShareCartList?> addItemToList(int groupId, int listId, int itemId, int quantity, {bool communal = false});
-
-  /// Authenticates the using the username and password, executes onSuccess if authentication succeeds, and onFailure otherwise 
-  Future<void> authenticateUser(String username, String password, VoidCallback onSuccess, VoidCallback onFailure);
-  /// Creates a new user with username, email, and password, executes onSuccess if registration succeeds, and onFailure otherwise
-  Future<void> createUser(String username, String email, String password, VoidCallback onSuccess, VoidCallback onFailure);
-  /// Logs out of the session by deleting the JWT authentication token, then executing onLogOut
-  Future<void> logOut(VoidCallback onLogOut);
-  /// Attempts to removes the current user from the group corresponding to groupId, if success, calls onSuccess, if failure, calls onFailure
-  Future<void> leaveGroup(String groupId, VoidCallback onSuccess, Function(String) onFailure);
-}
-
-/// The mock implementation of the ApiService. Used for testing.
-class MockApiService implements ApiService {
-  final List<ShareCartGroup> groups = [
-    ShareCartGroup("Family", 103, GroupRole.ADMIN, DateTime.now()),
-    ShareCartGroup("Roommates", 921, GroupRole.SHOPPER, DateTime.now())
-  ];
-  final Map<int, List<GroupMember>> groupMemberships = {
-    103: [
-      GroupMember("Jimmy", 9, GroupRole.ADMIN, DateTime.now()),
-      GroupMember("Mom", 21, GroupRole.SHOPPER, DateTime.now()),
-      GroupMember("Dan", 90, GroupRole.MEMBER, DateTime.now())
-    ],
-    921: [
-      GroupMember("Jimmy", 9, GroupRole.SHOPPER, DateTime.now()),
-      GroupMember("Dale", 2735, GroupRole.ADMIN, DateTime.now())
-    ]
-  };
-  final Map<int, List<GroupInvite>> groupInvites = {
-    103: [
-      GroupInvite("Karen", 57, DateTime.now())
-    ],
-    921: []
-  };
-  final Map<int, Map<int, ShareCartItem>> items = {
-    103: {
-      1: ShareCartItem("Bananas", "Fresh ripe bananas", "Produce", 1.29, 1, DateTime.now()),
-      2: ShareCartItem("Whole Milk", "1 gallon whole milk", "Pairy", 3.49, 2, DateTime.now()),
-      3: ShareCartItem("Ground Beef", "Lean ground beef 1 lb", "Meat", 5.99, 3, DateTime.now()),
-      4: ShareCartItem("Pasta", "Spaghetti noodles 16 oz", "Pasta", 1.79, 4, DateTime.now()),
-      5: ShareCartItem("Tomato Sauce", "Classic marinara sauce", "Canned", 2.19, 5, DateTime.now()),
-      6: ShareCartItem("Apples", "Red delicious apples (3 lb)", "Produce", 4.29, 6, DateTime.now()),
-      7: ShareCartItem("Bread", "Whole wheat sandwich bread", "Bakery", 2.99, 7, DateTime.now()),
-      8: ShareCartItem("Eggs", "Dozen large eggs", "Dairy", 2.79, 8, DateTime.now()),
-      9: ShareCartItem("Orange Juice", "Fresh squeezed OJ 64 oz", "Beverages", 4.59, 9, DateTime.now()),
-      10: ShareCartItem("Cheddar Cheese", "Shredded cheddar cheese", "Dairy", 3.89, 10, DateTime.now()),
-    },
-    921: {
-      11: ShareCartItem("Chicken Breast", "Boneless skinless chicken breasts", "meat", 6.49, 11, DateTime.now()),
-      12: ShareCartItem("Rice", "Long grain white rice 2 lb", "grains", 2.39, 12, DateTime.now()),
-      13: ShareCartItem("Cereal", "Honey oat breakfast cereal", "cereal", 3.79, 13, DateTime.now()),
-      14: ShareCartItem("Carrots", "Baby carrots 1 lb", "produce", 1.59, 14, DateTime.now()),
-      15: ShareCartItem("Yogurt", "Strawberry Greek yogurt", "dairy", 1.19, 15, DateTime.now()),
-      16: ShareCartItem("Peanut Butter", "Creamy peanut butter 16 oz", "spreads", 2.89, 16, DateTime.now()),
-      17: ShareCartItem("Tortilla Chips", "Restaurant style chips", "snacks", 3.49, 17, DateTime.now()),
-      18: ShareCartItem("Salsa", "Mild tomato salsa", "condiments", 2.99, 18, DateTime.now()),
-      19: ShareCartItem("Lettuce", "Romaine hearts (3 pack)", "produce", 3.19, 19, DateTime.now()),
-      20: ShareCartItem("Frozen Pizza", "Pepperoni frozen pizza", "frozen", 5.79, 20, DateTime.now()),
-    }
-    
-  };
-  final Map<int, Map<int, ShareCartList>> lists = {
-    103: {
-      1: ShareCartList("Weekly Groceries", 1, 103, DateTime.now(), [
-        ShareCartListItem(5, 1, 21, false, false, 2, DateTime.now()),
-        ShareCartListItem(1, 1, 90, true, false, 10, DateTime.now()),
-        ShareCartListItem(3, 1, 9, false, false, 2, DateTime.now())
-      ]),
-    },
-    921: {
-      2: ShareCartList("Sunday Party", 2, 921, DateTime.now(), [
-        ShareCartListItem(17, 2, 9, true, false, 3, DateTime.now()),
-        ShareCartListItem(18, 2, 2735, true, false, 3, DateTime.now())
-      ]),
-      3: ShareCartList("Weekley Groceries", 3, 921, DateTime.now(), [
-        ShareCartListItem(20, 3, 9, false, false, 2, DateTime.now()),
-        ShareCartListItem(16, 3, 2735, false, false, 1, DateTime.now())
-      ])
-    }
-  };
-
-  final List<MyInvite> myInvites = [
-    MyInvite("THE HOMIES", 2, DateTime.now())
-  ];
-
-  Duration loadTime = Duration(seconds: 1);
-
-  @override
-  Future<void> authenticateUser(String username, String password, VoidCallback onSuccess, VoidCallback onFailure) async {
-    onSuccess.call();
-  }
-
-  @override
-  Future<void> createUser(String username, String email, String password, VoidCallback onSuccess, VoidCallback onFailure) async {
-    onSuccess.call();
-  }
-
-  @override
-  Future<ShareCartGroup?> fetchGroup(int groupId) {
-    // TODO: implement fetchGroup
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<GroupReturn>> fetchGroups() async {
-    await Future.delayed(loadTime);
-    List<GroupReturn> ret = [];
-    for(ShareCartGroup group in groups){
-      ret.add((group: group, members: groupMemberships[group.id]!, invites: groupInvites[group.id]!));
-    }
-    return ret;
-  }
-
-  @override
-  Future<ShareCartItem?> fetchItem(int groupId, int itemId) async {
-    await Future.delayed(loadTime);
-    return items[groupId]![itemId];
-  }
-
-  @override
-  Future<Map<int, ShareCartItem>> fetchItems(int groupId) async {
-    await Future.delayed(loadTime);
-    return items[groupId]!;
-  }
-
-  @override
-  Future<ShareCartList?> fetchList(int groupId, int listId) async {
-    await Future.delayed(loadTime);
-    return lists[groupId]![listId];
-  }
-
-  @override
-  Future<Map<int, ShareCartList>> fetchLists(int groupId) async {
-    await Future.delayed(loadTime);
-    return lists[groupId]!;
-  }
-
-  @override
-  Future<void> leaveGroup(String groupId, VoidCallback onSuccess, Function(String p1) onFailure) async {
-    onSuccess.call();
-  }
-
-  @override
-  Future<void> logOut(VoidCallback onLogOut) async {
-    onLogOut.call();
-  }
-  
-  @override
-  Future<List<MyInvite>> fetchInvites() async {
-    await Future.delayed(loadTime);
-    return myInvites;
-  }
-  
-  @override
-  Future<ShareCartGroup?> createGroup(String name) {
-    // TODO: implement createGroup
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<ShareCartGroup?> acceptInvite(int groupId) {
-    // TODO: implement acceptInvite
-    throw UnimplementedError();
-  }
-  
-  @override
-  Future<void> declineInvite(int groupId) {
-    // TODO: implement declineInvite
-    throw UnimplementedError();
-  }
-  
-  @override
-  Future<ShareCartListItem> changeItemQuantity(int groupId, int listId, int itemId, int quantity) async {
-    await Future.delayed(loadTime);
-    var groupLists = lists[groupId] ?? {};
-    ShareCartList list = groupLists[listId] as ShareCartList;
-    int itemIndex = list.items.indexWhere((listItem) => listItem.itemId == itemId);
-    ShareCartListItem item = list.items[itemIndex];
-    return ShareCartListItem(item.itemId, item.listId, item.userId, item.communal, item.bought, quantity, item.createdAt);
-  }
-  
-  @override
-  Future<ShareCartList?> addItemToList(int groupId, int listId, int itemId, int quantity, {bool communal = false}) {
-    // TODO: implement addItemToList
-    throw UnimplementedError();
-  }
-  
-  @override
-  Future<ShareCartItem?> createItem(int groupId, String name, {String description = "", String category = "", double price = 0.0}) {
-    // TODO: implement createItem
-    throw UnimplementedError();
-  }
-  
-  @override
-  Future<ShareCartList?> createList(int groupId, String name) async {
-    await Future.delayed(loadTime);
-    var list = ShareCartList(name, 3, groupId, DateTime.now(), []);
-    lists[groupId]![3] = list;
-    return list;
-  }
-
-}
-
-// final ApiService apiService = MockApiService();
-final ApiService apiService = RealApiService(baseUrl: "http://localhost:8080");
-
-/// The real implementation of the ApiService. Used for the actual app.
-class RealApiService implements ApiService {
+/// Defines the interface between the back end and front end.
+class ApiService {
   final String baseUrl;
-  final http.Client client;
+  final http.Client client = http.Client();
   ThisUserDetails? _userDetails;
 
+  /// Returns the currently logged-in user's details.
   ThisUserDetails? get userDetails => _userDetails;
 
-  RealApiService({required this.baseUrl, http.Client? client})
-    : client = client ?? http.Client(); //Client dependency injection for testing purposes, defaults to regular http client
+  ApiService({required this.baseUrl});
 
-  final FlutterSecureStorage _storage = const FlutterSecureStorage(); //TODO make sure this works with target platforms and everyones machines
-  var baseHeaders = { 
-    "Content-Type":
-      "application/json"
-  };
-  
-  Future<String> getJWT() async {
+  final FlutterSecureStorage _storage =
+      const FlutterSecureStorage(); // TODO make sure this works with target platforms and everyones machines
+  var baseHeaders = {"Content-Type": "application/json"};
+
+  /// Retrieves the JWT token from secure storage.
+  Future getJWT() async {
     String? jwt = await _storage.read(key: 'AuthToken');
-    if(jwt == null) throw UnimplementedError(); //TODO figure out what to throw here
+    if (jwt == null) throw UnimplementedError(); // TODO figure out what to throw here
     return jwt;
   }
 
-  @override
-  Future<void> authenticateUser(String username, String password, VoidCallback onSuccess, VoidCallback onFailure) async {
-    var response = await client.post(Uri.parse('$baseUrl/api/auth/signin'),
+  /// Authenticates a user with the provided username and password.
+  Future authenticateUser(String username, String password,
+      VoidCallback onSuccess, VoidCallback onFailure) async {
+    final response = await client.post(
+      Uri.parse('$baseUrl/api/auth/signin'),
       headers: baseHeaders,
-      body: jsonEncode({"username": username, "password": password})
+      body: jsonEncode({"username": username, "password": password}),
     );
 
-    if(response.statusCode == 200){
+    if (response.statusCode == 200) {
       onSuccess.call();
-      var responseJson = jsonDecode(response.body) as Map<String, dynamic>;
+      final responseJson = jsonDecode(response.body) as Map<String, dynamic>;
       await _storage.write(key: 'AuthToken', value: responseJson['token']);
       print(await _storage.read(key: 'AuthToken'));
-      _userDetails = ThisUserDetails(username, responseJson['email'], responseJson['userId'], HttpDate.parse(responseJson['createdAtFormatted']));
+      _userDetails = ThisUserDetails(
+        username,
+        responseJson['email'],
+        responseJson['userId'],
+        HttpDate.parse(responseJson['createdAtFormatted']),
+      );
       return;
     } else {
       onFailure.call();
@@ -288,16 +56,17 @@ class RealApiService implements ApiService {
     }
   }
 
-  @override
-  Future<void> createUser(String username, String email, String password, VoidCallback onSuccess, VoidCallback onFailure) async {
-    var response = await client.post(
+  /// Creates a new user with the provided username, email, and password.
+  Future createUser(String username, String email, String password,
+      VoidCallback onSuccess, VoidCallback onFailure) async {
+    final response = await client.post(
       Uri.parse('$baseUrl/api/auth/signup'),
       headers: baseHeaders,
       body: jsonEncode({
         "username": username,
         "email": email,
-        "password": password
-      })
+        "password": password,
+      }),
     );
     if (response.statusCode == 200) {
       onSuccess.call();
@@ -308,87 +77,105 @@ class RealApiService implements ApiService {
     }
   }
 
-  @override
+  /// Fetches a specific item from a list within a group.
   Future<ShareCartItem?> fetchItem(int groupId, int itemId) {
-    // TODO: implement fetchItem
+    // TODO implement fetchItem
     throw UnimplementedError();
   }
 
-  @override
+  /// Fetches all items within a specific group.
   Future<Map<int, ShareCartItem>> fetchItems(int groupId) async {
-    var headers = await authorizedHeaders();
+    final headers = await authorizedHeaders();
 
-    var itemsResponse = await client.get(Uri.parse('$baseUrl/api/group/$groupId/item/getall'), headers: headers);
+    final itemsResponse = await client.get(
+      Uri.parse('$baseUrl/api/group/$groupId/item/getall'),
+      headers: headers,
+    );
 
-    if(itemsResponse.statusCode == 200){
-      Iterable jsonResponse = jsonDecode(itemsResponse.body);
-      return <int, ShareCartItem>{for (var item in jsonResponse) item["itemId"]: ShareCartItem.fromJson(item)};
+    if (itemsResponse.statusCode == 200) {
+      final Iterable jsonResponse = jsonDecode(itemsResponse.body);
+      return <int, ShareCartItem>{
+        for (final item in jsonResponse)
+          item["itemId"]: ShareCartItem.fromJson(item)
+      };
     }
-    // TODO: implement fetchItems
+    // TODO implement fetchItems
     throw UnimplementedError();
   }
 
-  @override
+  /// Fetches all shopping lists within a specific group.
   Future<Map<int, ShareCartList>> fetchLists(int groupId) async {
-    var headers = await authorizedHeaders();
+    final headers = await authorizedHeaders();
 
-    var response = await client.get(Uri.parse('$baseUrl/api/group/$groupId/list/getall'), headers: headers);
+    final response = await client.get(
+      Uri.parse('$baseUrl/api/group/$groupId/list/getall'),
+      headers: headers,
+    );
 
-    if(response.statusCode == 200){
-      Iterable responseBody = jsonDecode(response.body);
-      return <int, ShareCartList>{for (var list in responseBody) list["listId"]: ShareCartList.fromJson(list)};
+    if (response.statusCode == 200) {
+      final Iterable responseBody = jsonDecode(response.body);
+      return <int, ShareCartList>{
+        for (final list in responseBody)
+          list["listId"]: ShareCartList.fromJson(list)
+      };
     }
 
-    // TODO: implement fetchLists fail state
+    // TODO implement fetchLists fail state
     throw UnimplementedError();
   }
 
-  @override
+  /// Fetches a specific shopping list within a group.
   Future<ShareCartList?> fetchList(int groupId, int listId) async {
-    var headers = await authorizedHeaders();
+    final headers = await authorizedHeaders();
 
-    var response = await client.get(Uri.parse('$baseUrl/api/group/$groupId/list/$listId/get'), headers: headers);
+    final response = await client.get(
+      Uri.parse('$baseUrl/api/group/$groupId/list/$listId/get'),
+      headers: headers,
+    );
 
-    if(response.statusCode == 200){
-      var jsonResponse = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
       return ShareCartList.fromJson(jsonResponse);
     }
-    // TODO: implement fetchList fail state
+    // TODO implement fetchList fail state
     throw UnimplementedError();
   }
 
-  @override
+  /// Fetches all groups that the current user is a member of.
   Future<List<GroupReturn>> fetchGroups() async {
-    var headers = await authorizedHeaders();
-    var response = await client.get(Uri.parse('$baseUrl/api/group/get/all'), headers: headers);
+    final headers = await authorizedHeaders();
+    final response = await client.get(Uri.parse('$baseUrl/api/group/get/all'), headers: headers);
 
-    if(response.statusCode == 200){
-      Iterable jsonResponse = jsonDecode(response.body);
-      return List<GroupReturn>.from(jsonResponse.map((group) => (group: ShareCartGroup.fromJson(group, _roleFromGroupResponse(group)!), //This is ugly and idk if it will work
-                                                    members: List<GroupMember>.from((group["members"] as Iterable).map((member) => GroupMember.fromJson(member))),
-                                                    invites: List<GroupInvite>.from((group["invites"] as Iterable).map((invite) => GroupInvite.fromJson(invite))))));
+    if (response.statusCode == 200) {
+      final Iterable jsonResponse = jsonDecode(response.body);
+      return List<GroupReturn>.from(jsonResponse.map((group) => (
+        group: ShareCartGroup.fromJson(group, _roleFromGroupResponse(group)!), //This is ugly and idk if it will work
+        members: List<GroupMember>.from((group["members"] as Iterable).map((member) => GroupMember.fromJson(member))),
+        invites: List<GroupInvite>.from((group["invites"] as Iterable).map((invite) => GroupInvite.fromJson(invite)))
+      )));
     }
     throw UnimplementedError();
   }
 
-  @override
+  /// Fetches details for a specific group.
   Future<ShareCartGroup?> fetchGroup(int groupId) async {
-    // TODO: implement fetchGroup
+    // TODO implement fetchGroup
     throw UnimplementedError();
   }
 
-  @override
-  Future<void> logOut(VoidCallback onLogOut) async{
+  /// Clears all stored data and notifies the caller when finished.
+  Future logOut(VoidCallback onLogOut) async {
     await _storage.deleteAll(); //Clear all stored data on log out
     onLogOut.call();
     return;
   }
 
-  @override
-  Future<void> leaveGroup(String groupId, VoidCallback onSuccess, Function(String) onFailure) async {
-   var headers = await authorizedHeaders();
+  /// Allows the current user to leave a specific group.
+  Future leaveGroup(String groupId, VoidCallback onSuccess,
+      Function(String) onFailure) async {
+    final headers = await authorizedHeaders();
 
-    var response = await client.post(
+    final response = await client.post(
       Uri.parse('$baseUrl/api/group/$groupId/leave'),
       headers: headers,
     );
@@ -398,7 +185,7 @@ class RealApiService implements ApiService {
     } else {
       var errorMessage = "Failed to leave group";
       try {
-        var responseBody = jsonDecode(response.body) as Map<String, dynamic>;
+        final responseBody = jsonDecode(response.body) as Map<String, dynamic>;
         errorMessage = responseBody['message'] ?? errorMessage;
       } catch (e) {
         // Use default error message if response parsing fails
@@ -406,85 +193,110 @@ class RealApiService implements ApiService {
       onFailure(errorMessage);
     }
   }
-  
-  @override
-  Future<List<MyInvite>> fetchInvites() async {
-    var headers = await authorizedHeaders();
-    if(_userDetails == null) throw UnimplementedError();
-    int userId = _userDetails!.userId;
-    var response = await client.get(Uri.parse('$baseUrl/users/$userId/invites/get'), headers: headers);
 
-    if(response.statusCode == 200){
-      return List.from((jsonDecode(response.body) as Iterable).map((invite) => MyInvite.fromJson(invite as Map<String, dynamic>)));
+  /// Fetches all pending invites for the current user.
+  Future<List<MyInvite>> fetchInvites() async {
+    final headers = await authorizedHeaders();
+    if (_userDetails == null) throw UnimplementedError();
+    final int userId = _userDetails!.userId;
+    final response = await client.get(
+      Uri.parse('$baseUrl/users/$userId/invites/get'),
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      return List.from((jsonDecode(response.body) as Iterable)
+          .map((invite) => MyInvite.fromJson(invite as Map<String, dynamic>)));
     }
-    //TODO fail state
+    // TODO fail state
     throw UnimplementedError();
   }
-  
-  @override
+
+  /// Creates a new group with the given name.
   Future<ShareCartGroup?> createGroup(String name) async {
-    var headers = await authorizedHeaders();
-    var response = await client.post(Uri.parse('$baseUrl/api/group/create'), body: jsonEncode({"name" : name}), headers: headers);
-    switch(response.statusCode){
+    final headers = await authorizedHeaders();
+    final response = await client.post(
+      Uri.parse('$baseUrl/api/group/create'),
+      body: jsonEncode({"name": name}),
+      headers: headers,
+    );
+    switch (response.statusCode) {
       case 201:
-        return ShareCartGroup.fromJson(jsonDecode(response.body) as Map<String, dynamic>, GroupRole.ADMIN);
+        return ShareCartGroup.fromJson(
+            jsonDecode(response.body) as Map<String, dynamic>, GroupRole.ADMIN);
       case 409:
         throw ApiConflictException("A group with name $name already exists");
       default:
-        throw ApiFailureException("Could not create group $name, request failed with code ${response.statusCode}");
+        throw ApiFailureException(
+            "Could not create group $name, request failed with code ${response.statusCode}");
     }
   }
 
-  @override
-  Future<ShareCartListItem> changeItemQuantity(int groupId, int listId, int itemId, int quantity) async {
-    var headers = await authorizedHeaders();
-    var response = await client.put(Uri.parse('$baseUrl/api/group/$groupId/item/$listId/$itemId/quantity'), 
+  /// Changes the quantity of a specific item in a shopping list.
+  Future changeItemQuantity(
+      int groupId, int listId, int itemId, int quantity) async {
+    final headers = await authorizedHeaders();
+    final response = await client.put(
+      Uri.parse('$baseUrl/api/group/$groupId/item/$listId/$itemId/quantity'),
       headers: headers,
-      body: jsonEncode({"quantity" : quantity}));
-    
-    if(response.statusCode == 200) {
+      body: jsonEncode({"quantity": quantity}),
+    );
+
+    if (response.statusCode == 200) {
       return ShareCartListItem.fromJson(jsonDecode(response.body));
     }
 
     throw UnimplementedError();
   }
 
-  @override
+  /// Accepts an invitation to join a specific group.
   Future<ShareCartGroup?> acceptInvite(int groupId) async {
-    var headers = await authorizedHeaders();
-    var response = await client.post(Uri.parse('$baseUrl/api/group/$groupId/invite/accept'), headers: headers);
+    final headers = await authorizedHeaders();
+    final response = await client.post(
+      Uri.parse('$baseUrl/api/group/$groupId/invite/accept'),
+      headers: headers,
+    );
 
-    if(response.statusCode == 200){
-      Map<String, dynamic> jsonResponse = jsonDecode(response.body);
-      return ShareCartGroup.fromJson(jsonResponse, _roleFromGroupResponse(jsonResponse) as GroupRole);
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+      return ShareCartGroup.fromJson(
+          jsonResponse, _roleFromGroupResponse(jsonResponse) as GroupRole);
     }
-    // TODO: implement acceptInvite fail stat
+    // TODO implement acceptInvite fail stat
     throw UnimplementedError();
   }
-  
-  @override
-  Future<void> declineInvite(int groupId) async {
-    var headers = await authorizedHeaders();
-    var response = await client.post(Uri.parse('$baseUrl/api/$groupId/invite/decline'), headers: headers);
 
-    if(response.statusCode == 200){
+  /// Declines an invitation to join a specific group.
+  Future declineInvite(int groupId) async {
+    final headers = await authorizedHeaders();
+    final response = await client.post(
+      Uri.parse('$baseUrl/api/$groupId/invite/decline'),
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
       return;
     }
-    //TODO implement fail state
+    // TODO implement fail state
     throw UnimplementedError();
   }
 
-  @override
-  Future<ShareCartList?> addItemToList(int groupId, int listId, int itemId, int quantity, {bool communal = false}) async {
-    var headers = await authorizedHeaders();
-    var response = await client.post(Uri.parse('$baseUrl/api/group/$groupId/item/$listId/add'), headers: headers, 
+  /// Adds an existing item to a specific shopping list within a group.
+  Future<ShareCartList?> addItemToList(
+      int groupId, int listId, int itemId, int quantity,
+      {bool communal = false}) async {
+    final headers = await authorizedHeaders();
+    final response = await client.post(
+      Uri.parse('$baseUrl/api/group/$groupId/item/$listId/add'),
+      headers: headers,
       body: jsonEncode({
-        "itemId" : itemId,
-        "quantity" : quantity,
-        "communal" : communal,
-        "bought" : false
-      }));
-    
+        "itemId": itemId,
+        "quantity": quantity,
+        "communal": communal,
+        "bought": false,
+      }),
+    );
+
     switch (response.statusCode) {
       case 201:
         return null;
@@ -494,55 +306,68 @@ class RealApiService implements ApiService {
         throw ApiFailureException("Could not add item to list");
     }
   }
-  
-  @override
-  Future<ShareCartItem?> createItem(int groupId, String name, {String description = "", String category = "", double price = 0.0}) async {
-    var headers = await authorizedHeaders();
-    var response = await client.post(Uri.parse('$baseUrl/api/group/$groupId/item/create'), headers: headers,
-    body: jsonEncode({
-      "name" : name,
-      "description" : description,
-      "category" : category,
-      "price" : price
-    }));
+
+  /// Creates a new item within a specific group.
+  Future<ShareCartItem?> createItem(int groupId, String name,
+      {String description = "", String category = "", double price = 0.0}) async {
+    final headers = await authorizedHeaders();
+    final response = await client.post(
+      Uri.parse('$baseUrl/api/group/$groupId/item/create'),
+      headers: headers,
+      body: jsonEncode({
+        "name": name,
+        "description": description,
+        "category": category,
+        "price": price,
+      }),
+    );
 
     switch (response.statusCode) {
       case 201:
         return ShareCartItem.fromJson(jsonDecode(response.body));
       case 401:
-        throw ApiUnauthorizedException("Do not have permissions to create items in this group");
+        throw ApiUnauthorizedException(
+            "Do not have permissions to create items in this group");
       case 409:
         throw ApiConflictException("Item already exists in this group");
       default:
         throw ApiFailureException("Could not create item");
     }
   }
-  
-  @override
-  Future<ShareCartList?> createList(int groupId, String name) async {
-    var headers = await authorizedHeaders();
-    var response = await client.post(Uri.parse('$baseUrl/api/group/$groupId/list/add'), headers: headers, body: jsonEncode({'name' : name}));
 
-    switch(response.statusCode){
+  /// Creates a new shopping list within a specific group.
+  Future<ShareCartList?> createList(int groupId, String name) async {
+    final headers = await authorizedHeaders();
+    final response = await client.post(
+      Uri.parse('$baseUrl/api/group/$groupId/list/add'),
+      headers: headers,
+      body: jsonEncode({'name': name}),
+    );
+
+    switch (response.statusCode) {
       case 201:
         return ShareCartList.fromJson(jsonDecode(response.body));
       case 409:
-        throw ApiConflictException("List already exists with this name in this group");
+        throw ApiConflictException(
+            "List already exists with this name in this group");
       default:
         throw ApiUnauthorizedException("Cannot create list");
     }
   }
 
-    Future<Map<String, String>> authorizedHeaders() async {
-    var headers = baseHeaders;
-    String jwt = await getJWT();
+  /// Constructs the authorized headers including the JWT token.
+  Future<Map<String, String>> authorizedHeaders() async {
+    final headers = baseHeaders;
+    final String jwt = await getJWT();
     headers["Authorization"] = "Bearer $jwt";
     return headers;
   }
 
-  GroupRole? _roleFromGroupResponse(Map<String, dynamic> input){
-    Iterable members = input["members"];
-    return (members.firstWhere((member) => member["userId"] == userDetails!.userId))["role"].toString().groupRole;
+  /// Extracts the user's role within a group from the group response.
+  GroupRole? _roleFromGroupResponse(Map<String, dynamic> input) {
+    final Iterable members = input["members"];
+    return (members.firstWhere((member) => member["userId"] == userDetails!.userId))["role"]
+        .toString()
+        .groupRole;
   }
 }
-

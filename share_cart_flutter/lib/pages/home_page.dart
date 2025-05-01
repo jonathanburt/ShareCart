@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:share_cart_flutter/common/api_service.dart';
 import 'package:share_cart_flutter/common/app_bar.dart';
 import 'package:share_cart_flutter/common/create_group_dialog.dart';
 import 'package:share_cart_flutter/common/exceptions.dart';
@@ -24,8 +25,10 @@ class _GroupsHomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final apiService = Provider.of<ApiService>(context, listen: false);
+
     return Scaffold(
-      appBar: MyAppBar(Icon(Icons.people) ,"My Groups"),
+      appBar: MyAppBar(Icon(Icons.people), "My Groups"),
       body: Consumer<GroupProvider>(
         builder: (context, groupProvider, _) {
           final groups = groupProvider.groups;
@@ -87,7 +90,7 @@ class _GroupsHomePageState extends State<HomePage> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (_) => ChangeNotifierProvider(
-                                          create: (_) => GroupDetailsProvider(group.id)..loadLists()..loadItems(),
+                                          create: (_) => GroupDetailsProvider(apiService, group.id)..loadLists()..loadItems(),
                                           child: GroupPage(group: group,),
                                         ),
                                       ),
