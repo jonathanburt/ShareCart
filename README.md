@@ -21,7 +21,7 @@ The application features a robust user authentication system, allowing individua
 The following guide assumes you use VSCode as your IDE.
 
 ### Prerequisites
-- Install Java 21.0.7
+- Install Java 21
 - Install Dart development packages
 - Install Flutter
 - Install Docker (with Docker Compose support)
